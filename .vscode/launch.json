@@ -1,0 +1,36 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Spring Boot App (Dev)",
+            "request": "launch",
+            "mainClass": "kr.co.kalpa.dbapi2.KalpaDbApiApplication",
+            "args": "--spring.profiles.active=dev",
+            "console": "integratedTerminal"
+        },
+        {
+            "type": "java",
+            "name": "Spring Boot App (Prod)",
+            "request": "launch",
+            "mainClass": "kr.co.kalpa.dbapi2.KalpaDbApiApplication",
+            "args": "--spring.profiles.active=prod",
+            "console": "integratedTerminal"
+        },
+        {
+            "type": "java",
+            "name": "Spring Boot App (Test)",
+            "request": "launch",
+            "mainClass": "kr.co.kalpa.dbapi2.KalpaDbApiApplication",
+            "args": "--spring.profiles.active=test",
+            "console": "integratedTerminal"
+        },
+        {
+            "type": "java",
+            "name": "Attach to Remote Debug",
+            "request": "attach",
+            "hostName": "localhost",
+            "port": 5005
+        }
+    ]
+}

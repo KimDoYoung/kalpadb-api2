@@ -1,0 +1,43 @@
+# IDE
+.idea/
+*.swp
+*.swo
+*.iml
+*.iws
+*.ipr
+.classpath
+.project
+.settings/
+
+# Build
+build/
+.gradle/
+gradle/
+gradlew
+gradlew.bat
+*.jar
+*.war
+*.ear
+out/
+target/
+
+# OS
+.DS_Store
+Thumbs.db
+*.log
+
+# Environment & Properties
+.env
+.env.local
+application-local.properties
+
+# Dependencies
+node_modules/
+*.lock
+
+# Runtime
+*.pid
+*.pid.lock
+
+# IDE Workspace
+.workspace

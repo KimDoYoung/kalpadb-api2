@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(./gradlew build:*)",
+      "Bash(gradle --version:*)",
+      "Bash(gradle wrapper:*)",
+      "Bash(gradle --stop:*)",
+      "Bash(curl:*)",
+      "Bash(tee:*)",
+      "Bash(./gradlew:*)",
+      "Bash(powershell -Command:*)"
+    ]
+  }
+}
