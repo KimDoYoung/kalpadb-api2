@@ -52,6 +52,8 @@ public class SecurityConfig {
                         .requestMatchers("/auth/**").permitAll()
                         .requestMatchers("/error").permitAll()
                         .requestMatchers("/actuator/health").permitAll()
+                        // Diary API는 인증 필요
+                        .requestMatchers("/api/dairy/**").authenticated()
                         // 나머지는 인증 필요
                         .anyRequest().authenticated()
                 )

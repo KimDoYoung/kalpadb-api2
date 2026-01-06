@@ -97,6 +97,48 @@ public class GlobalExceptionHandler {
     }
 
     /**
+     * 일기 없음 예외
+     */
+    @ExceptionHandler(DiaryNotFoundException.class)
+    public ResponseEntity<ApiResponse<Void>> handleDiaryNotFoundException(
+            DiaryNotFoundException ex) {
+
+        log.error("Diary not found: {}", ex.getMessage());
+
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(ApiResponse.error(ex.getMessage()));
+    }
+
+    /**
+     * 일기 중복 예외
+     */
+    @ExceptionHandler(DiaryAlreadyExistsException.class)
+    public ResponseEntity<ApiResponse<Void>> handleDiaryAlreadyExistsException(
+            DiaryAlreadyExistsException ex) {
+
+        log.error("Diary already exists: {}", ex.getMessage());
+
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT)
+                .body(ApiResponse.error(ex.getMessage()));
+    }
+
+    /**
+     * 잘못된 날짜 형식 예외
+     */
+    @ExceptionHandler(InvalidYmdFormatException.class)
+    public ResponseEntity<ApiResponse<Void>> handleInvalidYmdFormatException(
+            InvalidYmdFormatException ex) {
+
+        log.error("Invalid YMD format: {}", ex.getMessage());
+
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(ApiResponse.error(ex.getMessage()));
+    }
+
+    /**
      * 일반 예외
      */
     @ExceptionHandler(Exception.class)
