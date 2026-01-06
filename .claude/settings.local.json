@@ -13,7 +13,11 @@
       "Bash(rm:*)",
       "Bash(python3:*)",
       "Bash(taskkill:*)",
-      "Bash(bash:*)"
+      "Bash(bash:*)",
+      "Bash(unzip:*)",
+      "Bash(/tmp/gradle-8.14/bin/gradle:*)",
+      "Bash(mkdir:*)",
+      "Bash(chmod:*)"
     ]
   }
 }
