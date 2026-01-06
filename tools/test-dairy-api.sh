@@ -172,7 +172,7 @@ echo ""
 
 # Test 12: Try to get non-existent diary (should fail)
 echo -e "${YELLOW}[12] Getting non-existent diary (should fail with 404)${NC}"
-NOTFOUND_RESPONSE=$(curl -s -X GET "$API_URL/dairy/99999999" \
+NOTFOUND_RESPONSE=$(curl -s -X GET "$API_URL/dairy/20000101" \
   -H "Authorization: Bearer $ACCESS_TOKEN")
 
 echo "$NOTFOUND_RESPONSE" | grep -q "일기를 찾을 수 없습니다" && echo -e "${GREEN}✓ Not found handling works${NC}" || echo -e "${RED}✗ Not found handling failed${NC}"
