@@ -3,7 +3,7 @@
     "configurations": [
         {
             "type": "java",
-            "name": "Spring Boot App (Dev)",
+            "name": "Dev",
             "request": "launch",
             "mainClass": "kr.co.kalpa.dbapi2.KalpaDbApiApplication",
             "args": "--spring.profiles.active=dev",
@@ -16,7 +16,7 @@
         },
         {
             "type": "java",
-            "name": "Spring Boot App (Prod)",
+            "name": "Prod",
             "request": "launch",
             "mainClass": "kr.co.kalpa.dbapi2.KalpaDbApiApplication",
             "args": "--spring.profiles.active=prod",

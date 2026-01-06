@@ -1,0 +1,8 @@
+{
+    "seq-thinking-cc": {
+      "command": "node",
+      "args": [
+        "/path/to/seq-thinking-cc/dist/index.js"
+      ]
+    }
+}

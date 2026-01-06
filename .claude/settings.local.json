@@ -8,7 +8,8 @@
       "Bash(curl:*)",
       "Bash(tee:*)",
       "Bash(./gradlew:*)",
-      "Bash(powershell -Command:*)"
+      "Bash(powershell -Command:*)",
+      "Bash(cat:*)"
     ]
   }
 }
