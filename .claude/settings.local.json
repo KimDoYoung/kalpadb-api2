@@ -9,7 +9,11 @@
       "Bash(tee:*)",
       "Bash(./gradlew:*)",
       "Bash(powershell -Command:*)",
-      "Bash(cat:*)"
+      "Bash(cat:*)",
+      "Bash(rm:*)",
+      "Bash(python3:*)",
+      "Bash(taskkill:*)",
+      "Bash(bash:*)"
     ]
   }
 }

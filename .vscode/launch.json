@@ -7,12 +7,7 @@
             "request": "launch",
             "mainClass": "kr.co.kalpa.dbapi2.KalpaDbApiApplication",
             "args": "--spring.profiles.active=dev",
-            "console": "integratedTerminal",
-            "env": {
-                "DB_PASSWORD": "${env:DB_PASSWORD}",
-                "DB_USERNAME": "${env:DB_USERNAME}",
-                "JWT_SECRET": "${env:JWT_SECRET}"
-            }
+            "console": "integratedTerminal"
         },
         {
             "type": "java",
