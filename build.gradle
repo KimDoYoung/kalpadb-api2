@@ -35,6 +35,9 @@ dependencies {
     // Thymeleaf Layout Dialect
     implementation 'nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect'
 
+    // Thymeleaf Spring Security Extras
+    implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
+
     // MariaDB
     runtimeOnly 'org.mariadb.jdbc:mariadb-java-client:3.3.2'
     

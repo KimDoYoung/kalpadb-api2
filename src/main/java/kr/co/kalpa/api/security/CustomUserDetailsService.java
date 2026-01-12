@@ -17,12 +17,15 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String userId) throws UsernameNotFoundException {
-        log.debug("Loading user by userId: {}", userId);
+        log.info("🔍 사용자 조회 시작: {}", userId);
 
         Users user = usersRepository.findByUserId(userId)
-                .orElseThrow(() -> new UsernameNotFoundException(
-                        "사용자를 찾을 수 없습니다: " + userId));
+                .orElseThrow(() -> {
+                    log.error("❌ 사용자를 찾을 수 없습니다: {}", userId);
+                    return new UsernameNotFoundException("사용자를 찾을 수 없습니다: " + userId);
+                });
 
+        log.info("✅ 사용자 로드 성공: {} (이름: {})", userId, user.getUserNm());
         return new CustomUserDetails(user);
     }
 }

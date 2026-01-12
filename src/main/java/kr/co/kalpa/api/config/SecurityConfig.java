@@ -46,7 +46,7 @@ public class SecurityConfig {
 
                 // Session 설정 (UI: SESSION, API: STATELESS)
                 .sessionManagement(session ->
-                        session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
+                        session.sessionCreationPolicy(SessionCreationPolicy.ALWAYS))
 
                 // 권한 설정
                 .authorizeHttpRequests(auth -> auth
@@ -80,6 +80,18 @@ public class SecurityConfig {
                         .loginPage("/login")
                         .permitAll()
                         .defaultSuccessUrl("/", true)
+                        .successHandler((request, response, authentication) -> {
+                            log.info("✅ 로그인 성공: {} (권한: {})",
+                                    authentication.getName(),
+                                    authentication.getAuthorities());
+                            response.sendRedirect("/");
+                        })
+                        .failureHandler((request, response, exception) -> {
+                            log.warn("❌ 로그인 실패: {} - {}",
+                                    request.getParameter("username"),
+                                    exception.getMessage());
+                            response.sendRedirect("/login?error");
+                        })
                 )
 
                 // 로그아웃 설정

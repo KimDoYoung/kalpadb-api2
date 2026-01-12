@@ -50,7 +50,10 @@ This is a RESTful API for the MySQL `kalpadb` database, built with Spring Boot. 
 
 ## Architecture Notes
 
-- This is a REST API layer over the `kalpadb` MySQL database
-- JWT-based authentication is used for securing endpoints
-- The client application PCMS2 consumes this API
-- Standard Spring Boot project structure expected with controllers, services, repositories, and models
+- mysql을 사용
+- /api 로 Restful api를 제공한다.
+- frontend도 함께 구현한다.
+  - alpine.js
+  - 타임리프
+  - tailwindcss(npm사용)
+  - UI는 responsive를 지원한다.
