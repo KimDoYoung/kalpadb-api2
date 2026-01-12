@@ -1,0 +1,31 @@
+<header th:fragment="header" class="bg-white shadow">
+    <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center text-white font-bold">
+                K
+            </div>
+            <h1 class="text-2xl font-bold text-gray-800">
+                <a th:href="@{/}">KalpaDB</a>
+            </h1>
+        </div>
+
+        <div class="flex items-center gap-4">
+            <!-- 사용자 정보 (로그인 상태일 때만 표시) -->
+            <div th:if="${#authentication != null and #authentication.isAuthenticated()}" class="text-sm">
+                <span class="text-gray-700">
+                    <span th:text="${#authentication.name}"></span>님
+                </span>
+            </div>
+
+            <!-- 로그인/로그아웃 버튼 -->
+            <div th:if="${#authentication != null and #authentication.isAuthenticated()}">
+                <form th:action="@{/logout}" method="post" class="inline">
+                    <button type="submit" class="btn-secondary text-sm">로그아웃</button>
+                </form>
+            </div>
+            <div th:unless="${#authentication != null and #authentication.isAuthenticated()}">
+                <a th:href="@{/login}" class="btn-primary text-sm">로그인</a>
+            </div>
+        </div>
+    </nav>
+</header>

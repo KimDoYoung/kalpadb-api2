@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/default}">
+<head>
+    <title>일기 작성 - KalpaDB</title>
+</head>
+<body>
+<main layout:fragment="content">
+    <div x-data="diaryForm()" x-init="init()">
+        <!-- 로딩 상태 -->
+        <div x-show="loading" class="text-center py-8">
+            <p class="text-gray-600">로딩 중...</p>
+        </div>
+
+        <!-- 에러 메시지 -->
+        <div x-show="error" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
+            <p x:text="error"></p>
+        </div>
+
+        <!-- 폼 -->
+        <div x-show="!loading" class="space-y-6">
+            <!-- 페이지 헤더 -->
+            <h2 class="text-3xl font-bold text-gray-800" x-text="isEdit ? '일기 수정' : '새 일기 작성'"></h2>
+
+            <!-- 날짜 -->
+            <div>
+                <label for="ymd" class="block text-sm font-medium text-gray-700 mb-2">
+                    날짜
+                </label>
+                <input
+                    type="date"
+                    id="ymd"
+                    x-model="form.ymd"
+                    :disabled="isEdit"
+                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
+                    required
+                >
+            </div>
+
+            <!-- 요약 -->
+            <div>
+                <label for="summary" class="block text-sm font-medium text-gray-700 mb-2">
+                    요약 (선택사항)
+                </label>
+                <input
+                    type="text"
+                    id="summary"
+                    x-model="form.summary"
+                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="한 줄 요약"
+                    maxlength="300"
+                >
+            </div>
+
+            <!-- 내용 -->
+            <div>
+                <label for="content" class="block text-sm font-medium text-gray-700 mb-2">
+                    내용
+                </label>
+                <textarea
+                    id="content"
+                    x-model="form.content"
+                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-96"
+                    placeholder="일기 내용을 입력하세요"
+                ></textarea>
+            </div>
+
+            <!-- 버튼 -->
+            <div class="flex gap-3">
+                <button @click="save()" class="btn-primary" :disabled="saving">
+                    <span x:text="saving ? '저장 중...' : (isEdit ? '수정' : '저장')"></span>
+                </button>
+                <a th:href="@{/diary}" class="btn-secondary">취소</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function diaryForm() {
+            const ymd = window.location.pathname.split('/').pop();
+            const isEdit = ymd !== 'new' && !isNaN(ymd);
+
+            return {
+                ymd: ymd,
+                isEdit: isEdit,
+                form: {
+                    ymd: ymd === 'new' ? new Date().toISOString().split('T')[0].replace(/-/g, '') : ymd,
+                    summary: '',
+                    content: ''
+                },
+                loading: isEdit,
+                saving: false,
+                error: '',
+
+                async init() {
+                    if (this.isEdit) {
+                        try {
+                            const response = await fetch(`/api/diary/${this.ymd}`);
+                            if (!response.ok) {
+                                throw new Error('일기를 불러올 수 없습니다.');
+                            }
+                            const data = await response.json();
+                            const diary = data.data || data;
+                            this.form = {
+                                ymd: diary.ymd,
+                                summary: diary.summary || '',
+                                content: diary.content || ''
+                            };
+                        } catch (err) {
+                            this.error = err.message;
+                            console.error(err);
+                        } finally {
+                            this.loading = false;
+                        }
+                    } else {
+                        this.loading = false;
+                    }
+                },
+
+                async save() {
+                    if (!this.form.ymd) {
+                        alert('날짜를 입력하세요.');
+                        return;
+                    }
+
+                    if (!this.form.content) {
+                        alert('내용을 입력하세요.');
+                        return;
+                    }
+
+                    this.saving = true;
+                    try {
+                        const url = `/api/diary${this.isEdit ? '/' + this.form.ymd : ''}`;
+                        const method = this.isEdit ? 'PUT' : 'POST';
+                        const response = await fetch(url, {
+                            method: method,
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify(this.form)
+                        });
+
+                        if (!response.ok) {
+                            const errorData = await response.json();
+                            throw new Error(errorData.message || '저장에 실패했습니다.');
+                        }
+
+                        alert('저장되었습니다.');
+                        window.location.href = `/diary/${this.form.ymd}`;
+                    } catch (err) {
+                        alert(err.message);
+                        console.error(err);
+                    } finally {
+                        this.saving = false;
+                    }
+                }
+            }
+        }
+    </script>
+</main>
+</body>
+</html>

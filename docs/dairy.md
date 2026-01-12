@@ -77,3 +77,5 @@
 - `Utility`: YmdValidator.java
 
 ## test
+
+- tools/test-dairy-api.sh을 수행시켜서 error없이 수행하는지 체크한다.

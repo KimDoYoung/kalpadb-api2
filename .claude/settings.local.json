@@ -1,4 +1,8 @@
 {
+  "env:" : {
+    "ENABLE_LSP_TOOL" : true,
+    "IS_DEMO" : true
+  },
   "permissions": {
     "allow": [
       "Bash(./gradlew build:*)",
@@ -15,5 +19,7 @@
       "Bash(taskkill:*)",
       "Bash(bash:*)"
     ]
-  }
+  },
+  "respectGitignore": true,
+  "language": "korean"  
 }

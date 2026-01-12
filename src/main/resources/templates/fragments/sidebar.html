@@ -1,0 +1,71 @@
+<aside th:fragment="sidebar" class="w-64 bg-gray-800 text-white min-h-screen">
+    <nav class="p-6">
+        <ul class="space-y-2">
+            <!-- 홈 -->
+            <li>
+                <a th:href="@{/}" class="block px-4 py-2 rounded hover:bg-gray-700 transition">
+                    <span>🏠 홈</span>
+                </a>
+            </li>
+
+            <!-- 인증이 필요한 메뉴들 -->
+            <div th:if="${#authentication != null and #authentication.isAuthenticated()}">
+                <!-- 일기 -->
+                <li>
+                    <a th:href="@{/diary}" class="block px-4 py-2 rounded hover:bg-gray-700 transition">
+                        <span>📔 일기</span>
+                    </a>
+                </li>
+
+                <!-- TODO -->
+                <li>
+                    <a th:href="@{/todo}" class="block px-4 py-2 rounded hover:bg-gray-700 transition">
+                        <span>✓ TODO</span>
+                    </a>
+                </li>
+
+                <!-- 책 -->
+                <li>
+                    <a th:href="@{/books}" class="block px-4 py-2 rounded hover:bg-gray-700 transition">
+                        <span>📚 독서</span>
+                    </a>
+                </li>
+
+                <!-- 영화 -->
+                <li>
+                    <a th:href="@{/movies}" class="block px-4 py-2 rounded hover:bg-gray-700 transition">
+                        <span>🎬 영화</span>
+                    </a>
+                </li>
+
+                <!-- 에세이 -->
+                <li>
+                    <a th:href="@{/essay}" class="block px-4 py-2 rounded hover:bg-gray-700 transition">
+                        <span>✍️ 에세이</span>
+                    </a>
+                </li>
+
+                <!-- 노트 -->
+                <li>
+                    <a th:href="@{/notes}" class="block px-4 py-2 rounded hover:bg-gray-700 transition">
+                        <span>📝 노트</span>
+                    </a>
+                </li>
+
+                <!-- 달력 -->
+                <li>
+                    <a th:href="@{/calendar}" class="block px-4 py-2 rounded hover:bg-gray-700 transition">
+                        <span>📅 달력</span>
+                    </a>
+                </li>
+            </div>
+
+            <!-- 로그인 안 되어 있을 때 -->
+            <div th:unless="${#authentication != null and #authentication.isAuthenticated()}">
+                <li class="text-gray-400 text-sm px-4 py-2">
+                    로그인하여 더 많은 기능을 이용하세요.
+                </li>
+            </div>
+        </ul>
+    </nav>
+</aside>

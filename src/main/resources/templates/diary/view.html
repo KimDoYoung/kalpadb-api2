@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/default}">
+<head>
+    <title>일기 상세 - KalpaDB</title>
+</head>
+<body>
+<main layout:fragment="content">
+    <div x-data="diaryDetail()" x-init="init()">
+        <!-- 로딩 상태 -->
+        <div x-show="loading" class="text-center py-8">
+            <p class="text-gray-600">로딩 중...</p>
+        </div>
+
+        <!-- 에러 메시지 -->
+        <div x-show="error" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
+            <p x:text="error"></p>
+        </div>
+
+        <!-- 일기 상세 -->
+        <div x-show="!loading && diary" class="space-y-6">
+            <!-- 헤더 -->
+            <div class="flex justify-between items-start border-b pb-4">
+                <div>
+                    <h2 class="text-3xl font-bold text-gray-800" x-text="formatDate(diary.ymd)"></h2>
+                    <p class="text-gray-600 mt-2" x-text="diary.summary || '(요약 없음)'"></p>
+                </div>
+                <div class="flex gap-2">
+                    <a :href="'/diary/edit/' + diary.ymd" class="btn-primary">수정</a>
+                    <button @click="deleteDiary()" class="btn-danger">삭제</button>
+                </div>
+            </div>
+
+            <!-- 내용 -->
+            <div class="bg-white rounded-lg p-6">
+                <div class="prose max-w-none" x-html="diary.content || '(내용 없음)'"></div>
+            </div>
+
+            <!-- 뒤로가기 -->
+            <div class="flex justify-between items-center">
+                <a th:href="@{/diary}" class="text-blue-500 hover:text-blue-600">← 목록으로</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function diaryDetail() {
+            const ymd = window.location.pathname.split('/').pop();
+
+            return {
+                ymd: ymd,
+                diary: null,
+                loading: true,
+                error: '',
+
+                async init() {
+                    try {
+                        const response = await fetch(`/api/diary/${this.ymd}`);
+                        if (!response.ok) {
+                            throw new Error('일기를 불러올 수 없습니다.');
+                        }
+                        const data = await response.json();
+                        this.diary = data.data || data;
+                    } catch (err) {
+                        this.error = err.message;
+                        console.error(err);
+                    } finally {
+                        this.loading = false;
+                    }
+                },
+
+                async deleteDiary() {
+                    if (confirm('정말 삭제하시겠습니까?')) {
+                        try {
+                            const response = await fetch(`/api/diary/${this.ymd}`, {
+                                method: 'DELETE'
+                            });
+                            if (response.ok) {
+                                alert('삭제되었습니다.');
+                                window.location.href = '/diary';
+                            } else {
+                                throw new Error('삭제에 실패했습니다.');
+                            }
+                        } catch (err) {
+                            alert(err.message);
+                            console.error(err);
+                        }
+                    }
+                },
+
+                formatDate(ymd) {
+                    if (!ymd || ymd.length !== 8) return ymd;
+                    return `${ymd.substring(0, 4)}-${ymd.substring(4, 6)}-${ymd.substring(6, 8)}`;
+                }
+            }
+        }
+    </script>
+</main>
+</body>
+</html>
