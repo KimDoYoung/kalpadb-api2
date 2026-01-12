@@ -5,10 +5,10 @@ import kr.co.kalpa.api.dto.request.TokenRefreshRequest;
 import kr.co.kalpa.api.dto.response.LoginResponse;
 import kr.co.kalpa.api.dto.response.TokenResponse;
 import kr.co.kalpa.api.dto.response.UserInfoResponse;
-import kr.co.kalpa.api.entity.ApUser;
+import kr.co.kalpa.api.entity.Users;
 import kr.co.kalpa.api.exception.InvalidTokenException;
 import kr.co.kalpa.api.exception.UnauthorizedException;
-import kr.co.kalpa.api.repository.ApUserRepository;
+import kr.co.kalpa.api.repository.UsersRepository;
 import kr.co.kalpa.api.security.RefreshTokenManager;
 import kr.co.kalpa.api.util.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +19,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,10 +27,11 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 @Slf4j
 public class AuthService {
-    private final ApUserRepository apUserRepository;
+    private final UsersRepository usersRepository;
     private final JwtTokenProvider jwtTokenProvider;
     private final RefreshTokenManager refreshTokenManager;
     private final AuthenticationManager authenticationManager;
+    private final PasswordEncoder passwordEncoder;
 
     /**
      * 로그인
@@ -39,12 +41,12 @@ public class AuthService {
         log.debug("Login attempt for userId: {}", request.getUserId());
 
         // 사용자 존재 확인
-        ApUser apUser = apUserRepository.findByUserId(request.getUserId())
+        Users user = usersRepository.findByUserId(request.getUserId())
                 .orElseThrow(() -> new UsernameNotFoundException(
                         "사용자를 찾을 수 없습니다: " + request.getUserId()));
 
-        // 비밀번호 검증 (현재는 평문 비교)
-        if (!apUser.getUserPw().equals(request.getPassword())) {
+        // 비밀번호 검증 (BCrypt)
+        if (!passwordEncoder.matches(request.getPassword(), user.getUserPw())) {
             log.warn("Invalid password for user: {}", request.getUserId());
             throw new BadCredentialsException("아이디 또는 비밀번호가 올바르지 않습니다");
         }
@@ -60,13 +62,13 @@ public class AuthService {
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         // 토큰 생성
-        String accessToken = jwtTokenProvider.generateAccessToken(apUser.getUserId());
-        String refreshToken = jwtTokenProvider.generateRefreshToken(apUser.getUserId());
+        String accessToken = jwtTokenProvider.generateAccessToken(user.getUserId());
+        String refreshToken = jwtTokenProvider.generateRefreshToken(user.getUserId());
 
         // Refresh Token 저장
-        refreshTokenManager.saveRefreshToken(refreshToken, apUser.getUserId());
+        refreshTokenManager.saveRefreshToken(refreshToken, user.getUserId());
 
-        log.info("User logged in successfully: {}", apUser.getUserId());
+        log.info("User logged in successfully: {}", user.getUserId());
 
         return LoginResponse.builder()
                 .accessToken(accessToken)
@@ -74,9 +76,8 @@ public class AuthService {
                 .tokenType("Bearer")
                 .expiresIn(jwtTokenProvider.getAccessTokenExpirationInSeconds())
                 .userInfo(LoginResponse.UserInfo.builder()
-                        .userId(apUser.getUserId())
-                        .userName(apUser.getUserNm())
-                        .userHomeFolder(apUser.getUserHomeFolder())
+                        .userId(user.getUserId())
+                        .userName(user.getUserNm())
                         .build())
                 .build();
     }
@@ -146,14 +147,13 @@ public class AuthService {
 
         String userId = authentication.getName();
 
-        ApUser apUser = apUserRepository.findByUserId(userId)
+        Users user = usersRepository.findByUserId(userId)
                 .orElseThrow(() -> new UsernameNotFoundException(
                         "사용자를 찾을 수 없습니다: " + userId));
 
         return UserInfoResponse.builder()
-                .userId(apUser.getUserId())
-                .userName(apUser.getUserNm())
-                .userHomeFolder(apUser.getUserHomeFolder())
+                .userId(user.getUserId())
+                .userName(user.getUserNm())
                 .build();
     }
 

@@ -23,6 +23,5 @@ public class LoginResponse {
     public static class UserInfo {
         private String userId;
         private String userName;
-        private String userHomeFolder;
     }
 }

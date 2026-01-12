@@ -1,6 +1,6 @@
 package kr.co.kalpa.api.security;
 
-import kr.co.kalpa.api.entity.ApUser;
+import kr.co.kalpa.api.entity.Users;
 import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -11,10 +11,10 @@ import java.util.Collections;
 
 @Getter
 public class CustomUserDetails implements UserDetails {
-    private final ApUser apUser;
+    private final Users user;
 
-    public CustomUserDetails(ApUser apUser) {
-        this.apUser = apUser;
+    public CustomUserDetails(Users user) {
+        this.user = user;
     }
 
     @Override
@@ -24,12 +24,12 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public String getPassword() {
-        return apUser.getUserPw();
+        return user.getUserPw();
     }
 
     @Override
     public String getUsername() {
-        return apUser.getUserId();
+        return user.getUserId();
     }
 
     @Override

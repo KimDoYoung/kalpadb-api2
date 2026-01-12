@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/dairy")
+@RequestMapping("/api/diary")
 @RequiredArgsConstructor
 @Slf4j
 public class DiaryApiController {
@@ -28,7 +28,7 @@ public class DiaryApiController {
 
     /**
      * Create a new diary
-     * POST /api/dairy
+     * POST /api/diary
      */
     @PostMapping
     public ResponseEntity<ApiResponse<DiaryResponse>> createDiary(
@@ -44,7 +44,7 @@ public class DiaryApiController {
 
     /**
      * Get diary by YMD
-     * GET /api/dairy/{ymd}
+     * GET /api/diary/{ymd}
      */
     @GetMapping("/{ymd}")
     public ResponseEntity<ApiResponse<DiaryResponse>> getDiary(
@@ -60,7 +60,7 @@ public class DiaryApiController {
 
     /**
      * Get all diaries with pagination and filters
-     * GET /api/dairy?page=0&size=10&sort=ymd,desc&fromYmd=20260101&toYmd=20260131&keyword=검색어&summaryOnly=true
+     * GET /api/diary?page=0&size=10&sort=ymd,desc&fromYmd=20260101&toYmd=20260131&keyword=검색어&summaryOnly=true
      */
     @GetMapping
     public ResponseEntity<ApiResponse<DiaryPageResponse>> getDiaries(
@@ -91,7 +91,7 @@ public class DiaryApiController {
 
     /**
      * Get recent N diaries
-     * GET /api/dairy/recent?limit=10
+     * GET /api/diary/recent?limit=10
      */
     @GetMapping("/recent")
     public ResponseEntity<ApiResponse<List<DiaryResponse>>> getRecentDiaries(
@@ -107,7 +107,7 @@ public class DiaryApiController {
 
     /**
      * Update diary
-     * PUT /api/dairy/{ymd}
+     * PUT /api/diary/{ymd}
      */
     @PutMapping("/{ymd}")
     public ResponseEntity<ApiResponse<DiaryResponse>> updateDiary(

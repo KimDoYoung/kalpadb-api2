@@ -69,7 +69,7 @@ echo ""
 
 # Test 2: Create diary
 echo -e "${YELLOW}[2] Creating diary for $TEST_YMD...${NC}"
-CREATE_RESPONSE=$(curl -s -X POST "$API_URL/dairy" \
+CREATE_RESPONSE=$(curl -s -X POST "$API_URL/diary" \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $ACCESS_TOKEN" \
   -d "{\"ymd\": \"$TEST_YMD\", \"content\": \"Test diary content for $TEST_YMD\", \"summary\": \"Test summary\"}")
@@ -80,7 +80,7 @@ echo ""
 
 # Test 3: Get specific diary
 echo -e "${YELLOW}[3] Getting diary by ymd: $TEST_YMD${NC}"
-GET_RESPONSE=$(curl -s -X GET "$API_URL/dairy/$TEST_YMD" \
+GET_RESPONSE=$(curl -s -X GET "$API_URL/diary/$TEST_YMD" \
   -H "Authorization: Bearer $ACCESS_TOKEN")
 
 echo "$GET_RESPONSE" | grep -q "$TEST_YMD" && echo -e "${GREEN}✓ Get diary success${NC}" || echo -e "${RED}✗ Get diary failed${NC}"
@@ -90,7 +90,7 @@ echo ""
 
 # Test 4: Get diary list with pagination
 echo -e "${YELLOW}[4] Getting diary list (page=0, size=5)${NC}"
-LIST_RESPONSE=$(curl -s -X GET "$API_URL/dairy?page=0&size=5" \
+LIST_RESPONSE=$(curl -s -X GET "$API_URL/diary?page=0&size=5" \
   -H "Authorization: Bearer $ACCESS_TOKEN")
 
 echo "$LIST_RESPONSE" | grep -q "content" && echo -e "${GREEN}✓ Get list success${NC}" || echo -e "${RED}✗ Get list failed${NC}"
@@ -101,7 +101,7 @@ echo ""
 
 # Test 5: Get diary list with date range
 echo -e "${YELLOW}[5] Getting diary list with date range (from 20260101 to 20260131)${NC}"
-RANGE_RESPONSE=$(curl -s -X GET "$API_URL/dairy?fromYmd=20260101&toYmd=20260131&page=0&size=10" \
+RANGE_RESPONSE=$(curl -s -X GET "$API_URL/diary?fromYmd=20260101&toYmd=20260131&page=0&size=10" \
   -H "Authorization: Bearer $ACCESS_TOKEN")
 
 echo "$RANGE_RESPONSE" | grep -q "content" && echo -e "${GREEN}✓ Get range filter success${NC}" || echo -e "${RED}✗ Get range filter failed${NC}"
@@ -111,7 +111,7 @@ echo ""
 
 # Test 6: Get diary list with keyword search
 echo -e "${YELLOW}[6] Getting diary list with keyword search (keyword=Test)${NC}"
-SEARCH_RESPONSE=$(curl -s -X GET "$API_URL/dairy?keyword=Test&page=0&size=10" \
+SEARCH_RESPONSE=$(curl -s -X GET "$API_URL/diary?keyword=Test&page=0&size=10" \
   -H "Authorization: Bearer $ACCESS_TOKEN")
 
 echo "$SEARCH_RESPONSE" | grep -q "content" && echo -e "${GREEN}✓ Get keyword search success${NC}" || echo -e "${RED}✗ Get keyword search failed${NC}"
@@ -121,7 +121,7 @@ echo ""
 
 # Test 7: Get diary list with summary only
 echo -e "${YELLOW}[7] Getting diary list with summaryOnly=true${NC}"
-SUMMARY_RESPONSE=$(curl -s -X GET "$API_URL/dairy?summaryOnly=true&page=0&size=5" \
+SUMMARY_RESPONSE=$(curl -s -X GET "$API_URL/diary?summaryOnly=true&page=0&size=5" \
   -H "Authorization: Bearer $ACCESS_TOKEN")
 
 echo "$SUMMARY_RESPONSE" | grep -q "summary" && echo -e "${GREEN}✓ Get summary only success${NC}" || echo -e "${RED}✗ Get summary only failed${NC}"
@@ -130,7 +130,7 @@ echo ""
 
 # Test 8: Get recent diaries
 echo -e "${YELLOW}[8] Getting recent $LIMIT diaries${NC}"
-RECENT_RESPONSE=$(curl -s -X GET "$API_URL/dairy/recent?limit=$LIMIT" \
+RECENT_RESPONSE=$(curl -s -X GET "$API_URL/diary/recent?limit=$LIMIT" \
   -H "Authorization: Bearer $ACCESS_TOKEN")
 
 echo "$RECENT_RESPONSE" | grep -q "ymd" && echo -e "${GREEN}✓ Get recent diaries success${NC}" || echo -e "${RED}✗ Get recent diaries failed${NC}"
@@ -139,7 +139,7 @@ echo ""
 
 # Test 9: Update diary
 echo -e "${YELLOW}[9] Updating diary for $TEST_YMD${NC}"
-UPDATE_RESPONSE=$(curl -s -X PUT "$API_URL/dairy/$TEST_YMD" \
+UPDATE_RESPONSE=$(curl -s -X PUT "$API_URL/diary/$TEST_YMD" \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $ACCESS_TOKEN" \
   -d "{\"content\": \"Updated test diary content for $TEST_YMD\", \"summary\": \"Updated summary\"}")
@@ -150,7 +150,7 @@ echo ""
 
 # Test 10: Try to create duplicate diary (should fail)
 echo -e "${YELLOW}[10] Creating duplicate diary (should fail with 409)${NC}"
-DUPLICATE_RESPONSE=$(curl -s -X POST "$API_URL/dairy" \
+DUPLICATE_RESPONSE=$(curl -s -X POST "$API_URL/diary" \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $ACCESS_TOKEN" \
   -d "{\"ymd\": \"$TEST_YMD\", \"content\": \"Duplicate\", \"summary\": \"Dup\"}")
@@ -161,7 +161,7 @@ echo ""
 
 # Test 11: Try invalid date format (should fail)
 echo -e "${YELLOW}[11] Creating diary with invalid date format (should fail with 400)${NC}"
-INVALID_DATE_RESPONSE=$(curl -s -X POST "$API_URL/dairy" \
+INVALID_DATE_RESPONSE=$(curl -s -X POST "$API_URL/diary" \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $ACCESS_TOKEN" \
   -d "{\"ymd\": \"2026-01-10\", \"content\": \"Invalid date\", \"summary\": \"Test\"}")
@@ -172,7 +172,7 @@ echo ""
 
 # Test 12: Try to get non-existent diary (should fail)
 echo -e "${YELLOW}[12] Getting non-existent diary (should fail with 404)${NC}"
-NOTFOUND_RESPONSE=$(curl -s -X GET "$API_URL/dairy/20000101" \
+NOTFOUND_RESPONSE=$(curl -s -X GET "$API_URL/diary/20000101" \
   -H "Authorization: Bearer $ACCESS_TOKEN")
 
 echo "$NOTFOUND_RESPONSE" | grep -q "일기를 찾을 수 없습니다" && echo -e "${GREEN}✓ Not found handling works${NC}" || echo -e "${RED}✗ Not found handling failed${NC}"
@@ -181,7 +181,7 @@ echo ""
 
 # Test 13: API without authentication (should fail)
 echo -e "${YELLOW}[13] Accessing diary API without token (should fail with 401)${NC}"
-NOAUTH_RESPONSE=$(curl -s -X GET "$API_URL/dairy")
+NOAUTH_RESPONSE=$(curl -s -X GET "$API_URL/diary")
 
 echo "$NOAUTH_RESPONSE" | grep -q "success.*false" && echo -e "${GREEN}✓ Authentication check works${NC}" || echo -e "${RED}✗ Authentication check failed${NC}"
 echo "  Response: $(echo $NOAUTH_RESPONSE | cut -c1-100)..."

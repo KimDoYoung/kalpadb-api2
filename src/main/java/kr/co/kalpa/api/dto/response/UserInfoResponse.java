@@ -12,5 +12,4 @@ import lombok.NoArgsConstructor;
 public class UserInfoResponse {
     private String userId;
     private String userName;
-    private String userHomeFolder;
 }
