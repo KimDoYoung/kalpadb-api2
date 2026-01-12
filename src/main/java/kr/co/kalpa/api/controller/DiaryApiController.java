@@ -19,10 +19,10 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/dairy")
+@RequestMapping("/api/dairy")
 @RequiredArgsConstructor
 @Slf4j
-public class DiaryController {
+public class DiaryApiController {
 
     private final DiaryService diaryService;
 

@@ -5,7 +5,7 @@
             "type": "java",
             "name": "Dev",
             "request": "launch",
-            "mainClass": "kr.co.kalpa.dbapi2.KalpaDbApiApplication",
+            "mainClass": "kr.co.kalpa.api.KalpaApplication",
             "args": "--spring.profiles.active=dev",
             "console": "integratedTerminal"
         },
@@ -13,7 +13,7 @@
             "type": "java",
             "name": "Prod",
             "request": "launch",
-            "mainClass": "kr.co.kalpa.dbapi2.KalpaDbApiApplication",
+            "mainClass": "kr.co.kalpa.api.KalpaApplication",
             "args": "--spring.profiles.active=prod",
             "console": "integratedTerminal"
         },
@@ -21,7 +21,7 @@
             "type": "java",
             "name": "Spring Boot App (Test)",
             "request": "launch",
-            "mainClass": "kr.co.kalpa.dbapi2.KalpaDbApiApplication",
+            "mainClass": "kr.co.kalpa.api.KalpaApplication",
             "args": "--spring.profiles.active=test",
             "console": "integratedTerminal"
         },
