@@ -1,75 +1,73 @@
-<header th:fragment="header">
-    <!-- 상단 바 -->
-    <nav class="bg-white shadow">
-        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
-            <div class="flex items-center gap-3">
-                <div class="w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center text-white font-bold">
-                    K
-                </div>
-                <h1 class="text-2xl font-bold text-gray-800">
-                    <a th:href="@{/}">KalpaDB</a>
-                </h1>
+<header th:fragment="header" class="bg-white shadow">
+    <!-- 통합 상단 바 -->
+    <nav class="container mx-auto px-6 py-3 flex justify-between items-center">
+        <!-- 로고 -->
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center text-white font-bold">
+                K
             </div>
-
-            <div class="flex items-center gap-4">
-                <!-- 사용자 정보 (로그인 상태일 때만 표시) -->
-                <div th:if="${#authentication != null and #authentication.isAuthenticated()}" class="text-sm">
-                    <span class="text-gray-700">
-                        <span th:text="${#authentication.name}"></span>님
-                    </span>
-                </div>
-
-                <!-- 로그인/로그아웃 버튼 -->
-                <div th:if="${#authentication != null and #authentication.isAuthenticated()}">
-                    <form th:action="@{/logout}" method="post" class="inline">
-                        <button type="submit" class="btn-secondary text-sm">로그아웃</button>
-                    </form>
-                </div>
-                <div th:unless="${#authentication != null and #authentication.isAuthenticated()}">
-                    <a th:href="@{/login}" class="btn-primary text-sm">로그인</a>
-                </div>
-            </div>
+            <h1 class="text-2xl font-bold text-gray-800">
+                <a th:href="@{/}">KalpaDB</a>
+            </h1>
         </div>
-    </nav>
 
-    <!-- 메뉴 바 (로그인한 사용자만 표시) -->
-    <nav th:if="${#authentication != null and #authentication.isAuthenticated()}" class="bg-gray-100 border-b">
-        <div class="container mx-auto px-6 py-3 flex gap-8">
+        <!-- 메뉴 (로그인한 사용자만 표시) -->
+        <div th:if="${#authentication != null and #authentication.isAuthenticated()}" class="flex items-center gap-6" x-data="{ diaryOpen: false, boardOpen: false, techOpen: false }">
             <!-- 일지 메뉴 -->
-            <div class="relative group">
-                <button type="button" class="text-gray-800 font-medium hover:text-blue-600 flex items-center gap-1">
+            <div class="relative">
+                <button type="button" @click="diaryOpen = !diaryOpen" class="text-gray-800 text-sm hover:text-blue-600 flex items-center gap-0.5">
                     📔 일지
                     <span class="text-xs">▼</span>
                 </button>
-                <div class="absolute left-0 hidden group-hover:block bg-white shadow-md rounded-md py-2 w-40 z-10">
-                    <a th:href="@{/diary/new}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">일지기록</a>
-                    <a th:href="@{/diary}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">일지찾기</a>
-                    <a th:href="@{/calendar}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">달력</a>
+                <div x-show="diaryOpen" @click.outside="diaryOpen = false" style="position: absolute; top: 100%; left: 0; margin-top: 0.5rem; background-color: white; box-shadow: 0 4px 6px rgba(0,0,0,0.1); border-radius: 0.375rem; padding: 0.25rem 0; min-width: 8rem;">
+                    <a th:href="@{/diary/new}" class="block px-3 py-1 text-gray-700 text-sm hover:bg-gray-100">일지기록</a>
+                    <a th:href="@{/diary}" class="block px-3 py-1 text-gray-700 text-sm hover:bg-gray-100">일지찾기</a>
+                    <a th:href="@{/calendar}" class="block px-3 py-1 text-gray-700 text-sm hover:bg-gray-100">달력</a>
                 </div>
             </div>
 
             <!-- 게시판 메뉴 -->
-            <div class="relative group">
-                <button type="button" class="text-gray-800 font-medium hover:text-blue-600 flex items-center gap-1">
+            <div class="relative">
+                <button type="button" @click="boardOpen = !boardOpen" class="text-gray-800 text-sm hover:text-blue-600 flex items-center gap-0.5">
                     📝 게시판
                     <span class="text-xs">▼</span>
                 </button>
-                <div class="absolute left-0 hidden group-hover:block bg-white shadow-md rounded-md py-2 w-40 z-10">
-                    <a th:href="@{/essay}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Essay</a>
-                    <a th:href="@{/notes}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">기술노트</a>
+                <div x-show="boardOpen" @click.outside="boardOpen = false" style="position: absolute; top: 100%; left: 0; margin-top: 0.5rem; background-color: white; box-shadow: 0 4px 6px rgba(0,0,0,0.1); border-radius: 0.375rem; padding: 0.25rem 0; min-width: 8rem;">
+                    <a th:href="@{/essay}" class="block px-3 py-1 text-gray-700 text-sm hover:bg-gray-100">Essay</a>
+                    <a th:href="@{/notes}" class="block px-3 py-1 text-gray-700 text-sm hover:bg-gray-100">기술노트</a>
                 </div>
             </div>
 
             <!-- Tech 메뉴 -->
-            <div class="relative group">
-                <button type="button" class="text-gray-800 font-medium hover:text-blue-600 flex items-center gap-1">
+            <div class="relative">
+                <button type="button" @click="techOpen = !techOpen" class="text-gray-800 text-sm hover:text-blue-600 flex items-center gap-0.5">
                     🔧 Tech
                     <span class="text-xs">▼</span>
                 </button>
-                <div class="absolute left-0 hidden group-hover:block bg-white shadow-md rounded-md py-2 w-40 z-10">
-                    <a th:href="@{/jangbi}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">장비</a>
-                    <a th:href="@{/files}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">파일관리</a>
+                <div x-show="techOpen" @click.outside="techOpen = false" style="position: absolute; top: 100%; left: 0; margin-top: 0.5rem; background-color: white; box-shadow: 0 4px 6px rgba(0,0,0,0.1); border-radius: 0.375rem; padding: 0.25rem 0; min-width: 8rem;">
+                    <a th:href="@{/jangbi}" class="block px-3 py-1 text-gray-700 text-sm hover:bg-gray-100">장비</a>
+                    <a th:href="@{/files}" class="block px-3 py-1 text-gray-700 text-sm hover:bg-gray-100">파일관리</a>
                 </div>
+            </div>
+        </div>
+
+        <!-- 우측: 사용자 정보 및 버튼 -->
+        <div class="flex items-center gap-4">
+            <!-- 사용자 정보 (로그인 상태일 때만 표시) -->
+            <div th:if="${#authentication != null and #authentication.isAuthenticated()}" class="text-sm">
+                <span class="text-gray-700">
+                    <span th:text="${#authentication.name}"></span>님
+                </span>
+            </div>
+
+            <!-- 로그인/로그아웃 버튼 -->
+            <div th:if="${#authentication != null and #authentication.isAuthenticated()}">
+                <form th:action="@{/logout}" method="post" class="inline">
+                    <button type="submit" class="btn-secondary text-sm">로그아웃</button>
+                </form>
+            </div>
+            <div th:unless="${#authentication != null and #authentication.isAuthenticated()}">
+                <a th:href="@{/login}" class="btn-primary text-sm">로그인</a>
             </div>
         </div>
     </nav>

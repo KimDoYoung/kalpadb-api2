@@ -99,6 +99,14 @@ public class SecurityConfig {
                         .logoutUrl("/logout")
                         .logoutSuccessUrl("/login")
                         .permitAll()
+                        .logoutSuccessHandler((request, response, authentication) -> {
+                            log.info("✅ 로그아웃 성공: {} (세션 정리 완료)",
+                                    authentication != null ? authentication.getName() : "anonymousUser");
+                            response.sendRedirect("/login");
+                        })
+                        .invalidateHttpSession(true)
+                        .clearAuthentication(true)
+                        .deleteCookies("JSESSIONID")
                 )
 
                 // 예외 처리

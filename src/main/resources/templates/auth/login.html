@@ -52,30 +52,20 @@
                     >
                 </div>
 
-                <!-- 숫자 패드 -->
-                <div class="mt-6 p-4 bg-gray-100 rounded-lg">
-                    <p class="text-xs text-gray-600 mb-3 text-center">또는 버튼으로 입력하세요</p>
-
-                    <!-- 숫자 버튼 (1-9) -->
-                    <div class="grid grid-cols-3 gap-2 mb-2">
-                        <button type="button" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 rounded" onclick="addToPassword(event, '1')">1</button>
-                        <button type="button" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 rounded" onclick="addToPassword(event, '2')">2</button>
-                        <button type="button" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 rounded" onclick="addToPassword(event, '3')">3</button>
-
-                        <button type="button" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 rounded" onclick="addToPassword(event, '4')">4</button>
-                        <button type="button" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 rounded" onclick="addToPassword(event, '5')">5</button>
-                        <button type="button" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 rounded" onclick="addToPassword(event, '6')">6</button>
-
-                        <button type="button" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 rounded" onclick="addToPassword(event, '7')">7</button>
-                        <button type="button" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 rounded" onclick="addToPassword(event, '8')">8</button>
-                        <button type="button" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 rounded" onclick="addToPassword(event, '9')">9</button>
-                    </div>
-
-                    <!-- 0과 제어 버튼 -->
-                    <div class="grid grid-cols-3 gap-2">
-                        <button type="button" class="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-3 rounded" onclick="clearPassword(event)">x</button>
-                        <button type="button" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 rounded" onclick="addToPassword(event, '0')">0</button>
-                        <button type="button" class="bg-red-500 hover:bg-red-600 text-white font-bold py-3 rounded" onclick="deleteLastPassword(event)">&lt;-</button>
+                <!-- 숫자 패드 (수평 배치) -->
+                <div class="mt-6 p-2 bg-gray-100 rounded-lg flex justify-center">
+                    <div style="display: flex; flex-wrap: nowrap; gap: 1px;">
+                        <button type="button" style="flex-shrink: 0; width: 32px; height: 32px; background-color: #3b82f6; color: white; border-radius: 4px; border: none; cursor: pointer; font-size: 12px; font-weight: bold;" onclick="addToPassword(event, '1')">1</button>
+                        <button type="button" style="flex-shrink: 0; width: 32px; height: 32px; background-color: #3b82f6; color: white; border-radius: 4px; border: none; cursor: pointer; font-size: 12px; font-weight: bold;" onclick="addToPassword(event, '2')">2</button>
+                        <button type="button" style="flex-shrink: 0; width: 32px; height: 32px; background-color: #3b82f6; color: white; border-radius: 4px; border: none; cursor: pointer; font-size: 12px; font-weight: bold;" onclick="addToPassword(event, '3')">3</button>
+                        <button type="button" style="flex-shrink: 0; width: 32px; height: 32px; background-color: #3b82f6; color: white; border-radius: 4px; border: none; cursor: pointer; font-size: 12px; font-weight: bold;" onclick="addToPassword(event, '4')">4</button>
+                        <button type="button" style="flex-shrink: 0; width: 32px; height: 32px; background-color: #3b82f6; color: white; border-radius: 4px; border: none; cursor: pointer; font-size: 12px; font-weight: bold;" onclick="addToPassword(event, '5')">5</button>
+                        <button type="button" style="flex-shrink: 0; width: 32px; height: 32px; background-color: #3b82f6; color: white; border-radius: 4px; border: none; cursor: pointer; font-size: 12px; font-weight: bold;" onclick="addToPassword(event, '6')">6</button>
+                        <button type="button" style="flex-shrink: 0; width: 32px; height: 32px; background-color: #3b82f6; color: white; border-radius: 4px; border: none; cursor: pointer; font-size: 12px; font-weight: bold;" onclick="addToPassword(event, '7')">7</button>
+                        <button type="button" style="flex-shrink: 0; width: 32px; height: 32px; background-color: #3b82f6; color: white; border-radius: 4px; border: none; cursor: pointer; font-size: 12px; font-weight: bold;" onclick="addToPassword(event, '8')">8</button>
+                        <button type="button" style="flex-shrink: 0; width: 32px; height: 32px; background-color: #3b82f6; color: white; border-radius: 4px; border: none; cursor: pointer; font-size: 12px; font-weight: bold;" onclick="addToPassword(event, '9')">9</button>
+                        <button type="button" style="flex-shrink: 0; width: 32px; height: 32px; background-color: #3b82f6; color: white; border-radius: 4px; border: none; cursor: pointer; font-size: 12px; font-weight: bold;" onclick="addToPassword(event, '0')">0</button>
+                        <button type="button" style="flex-shrink: 0; width: 32px; height: 32px; background-color: #eab308; color: white; border-radius: 4px; border: none; cursor: pointer; font-size: 12px; font-weight: bold;" onclick="clearPassword(event)">x</button>
                     </div>
                 </div>
 
