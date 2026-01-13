@@ -9,7 +9,12 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface DiaryRepository extends JpaRepository<Diary, String> {
+public interface DiaryRepository extends JpaRepository<Diary, Long> {
+
+    /**
+     * Find diary by ymd
+     */
+    Diary findByYmd(String ymd);
 
     /**
      * Check if diary exists by ymd

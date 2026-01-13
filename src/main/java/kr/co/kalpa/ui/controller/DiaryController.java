@@ -15,8 +15,8 @@ public class DiaryController {
     }
 
     @GetMapping("/new")
-    public String newDiary() {
-        return "diary/form";
+    public String create() {
+        return "diary/create";
     }
 
     @GetMapping("/{ymd}")
@@ -24,8 +24,8 @@ public class DiaryController {
         return "diary/view";
     }
 
-    @GetMapping("/edit/{ymd}")
+    @GetMapping("/{ymd}/edit")
     public String edit(@PathVariable String ymd) {
-        return "diary/form";
+        return "diary/edit";
     }
 }

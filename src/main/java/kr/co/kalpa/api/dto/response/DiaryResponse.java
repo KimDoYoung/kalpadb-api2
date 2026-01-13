@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 @Builder
 public class DiaryResponse {
 
+    private Long id;
     private String ymd;
     private String content;
     private String summary;
@@ -21,6 +22,7 @@ public class DiaryResponse {
      */
     public static DiaryResponse from(Diary diary) {
         return DiaryResponse.builder()
+                .id(diary.getId())
                 .ymd(diary.getYmd())
                 .content(diary.getContent())
                 .summary(diary.getSummary())
@@ -32,6 +34,7 @@ public class DiaryResponse {
      */
     public static DiaryResponse summaryOnly(Diary diary) {
         return DiaryResponse.builder()
+                .id(diary.getId())
                 .ymd(diary.getYmd())
                 .summary(diary.getSummary())
                 .build();

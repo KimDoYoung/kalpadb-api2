@@ -1,9 +1,6 @@
 package kr.co.kalpa.api.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -18,7 +15,11 @@ import lombok.NoArgsConstructor;
 public class Diary {
 
     @Id
-    @Column(name = "ymd", length = 8)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    private Long id;
+
+    @Column(name = "ymd", length = 8, unique = true)
     private String ymd;
 
     @Column(name = "content", columnDefinition = "TEXT")

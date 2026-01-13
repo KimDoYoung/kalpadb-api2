@@ -1,13 +1,17 @@
 package kr.co.kalpa.api.controller;
 
-import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import kr.co.kalpa.api.dto.ApiResponse;
 import kr.co.kalpa.api.dto.request.DiaryCreateRequest;
 import kr.co.kalpa.api.dto.request.DiaryUpdateRequest;
 import kr.co.kalpa.api.dto.response.DiaryPageResponse;
 import kr.co.kalpa.api.dto.response.DiaryResponse;
+import kr.co.kalpa.api.dto.response.FileResponse;
+import kr.co.kalpa.api.entity.Diary;
+import kr.co.kalpa.api.entity.FileMatch;
 import kr.co.kalpa.api.service.DiaryService;
+import kr.co.kalpa.api.service.FileMatchService;
+import kr.co.kalpa.api.service.FileService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
@@ -15,7 +19,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -25,16 +31,24 @@ import java.util.List;
 public class DiaryApiController {
 
     private final DiaryService diaryService;
+    private final FileMatchService fileMatchService;
+    private final FileService fileService;
 
     /**
-     * Create a new diary
+     * Create a new diary (FormData 지원)
      * POST /api/diary
      */
-    @PostMapping
+    @PostMapping(consumes = "multipart/form-data")
     public ResponseEntity<ApiResponse<DiaryResponse>> createDiary(
-            @Valid @RequestBody DiaryCreateRequest request) {
+            @RequestParam String ymd,
+            @RequestParam(required = false) String summary,
+            @RequestParam String content,
+            @RequestParam(required = false) List<MultipartFile> files) {
 
-        log.info("Create diary request for ymd: {}", request.getYmd());
+        log.info("Create diary request for ymd: {}", ymd);
+
+        DiaryCreateRequest request = new DiaryCreateRequest();
+        request = new DiaryCreateRequest(ymd, content, summary, files);
 
         DiaryResponse response = diaryService.createDiary(request);
 
@@ -106,19 +120,88 @@ public class DiaryApiController {
     }
 
     /**
-     * Update diary
+     * Update diary (FormData 지원)
      * PUT /api/diary/{ymd}
      */
-    @PutMapping("/{ymd}")
+    @PutMapping(value = "/{ymd}", consumes = "multipart/form-data")
     public ResponseEntity<ApiResponse<DiaryResponse>> updateDiary(
             @PathVariable String ymd,
-            @Valid @RequestBody DiaryUpdateRequest request) {
+            @RequestParam String content,
+            @RequestParam(required = false) String summary,
+            @RequestParam(required = false) List<MultipartFile> newFiles,
+            @RequestParam(required = false) String deletedFileIds) {
 
         log.info("Update diary request for ymd: {}", ymd);
+
+        // deletedFileIds JSON 파싱
+        List<Long> deletedIds = new ArrayList<>();
+        if (deletedFileIds != null && !deletedFileIds.isBlank()) {
+            try {
+                // JSON 배열 파싱 (간단 구현)
+                String trimmed = deletedFileIds.replaceAll("[\\[\\]\\s]", "");
+                if (!trimmed.isEmpty()) {
+                    String[] ids = trimmed.split(",");
+                    for (String id : ids) {
+                        deletedIds.add(Long.parseLong(id));
+                    }
+                }
+            } catch (Exception e) {
+                log.warn("Failed to parse deletedFileIds: {}", deletedFileIds);
+            }
+        }
+
+        DiaryUpdateRequest request = new DiaryUpdateRequest(content, summary, deletedIds, newFiles);
 
         DiaryResponse response = diaryService.updateDiary(ymd, request);
 
         return ResponseEntity.ok(
                 ApiResponse.success("일기가 수정되었습니다", response));
+    }
+
+    /**
+     * Delete diary (파일은 보존)
+     * DELETE /api/diary/{ymd}
+     */
+    @DeleteMapping("/{ymd}")
+    public ResponseEntity<ApiResponse<Void>> deleteDiary(
+            @PathVariable String ymd) {
+
+        log.info("Delete diary request for ymd: {}", ymd);
+
+        diaryService.deleteDiary(ymd);
+
+        return ResponseEntity.ok(
+                ApiResponse.success("일기가 삭제되었습니다", null));
+    }
+
+    /**
+     * Get files attached to a diary
+     * GET /api/diary/{ymd}/files
+     */
+    @GetMapping("/{ymd}/files")
+    public ResponseEntity<ApiResponse<List<FileResponse>>> getDiaryFiles(
+            @PathVariable String ymd) {
+
+        log.info("Get diary files request for ymd: {}", ymd);
+
+        // Get diary by ymd to get its ID
+        DiaryResponse diary = diaryService.getDiary(ymd);
+
+        // Get file matches for this diary
+        List<FileMatch> matches = fileMatchService.getMatchesByTarget("diary", diary.getId());
+
+        // Convert file IDs to FileResponse objects
+        List<FileResponse> files = new ArrayList<>();
+        for (FileMatch match : matches) {
+            try {
+                var file = fileService.getFile(match.getFileId());
+                files.add(FileResponse.from(file));
+            } catch (Exception e) {
+                log.error("Error loading file: {}", match.getFileId(), e);
+            }
+        }
+
+        return ResponseEntity.ok(
+                ApiResponse.success("파일 목록 조회 성공", files));
     }
 }

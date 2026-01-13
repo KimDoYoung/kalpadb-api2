@@ -17,7 +17,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -27,6 +29,8 @@ import java.util.stream.Collectors;
 public class DiaryService {
 
     private final DiaryRepository diaryRepository;
+    private final FileService fileService;
+    private final FileMatchService fileMatchService;
 
     /**
      * Create a new diary
@@ -53,6 +57,22 @@ public class DiaryService {
         Diary savedDiary = diaryRepository.save(diary);
         log.info("Diary created successfully for ymd: {}", savedDiary.getYmd());
 
+        // Handle file uploads
+        if (request.getFiles() != null && !request.getFiles().isEmpty()) {
+            try {
+                for (MultipartFile file : request.getFiles()) {
+                    if (!file.isEmpty()) {
+                        var fileResponse = fileService.saveFile(file);
+                        fileMatchService.createMatch("diary", savedDiary.getId(), fileResponse.getFileId());
+                        log.info("File attached to diary - diaryId: {}, fileId: {}", savedDiary.getId(), fileResponse.getFileId());
+                    }
+                }
+            } catch (IOException e) {
+                log.error("Error saving files for diary: {}", savedDiary.getYmd(), e);
+                throw new RuntimeException("파일 저장 중 오류가 발생했습니다", e);
+            }
+        }
+
         return DiaryResponse.from(savedDiary);
     }
 
@@ -66,8 +86,10 @@ public class DiaryService {
         // Validate YMD format
         YmdValidator.validate(ymd);
 
-        Diary diary = diaryRepository.findById(ymd)
-                .orElseThrow(() -> new DiaryNotFoundException(ymd));
+        Diary diary = diaryRepository.findByYmd(ymd);
+        if (diary == null) {
+            throw new DiaryNotFoundException(ymd);
+        }
 
         return DiaryResponse.from(diary);
     }
@@ -144,15 +166,68 @@ public class DiaryService {
         YmdValidator.validate(ymd);
 
         // Find existing diary
-        Diary diary = diaryRepository.findById(ymd)
-                .orElseThrow(() -> new DiaryNotFoundException(ymd));
+        Diary diary = diaryRepository.findByYmd(ymd);
+        if (diary == null) {
+            throw new DiaryNotFoundException(ymd);
+        }
 
         // Update fields
         diary.update(request.getContent(), request.getSummary());
+
+        // Handle deleted files
+        if (request.getDeletedFileIds() != null && !request.getDeletedFileIds().isEmpty()) {
+            for (Long fileId : request.getDeletedFileIds()) {
+                fileMatchService.deleteMatch("diary", diary.getId(), fileId);
+                try {
+                    fileService.deleteFile(fileId);
+                    log.info("File deleted - diaryId: {}, fileId: {}", diary.getId(), fileId);
+                } catch (Exception e) {
+                    log.error("Error deleting file: {}", fileId, e);
+                }
+            }
+        }
+
+        // Handle new files
+        if (request.getNewFiles() != null && !request.getNewFiles().isEmpty()) {
+            try {
+                for (MultipartFile file : request.getNewFiles()) {
+                    if (!file.isEmpty()) {
+                        var fileResponse = fileService.saveFile(file);
+                        fileMatchService.createMatch("diary", diary.getId(), fileResponse.getFileId());
+                        log.info("File attached to diary - diaryId: {}, fileId: {}", diary.getId(), fileResponse.getFileId());
+                    }
+                }
+            } catch (IOException e) {
+                log.error("Error saving new files for diary: {}", ymd, e);
+                throw new RuntimeException("파일 저장 중 오류가 발생했습니다", e);
+            }
+        }
 
         // Save is automatic due to @Transactional and JPA dirty checking
         log.info("Diary updated successfully for ymd: {}", ymd);
 
         return DiaryResponse.from(diary);
+    }
+
+    /**
+     * Delete diary (파일은 보존됨)
+     */
+    @Transactional
+    public void deleteDiary(String ymd) {
+        log.debug("Deleting diary for ymd: {}", ymd);
+
+        // Validate YMD format
+        YmdValidator.validate(ymd);
+
+        // Find diary by ymd
+        Diary diary = diaryRepository.findByYmd(ymd);
+        if (diary == null) {
+            throw new DiaryNotFoundException(ymd);
+        }
+
+        // Note: file_match will be cascade deleted via FK constraint, but files will be preserved
+        // as the FK has ON DELETE CASCADE only for file_match table, not for files table
+        diaryRepository.delete(diary);
+        log.info("Diary deleted successfully for ymd: {}", ymd);
     }
 }
