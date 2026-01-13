@@ -1,11 +1,30 @@
-<header th:fragment="header" class="bg-white border-b border-gray-100 sticky top-0 z-50 transition-all duration-300">
-    <nav class="bg-white" x-data="{ activeMenu: null, mobileMenuOpen: false }">
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KalpaDB - Responsive Navbar</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <style>
+        [x-cloak] { display: none !important; }
+        body { font-family: 'Inter', system-ui, -apple-system, sans-serif; }
+    </style>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="bg-gray-50 text-gray-800 antialiased">
+
+    <!-- Navbar Container -->
+    <!-- 'mobileMenuOpen' handles the hamburger menu state -->
+    <nav class="bg-white border-b border-gray-100 sticky top-0 z-50 transition-all duration-300" x-data="{ activeMenu: null, mobileMenuOpen: false }">
         <div class="container mx-auto px-6 h-16 flex items-center justify-between">
             
             <!-- Left Side: Logo + Desktop Menu -->
             <div class="flex items-center gap-8">
                 <!-- Logo -->
-                <a th:href="@{/}" class="flex items-center gap-2.5 group">
+                <a href="/" class="flex items-center gap-2.5 group">
                     <div class="w-9 h-9 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold shadow-md group-hover:bg-blue-700 transition-colors">
                         K
                     </div>
@@ -15,7 +34,7 @@
                 </a>
 
                 <!-- Desktop Menu (Hidden on mobile, Visible on md+) -->
-                <div th:if="${#authentication != null and #authentication.isAuthenticated()}" class="hidden md:flex items-center gap-1">
+                <div class="hidden md:flex items-center gap-1">
                     
                     <!-- 1. Diary Menu -->
                     <div class="relative">
@@ -25,7 +44,7 @@
                             class="flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium text-gray-600 hover:text-blue-600 hover:bg-blue-50 transition-all duration-200"
                             :class="activeMenu === 'diary' ? 'bg-blue-50 text-blue-600' : ''"
                         >
-                            <span>일지</span>
+                            <span>📔 일지</span>
                             <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 transition-transform duration-200" :class="activeMenu === 'diary' ? 'rotate-180 opacity-100' : 'opacity-50'" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                             </svg>
@@ -43,9 +62,9 @@
                             x-cloak
                         >
                             <div class="py-1.5">
-                                <a th:href="@{/diary/new}" class="block px-4 py-2.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-600 font-medium transition-colors">✏️ 일지기록</a>
-                                <a th:href="@{/diary}" class="block px-4 py-2.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-600 font-medium transition-colors">🔍 일지찾기</a>
-                                <a th:href="@{/calendar}" class="block px-4 py-2.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-600 font-medium transition-colors">📅 달력</a>
+                                <a href="/diary/new" class="block px-4 py-2.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-600 font-medium transition-colors">✏️ 일지기록</a>
+                                <a href="/diary" class="block px-4 py-2.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-600 font-medium transition-colors">🔍 일지찾기</a>
+                                <a href="/calendar" class="block px-4 py-2.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-600 font-medium transition-colors">📅 달력</a>
                             </div>
                         </div>
                     </div>
@@ -76,8 +95,8 @@
                             x-cloak
                         >
                             <div class="py-1.5">
-                                <a th:href="@{/essay}" class="block px-4 py-2.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-600 font-medium transition-colors">✍️ Essay</a>
-                                <a th:href="@{/notes}" class="block px-4 py-2.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-600 font-medium transition-colors">💡 기술노트</a>
+                                <a href="/essay" class="block px-4 py-2.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-600 font-medium transition-colors">✍️ Essay</a>
+                                <a href="/notes" class="block px-4 py-2.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-600 font-medium transition-colors">💡 기술노트</a>
                             </div>
                         </div>
                     </div>
@@ -108,8 +127,8 @@
                             x-cloak
                         >
                             <div class="py-1.5">
-                                <a th:href="@{/jangbi}" class="block px-4 py-2.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-600 font-medium transition-colors">🖥️ 장비</a>
-                                <a th:href="@{/files}" class="block px-4 py-2.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-600 font-medium transition-colors">📂 파일관리</a>
+                                <a href="/jangbi" class="block px-4 py-2.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-600 font-medium transition-colors">🖥️ 장비</a>
+                                <a href="/files" class="block px-4 py-2.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-600 font-medium transition-colors">📂 파일관리</a>
                             </div>
                         </div>
                     </div>
@@ -121,20 +140,13 @@
             <div class="flex items-center gap-4">
                 
                 <!-- Desktop User Profile -->
-                <div th:if="${#authentication != null and #authentication.isAuthenticated()}" class="hidden md:flex items-center gap-3 pl-6 border-l border-gray-100">
+                <div class="hidden md:flex items-center gap-3 pl-6 border-l border-gray-100">
                     <span class="text-sm font-medium text-gray-600">
-                         <span th:text="${#authentication.name}">User</span>
+                         anonymousUser
                      </span>
-                     <form th:action="@{/logout}" method="post" class="inline">
-                        <button type="submit" class="text-xs px-3 py-1.5 rounded-full border border-gray-200 hover:bg-gray-50 hover:text-red-500 hover:border-red-200 transition-colors">
-                            로그아웃
-                        </button>
-                    </form>
-                </div>
-                
-                <!-- Login Button (Visible if not authenticated) -->
-                <div th:unless="${#authentication != null and #authentication.isAuthenticated()}" class="hidden md:block">
-                     <a th:href="@{/login}" class="text-sm font-medium text-blue-600 hover:text-blue-700">로그인</a>
+                     <button class="text-xs px-3 py-1.5 rounded-full border border-gray-200 hover:bg-gray-50 hover:text-red-500 hover:border-red-200 transition-colors">
+                         로그아웃
+                     </button>
                 </div>
 
                 <!-- Mobile Hamburger Button -->
@@ -157,7 +169,6 @@
             x-collapse 
             class="md:hidden border-t border-gray-100 bg-white"
             x-cloak
-            th:if="${#authentication != null and #authentication.isAuthenticated()}"
         >
             <div class="px-4 py-6 space-y-4">
                 
@@ -168,9 +179,9 @@
                         <svg class="w-4 h-4 text-gray-400 transition-transform" :class="open ? 'rotate-180' : ''" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
                     </button>
                     <div x-show="open" x-collapse class="pl-8 space-y-2 mt-1">
-                        <a th:href="@{/diary/new}" class="block py-2 text-sm text-gray-500 hover:text-blue-600">일지기록</a>
-                        <a th:href="@{/diary}" class="block py-2 text-sm text-gray-500 hover:text-blue-600">일지찾기</a>
-                        <a th:href="@{/calendar}" class="block py-2 text-sm text-gray-500 hover:text-blue-600">달력</a>
+                        <a href="/diary/new" class="block py-2 text-sm text-gray-500 hover:text-blue-600">일지기록</a>
+                        <a href="/diary" class="block py-2 text-sm text-gray-500 hover:text-blue-600">일지찾기</a>
+                        <a href="/calendar" class="block py-2 text-sm text-gray-500 hover:text-blue-600">달력</a>
                     </div>
                 </div>
 
@@ -181,8 +192,8 @@
                         <svg class="w-4 h-4 text-gray-400 transition-transform" :class="open ? 'rotate-180' : ''" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
                     </button>
                     <div x-show="open" x-collapse class="pl-8 space-y-2 mt-1">
-                        <a th:href="@{/essay}" class="block py-2 text-sm text-gray-500 hover:text-blue-600">Essay</a>
-                        <a th:href="@{/notes}" class="block py-2 text-sm text-gray-500 hover:text-blue-600">기술노트</a>
+                        <a href="/essay" class="block py-2 text-sm text-gray-500 hover:text-blue-600">Essay</a>
+                        <a href="/notes" class="block py-2 text-sm text-gray-500 hover:text-blue-600">기술노트</a>
                     </div>
                 </div>
 
@@ -193,8 +204,8 @@
                         <svg class="w-4 h-4 text-gray-400 transition-transform" :class="open ? 'rotate-180' : ''" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
                     </button>
                     <div x-show="open" x-collapse class="pl-8 space-y-2 mt-1">
-                        <a th:href="@{/jangbi}" class="block py-2 text-sm text-gray-500 hover:text-blue-600">장비</a>
-                        <a th:href="@{/files}" class="block py-2 text-sm text-gray-500 hover:text-blue-600">파일관리</a>
+                        <a href="/jangbi" class="block py-2 text-sm text-gray-500 hover:text-blue-600">장비</a>
+                        <a href="/files" class="block py-2 text-sm text-gray-500 hover:text-blue-600">파일관리</a>
                     </div>
                 </div>
                 
@@ -202,29 +213,27 @@
 
                 <!-- Mobile User Info -->
                 <div class="px-2 flex items-center justify-between">
-                    <span class="text-sm font-medium text-gray-600">
-                        <span th:text="${#authentication.name}">User</span>
-                    </span>
-                    <form th:action="@{/logout}" method="post" class="inline">
-                        <button type="submit" class="text-xs px-3 py-1.5 rounded-full border border-gray-200 text-gray-600">로그아웃</button>
-                    </form>
+                    <span class="text-sm font-medium text-gray-600">anonymousUser</span>
+                    <button class="text-xs px-3 py-1.5 rounded-full border border-gray-200 text-gray-600">로그아웃</button>
                 </div>
 
             </div>
         </div>
-        
-        <!-- Mobile Menu (Not Authenticated) -->
-         <div 
-            x-show="mobileMenuOpen" 
-            x-collapse 
-            class="md:hidden border-t border-gray-100 bg-white"
-            x-cloak
-            th:unless="${#authentication != null and #authentication.isAuthenticated()}"
-        >
-             <div class="px-4 py-6">
-                <a th:href="@{/login}" class="block w-full text-center py-2 text-sm font-medium text-blue-600 border border-blue-200 rounded-lg bg-blue-50">로그인</a>
-             </div>
-        </div>
 
     </nav>
-</header>
+
+    <!-- Main Content Area -->
+    <main class="container mx-auto p-6">
+        <div class="max-w-4xl mx-auto mt-10 p-6 bg-white rounded-2xl border border-gray-100 shadow-sm">
+             <div class="text-center py-10">
+                <div class="w-16 h-16 bg-blue-50 text-blue-500 rounded-2xl flex items-center justify-center mx-auto mb-4 text-3xl">
+                    📱
+                </div>
+                <h2 class="text-2xl font-bold text-gray-800 mb-2">Responsive Navigation</h2>
+                <p class="text-gray-500">Resize the browser window to see the hamburger menu in action.</p>
+             </div>
+        </div>
+    </main>
+
+</body>
+</html>

@@ -17,7 +17,7 @@ function initDiaryPage() {
   });
 
   // 폼 제출
-  const diaryForm = document.querySelector('form');
+  const diaryForm = document.querySelector('form.diary-form');
   if (diaryForm) {
     diaryForm.addEventListener('submit', handleDiaryFormSubmit);
   }
@@ -32,9 +32,14 @@ function handleDiaryItemClick(e) {
 }
 
 async function handleDiaryFormSubmit(e) {
-  e.preventDefault();
-
   const form = e.target;
+  
+  // 로그아웃 폼인 경우 처리하지 않음
+  if (form.getAttribute('action')?.includes('/logout')) {
+      return;
+  }
+
+  e.preventDefault();
   const formData = new FormData(form);
   const data = Object.fromEntries(formData);
 

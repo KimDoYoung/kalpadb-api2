@@ -97,16 +97,13 @@ public class SecurityConfig {
                 // 로그아웃 설정
                 .logout(logout -> logout
                         .logoutUrl("/logout")
-                        .logoutSuccessUrl("/login")
-                        .permitAll()
                         .logoutSuccessHandler((request, response, authentication) -> {
-                            log.info("✅ 로그아웃 성공: {} (세션 정리 완료)",
-                                    authentication != null ? authentication.getName() : "anonymousUser");
+                            log.info("🔐 로그아웃 성공: {}", authentication != null ? authentication.getName() : "anonymous");
                             response.sendRedirect("/login");
                         })
                         .invalidateHttpSession(true)
-                        .clearAuthentication(true)
                         .deleteCookies("JSESSIONID")
+                        .permitAll()
                 )
 
                 // 예외 처리
