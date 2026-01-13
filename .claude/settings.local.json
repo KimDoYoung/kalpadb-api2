@@ -1,8 +1,5 @@
 {
-  "env:" : {
-    "ENABLE_LSP_TOOL" : true,
-    "IS_DEMO" : true
-  },
+  "respectGitignore": true,
   "permissions": {
     "allow": [
       "Bash(./gradlew build:*)",
@@ -21,9 +18,14 @@
       "Bash(unzip:*)",
       "Bash(/tmp/gradle-8.14/bin/gradle:*)",
       "Bash(mkdir:*)",
-      "Bash(chmod:*)"
+      "Bash(chmod:*)",
+      "Bash(npm run build:bundle:*)",
+      "Bash(npm run build:js:*)"
     ]
   },
-  "respectGitignore": true,
-  "language": "korean"  
+  "language": "korean",
+  "env:": {
+    "ENABLE_LSP_TOOL": true,
+    "IS_DEMO": true
+  }
 }

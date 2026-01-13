@@ -1,0 +1,53 @@
+/* 일기 페이지 스타일 */
+
+.diary-container {
+  @apply container mx-auto py-8;
+}
+
+.diary-header {
+  @apply flex justify-between items-center mb-8;
+}
+
+.diary-header h1 {
+  @apply text-3xl font-bold;
+}
+
+.diary-list {
+  @apply space-y-4;
+}
+
+.diary-item {
+  @apply card hover:shadow-lg transition-shadow cursor-pointer;
+}
+
+.diary-item-title {
+  @apply text-xl font-semibold mb-2;
+}
+
+.diary-item-date {
+  @apply text-sm text-gray-500 mb-3;
+}
+
+.diary-item-content {
+  @apply text-gray-600 line-clamp-3;
+}
+
+.diary-form {
+  @apply card max-w-2xl mx-auto;
+}
+
+.diary-form-group {
+  @apply mb-4;
+}
+
+.diary-form-group label {
+  @apply block text-sm font-medium mb-2;
+}
+
+.diary-form-group textarea {
+  @apply w-full border rounded-md p-2 focus:outline-none focus:border-blue-500;
+}
+
+.diary-form-actions {
+  @apply flex gap-2 justify-end;
+}

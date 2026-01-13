@@ -1,0 +1,62 @@
+/* 인증 페이지 스타일 */
+
+.auth-container {
+  @apply flex items-center justify-center min-h-screen bg-gray-100;
+}
+
+.auth-form {
+  @apply card max-w-md w-full shadow-lg;
+}
+
+.auth-form h1 {
+  @apply text-2xl font-bold mb-6 text-center;
+}
+
+.auth-form-group {
+  @apply mb-4;
+}
+
+.auth-form-group label {
+  @apply block text-sm font-medium mb-2;
+}
+
+.auth-form-group input {
+  @apply w-full border rounded-md p-2 focus:outline-none focus:border-blue-500;
+}
+
+.auth-form-group input:invalid {
+  @apply border-red-500;
+}
+
+.auth-form-actions {
+  @apply flex gap-2 justify-between mt-6;
+}
+
+.auth-form button {
+  @apply flex-1;
+}
+
+.auth-links {
+  @apply text-center mt-4;
+}
+
+.auth-links a {
+  @apply text-blue-500 hover:underline text-sm;
+}
+
+/* 숫자 패드 */
+.numeric-pad {
+  @apply grid grid-cols-3 gap-2 mt-4;
+}
+
+.numeric-pad button {
+  @apply btn-primary aspect-square text-xl font-bold;
+}
+
+.numeric-pad .delete-btn {
+  @apply btn-danger col-span-1;
+}
+
+.numeric-pad .clear-btn {
+  @apply btn-secondary col-span-2;
+}

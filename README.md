@@ -54,6 +54,67 @@ spring.datasource.password=your_password
 
 ### 4. 빌드 및 실행
 
+### 4.1 js,css 빌드
+
+✅ 최종 폴더 구조 변경 완료!
+📁 새로운 구조
+
+static/
+├── css/
+│   ├── common/                    # 공통 CSS 폴더
+│   │   ├── common.css            # Tailwind 공통 스타일
+│   │   └── pages/
+│   │       ├── home.css
+│   │       ├── diary.css
+│   │       └── auth.css
+│   └── kalpadb.css               # 최종 번들 파일 ✨
+│
+└── js/
+    ├── common/                    # 공통 JS 폴더
+    │   ├── common.js             # 공통 유틸리티
+    │   └── pages/
+    │       ├── home.js
+    │       ├── diary.js
+    │       └── auth.js
+    └── kalpadb.js                # 최종 번들 파일 ✨
+📦 최종 산출물
+CSS:
+
+css/kalpadb.css - 모든 CSS 번들
+JS:
+
+js/kalpadb.js - 모든 JS 번들
+🔗 HTML에서 로드
+
+<!-- 공통 스타일 (Tailwind) -->
+<link rel="stylesheet" th:href="@{/css/common/common.css}">
+
+<!-- KalpaDB 번들 스타일 -->
+<link rel="stylesheet" th:href="@{/css/kalpadb.css}">
+
+<!-- 공통 유틸리티 -->
+<script th:src="@{/js/common/common.js}"></script>
+
+<!-- KalpaDB 번들 JavaScript -->
+<script th:src="@{/js/kalpadb.js}"></script>
+📝 npm 명령어
+
+```bash
+# CSS만 번들링 + minify
+npm run build:css
+
+# JS만 번들링 + minify
+npm run build:js
+
+# CSS와 JS 모두 번들링 + minify (권장)
+npm run build:bundle
+
+# CSS 감시 모드
+npm run watch:css
+```
+
+#### java 빌드
+
 ```bash
 # Gradle Wrapper 생성 (최초 1회)
 gradle wrapper --gradle-version 8.11

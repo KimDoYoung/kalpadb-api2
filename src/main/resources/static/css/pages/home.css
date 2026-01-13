@@ -1,0 +1,29 @@
+/* 홈 페이지 스타일 */
+
+.home-container {
+  @apply container mx-auto py-8;
+}
+
+.home-header {
+  @apply mb-8;
+}
+
+.home-header h1 {
+  @apply text-3xl font-bold mb-4;
+}
+
+.home-grid {
+  @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6;
+}
+
+.home-card {
+  @apply card hover:shadow-lg transition-shadow;
+}
+
+.home-card-title {
+  @apply text-xl font-semibold mb-3;
+}
+
+.home-card-content {
+  @apply text-gray-600;
+}
