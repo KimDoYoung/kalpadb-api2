@@ -55,6 +55,9 @@ dependencies {
     // Environment Variables (.env)
     implementation 'me.paulschwarz:spring-dotenv:2.5.4'
 
+    // Spring Boot DevTools (개발 중 자동 재시작)
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+
     // Test
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'

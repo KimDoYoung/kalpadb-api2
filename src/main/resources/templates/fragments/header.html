@@ -15,7 +15,7 @@
                 </a>
 
                 <!-- Desktop Menu (Hidden on mobile, Visible on md+) -->
-                <div th:if="${#authentication != null and #authentication.isAuthenticated()}" class="hidden md:flex items-center gap-1">
+                <div th:if="${#authentication.name != 'anonymousUser'}" class="hidden md:flex items-center gap-1">
                     
                     <!-- 1. Diary Menu -->
                     <div class="relative">
@@ -121,7 +121,7 @@
             <div class="flex items-center gap-4">
                 
                 <!-- Desktop User Profile -->
-                <div th:if="${#authentication != null and #authentication.isAuthenticated()}" class="hidden md:flex items-center gap-3 pl-6 border-l border-gray-100">
+                <div th:if="${#authentication.name != 'anonymousUser'}" class="hidden md:flex items-center gap-3 pl-6 border-l border-gray-100">
                     <span class="text-sm font-medium text-gray-600">
                          <span th:text="${#authentication.name}">User</span>
                      </span>
@@ -133,7 +133,7 @@
                 </div>
                 
                 <!-- Login Button (Visible if not authenticated) -->
-                <div th:unless="${#authentication != null and #authentication.isAuthenticated()}" class="hidden md:block">
+                <div th:if="${#authentication.name == 'anonymousUser'}" class="hidden md:block">
                      <a th:href="@{/login}" class="text-sm font-medium text-blue-600 hover:text-blue-700">로그인</a>
                 </div>
 
@@ -152,12 +152,12 @@
         </div>
 
         <!-- Mobile Menu (Expandable Panel) -->
-        <div 
-            x-show="mobileMenuOpen" 
-            x-collapse 
+        <div
+            x-show="mobileMenuOpen"
+            x-collapse
             class="md:hidden border-t border-gray-100 bg-white"
             x-cloak
-            th:if="${#authentication != null and #authentication.isAuthenticated()}"
+            th:if="${#authentication.name != 'anonymousUser'}"
         >
             <div class="px-4 py-6 space-y-4">
                 
@@ -214,12 +214,12 @@
         </div>
         
         <!-- Mobile Menu (Not Authenticated) -->
-         <div 
-            x-show="mobileMenuOpen" 
-            x-collapse 
+         <div
+            x-show="mobileMenuOpen"
+            x-collapse
             class="md:hidden border-t border-gray-100 bg-white"
             x-cloak
-            th:unless="${#authentication != null and #authentication.isAuthenticated()}"
+            th:if="${#authentication.name == 'anonymousUser'}"
         >
              <div class="px-4 py-6">
                 <a th:href="@{/login}" class="block w-full text-center py-2 text-sm font-medium text-blue-600 border border-blue-200 rounded-lg bg-blue-50">로그인</a>
