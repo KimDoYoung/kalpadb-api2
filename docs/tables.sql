@@ -9,7 +9,8 @@ CREATE TABLE IF NOT EXISTS `users` (
 
 -- 기본 사용자 데이터 (bcrypt 암호화, 비밀번호: 1111)
 INSERT INTO users (user_id, user_pw, user_nm) VALUES
-('kdy987', '$2a$10$vUYXTNVJV7h9pXpQR0W5s.E7pGvS.0OcvJqUMo3D3VFxq4nqquM3e', 'KimDoYoung');
+('kdy987', '$2a$10$vUYXTNVJV7h9pXpQR0W5s.E7pGvS.0OcvJqUMo3D3VFxq4nqquM3e', 'KimDoYoung'),
+('admin', '$2a$10$Z3RTwwcpMPh4Egi/3P75N.x5JCu3iiUkPz7v2mwvFTHh2.nNvZX7K', 'Admin');
 
 -- diary (개선: id를 PK로, ymd는 UNIQUE 인덱스)
 DROP TABLE IF EXISTS `diary`;
