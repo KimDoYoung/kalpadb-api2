@@ -86,3 +86,8 @@ jacocoTestReport {
 tasks.named('bootRun') {
     systemProperty 'spring.profiles.active', project.findProperty('profile') ?: 'dev'
 }
+
+task generateBcryptHash(type: JavaExec) {
+    mainClass = 'kr.co.kalpa.api.GenerateBcryptHash'
+    classpath = sourceSets.test.runtimeClasspath
+}

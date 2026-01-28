@@ -1,6 +1,6 @@
 drop table if exists users;
 CREATE TABLE IF NOT EXISTS `users` (
-  `id` int NOT NULL AUTO_INCREMENT COMMENT '사용자ID',
+  `id` BIGINT NOT NULL AUTO_INCREMENT COMMENT '사용자ID',
   `user_id` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '사용자id',
   `user_pw` varchar(200) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '사용자PW',
   `user_nm` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '사용자명',
@@ -9,12 +9,13 @@ CREATE TABLE IF NOT EXISTS `users` (
 
 -- 기본 사용자 데이터 (bcrypt 암호화, 비밀번호: 1111)
 INSERT INTO users (user_id, user_pw, user_nm) VALUES
-('kdy987', '$2a$10$vUYXTNVJV7h9pXpQR0W5s.E7pGvS.0OcvJqUMo3D3VFxq4nqquM3e', 'KimDoYoung');
+('kdy987', '$2a$10$vUYXTNVJV7h9pXpQR0W5s.E7pGvS.0OcvJqUMo3D3VFxq4nqquM3e', 'KimDoYoung'),
+('admin', '$2a$10$Z3RTwwcpMPh4Egi/3P75N.x5JCu3iiUkPz7v2mwvFTHh2.nNvZX7K', 'Admin');
 
 -- diary (개선: id를 PK로, ymd는 UNIQUE 인덱스)
 DROP TABLE IF EXISTS `diary`;
 CREATE TABLE IF NOT EXISTS `diary` (
-  `id` INT NOT NULL AUTO_INCREMENT COMMENT '고유번호 (파일 매칭용)',
+  `id` BIGINT NOT NULL AUTO_INCREMENT COMMENT '고유번호 (파일 매칭용)',
   `ymd` VARCHAR(8) COLLATE utf8mb4_unicode_ci NOT NULL UNIQUE COMMENT '일자 (조회용)',
   `content` TEXT COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '내용',
   `summary` VARCHAR(300) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '요약',
@@ -26,7 +27,7 @@ CREATE TABLE IF NOT EXISTS `diary` (
 
 DROP TABLE IF EXISTS `jangbi`;
 CREATE TABLE `jangbi` (
-  `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'id',
+  `id` BIGINT NOT NULL AUTO_INCREMENT COMMENT 'id',
   `ymd` varchar(8) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '구입일',
   `item` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '품목',
   `location` varchar(200) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '위치',
@@ -39,7 +40,7 @@ CREATE TABLE `jangbi` (
 
 drop table if exists essay;
 CREATE TABLE IF NOT EXISTS  `essay` (
-  `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '일련번호',
+  `id` BIGINT NOT NULL AUTO_INCREMENT COMMENT '일련번호',
   `title` varchar(300) NOT NULL COMMENT '제목',
   `content` text DEFAULT NULL COMMENT '내용',
   `tags` varchar(200) DEFAULT NULL COMMENT '태그',
@@ -67,7 +68,7 @@ drop table if exists file_match;
 CREATE TABLE IF NOT EXISTS file_match (
     id BIGINT AUTO_INCREMENT PRIMARY KEY COMMENT '매칭 고유번호',
     table_name VARCHAR(100) NOT NULL COMMENT '대상 테이블명',
-    target_id INT NOT NULL COMMENT '대상 테이블 항목 ID',
+    target_id BIGINT NOT NULL COMMENT '대상 테이블 항목 ID',
     file_id BIGINT NOT NULL COMMENT '파일 ID',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT '생성일시',
     -- 아래 라인에서 COMMENT 부분을 제거했습니다.
@@ -81,7 +82,7 @@ DROP TABLE IF EXISTS `todo`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `todo` (
-  `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'ID',
+  `id` BIGINT NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `content` varchar(300) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '내용',
   `input_dt` datetime NOT NULL DEFAULT current_timestamp() COMMENT '입력일시',
   `done_yn` char(1) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'N' COMMENT '완료YN',
