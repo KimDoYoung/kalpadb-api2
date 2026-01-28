@@ -57,3 +57,8 @@ This is a RESTful API for the MySQL `kalpadb` database, built with Spring Boot. 
   - 타임리프
   - tailwindcss(npm사용)
   - UI는 responsive를 지원한다.
+
+## table desc
+
+- docs/tables.sql 을 참고한다.
+- **주의: kalpadb_schema.sql이 아니다!**
