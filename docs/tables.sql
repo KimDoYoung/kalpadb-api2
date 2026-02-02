@@ -61,7 +61,7 @@ CREATE TABLE IF NOT EXISTS files (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     INDEX idx_physical_name (physical_file_name),
     INDEX idx_org_file_name (org_file_name)
-);
+)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='파일정보';
 
 -- 파일 매칭 테이블 (개선: VARCHAR로 table명 기술, 확장성 우선)
 drop table if exists file_match;

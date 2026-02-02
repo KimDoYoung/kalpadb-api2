@@ -23,8 +23,8 @@ import java.util.UUID;
 @Slf4j
 public class FileService {
 
-    @Value("${file.upload.base-dir:./uploads}")
-    private String uploadBaseDir;
+    @Value("${file.upload.attach-files-dir}")
+    private String attachFilesDir;
 
     private final FilesRepository filesRepository;
 
@@ -43,25 +43,29 @@ public class FileService {
         // Create folder structure with date
         LocalDateTime now = LocalDateTime.now();
         String dateFolder = now.format(DateTimeFormatter.ofPattern("yyyy/MM/dd"));
-        String savedFolder = uploadBaseDir + File.separator + dateFolder;
+        
+        // Resolve absolute path to avoid issues with relative paths in different environments (e.g., Tomcat temp dir)
+        Path baseDirPath = Paths.get(attachFilesDir).toAbsolutePath();
+        Path folderPath = baseDirPath.resolve(dateFolder);
+        String absoluteFolderPath = folderPath.toString();
 
         // Create directories
-        File dir = new File(savedFolder);
+        File dir = folderPath.toFile();
         if (!dir.exists()) {
             boolean created = dir.mkdirs();
             if (!created) {
-                throw new IOException("디렉토리 생성 실패: " + savedFolder);
+                throw new IOException("디렉토리 생성 실패: " + absoluteFolderPath);
             }
         }
 
         // Save file to disk
-        Path filePath = Paths.get(savedFolder, physicalFileName);
+        Path filePath = folderPath.resolve(physicalFileName);
         file.transferTo(filePath.toFile());
         log.info("File saved to: {}", filePath);
 
         // Create Files entity
         Files fileEntity = Files.builder()
-                .savedFolder(savedFolder)
+                .savedFolder(dateFolder)
                 .orgFileName(file.getOriginalFilename())
                 .physicalFileName(physicalFileName)
                 .fileSize(file.getSize())
@@ -89,7 +93,8 @@ public class FileService {
      */
     public Path getFilePath(Long fileId) throws IOException {
         Files file = getFile(fileId);
-        Path filePath = Paths.get(file.getSavedFolder(), file.getPhysicalFileName());
+        Path baseDirPath = Paths.get(attachFilesDir).toAbsolutePath();
+        Path filePath = baseDirPath.resolve(file.getSavedFolder()).resolve(file.getPhysicalFileName());
 
         if (!java.nio.file.Files.exists(filePath)) {
             throw new IOException("파일이 존재하지 않습니다: " + filePath);
@@ -107,7 +112,8 @@ public class FileService {
 
         // Delete from disk
         try {
-            Path filePath = Paths.get(file.getSavedFolder(), file.getPhysicalFileName());
+            Path baseDirPath = Paths.get(attachFilesDir).toAbsolutePath();
+            Path filePath = baseDirPath.resolve(file.getSavedFolder()).resolve(file.getPhysicalFileName());
             if (java.nio.file.Files.exists(filePath)) {
                 java.nio.file.Files.delete(filePath);
                 log.info("File deleted from disk: {}", filePath);
@@ -126,6 +132,6 @@ public class FileService {
      * Generate unique physical file name
      */
     private String generatePhysicalFileName() {
-        return UUID.randomUUID().toString();
+        return UUID.randomUUID().toString().replace("-", "");
     }
 }

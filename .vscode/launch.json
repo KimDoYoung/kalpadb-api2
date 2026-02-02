@@ -3,10 +3,10 @@
     "configurations": [
         {
             "type": "java",
-            "name": "Dev",
+            "name": "fedora",
             "request": "launch",
             "mainClass": "kr.co.kalpa.api.KalpaApplication",
-            "args": "--spring.profiles.active=dev",
+            "args": "--spring.profiles.active=fedora",
             "console": "integratedTerminal"
         },
         {
