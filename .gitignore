@@ -43,3 +43,5 @@ node_modules/
 
 # IDE Workspace
 .workspace
+logs/
+kalpa_data/
