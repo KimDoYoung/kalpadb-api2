@@ -76,6 +76,18 @@
 - `Exceptions`: DiaryNotFoundException, DiaryAlreadyExistsException, InvalidYmdFormatException
 - `Utility`: YmdValidator.java
 
+## editor images
+
+- diary create api 나 edit (수정) api에서
+- quill.js 에 이미지를 `붙여 넣기`  하면 Base64데이터가 내용에 포함된다.
+- 저장 버튼이 클릭시 quill contents에 있는 모든 데이터 파일들을 서버로 전송한다.
+- 즉 이미지가 2개 붙어 있다면 2 덩어리의 데이터가 전송된다.
+- 그 덩어리데이터를 png 이미지 파일로 저장을 한다. 저장위치는 file.upload.editor-images-dir 하위에 yyyy/mm/dd 폴더를 생성하여 넣는다.
+- 그리고 url을 리턴한다. url은 `file.image.base-url`에 /yyyy/mm/dd 를 붙여서 작성한다.
+- files table에 추가한다.
+- file_match에 추가한다.
+- file_type은 `EDITOR_IMAGE` enum의 문자열로 한다.
+
 ## test
 
 - tools/test-dairy-api.sh을 수행시켜서 error없이 수행하는지 체크한다.

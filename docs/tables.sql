@@ -70,11 +70,16 @@ CREATE TABLE IF NOT EXISTS file_match (
     table_name VARCHAR(100) NOT NULL COMMENT '대상 테이블명',
     target_id BIGINT NOT NULL COMMENT '대상 테이블 항목 ID',
     file_id BIGINT NOT NULL COMMENT '파일 ID',
+    file_type VARCHAR(50) NOT NULL COMMENT '파일 유형 (ATTACHMENT, CONTENT_IMAGE, THUMBNAIL 등)',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT '생성일시',
-    -- 아래 라인에서 COMMENT 부분을 제거했습니다.
+    
     FOREIGN KEY (file_id) REFERENCES files(file_id) ON DELETE CASCADE,
-    UNIQUE KEY unique_target_file (table_name, target_id, file_id) COMMENT '중복 방지',
+    
+    -- file_type까지 포함하여 중복 방지
+    UNIQUE KEY unique_target_file (table_name, target_id, file_id, file_type),
+    
     INDEX idx_table_target (table_name, target_id),
+    INDEX idx_table_target_type (table_name, target_id, file_type),
     INDEX idx_file_id (file_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='파일 매칭';
 

@@ -11,10 +11,10 @@
         },
         {
             "type": "java",
-            "name": "Prod",
+            "name": "Home",
             "request": "launch",
             "mainClass": "kr.co.kalpa.api.KalpaApplication",
-            "args": "--spring.profiles.active=prod",
+            "args": "--spring.profiles.active=home",
             "console": "integratedTerminal"
         },
         {

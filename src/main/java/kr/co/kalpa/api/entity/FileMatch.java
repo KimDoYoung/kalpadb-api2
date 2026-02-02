@@ -30,6 +30,10 @@ public class FileMatch {
     @Column(name = "file_id", nullable = false)
     private Long fileId;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "file_type", nullable = false, length = 50)
+    private FileType fileType;
+
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 

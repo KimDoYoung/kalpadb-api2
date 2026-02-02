@@ -7,7 +7,6 @@ import kr.co.kalpa.api.dto.request.DiaryUpdateRequest;
 import kr.co.kalpa.api.dto.response.DiaryPageResponse;
 import kr.co.kalpa.api.dto.response.DiaryResponse;
 import kr.co.kalpa.api.dto.response.FileResponse;
-import kr.co.kalpa.api.entity.Diary;
 import kr.co.kalpa.api.entity.FileMatch;
 import kr.co.kalpa.api.service.DiaryService;
 import kr.co.kalpa.api.service.FileMatchService;

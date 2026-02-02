@@ -6,6 +6,7 @@ import kr.co.kalpa.api.dto.response.DiaryPageResponse;
 import kr.co.kalpa.api.dto.response.DiaryResponse;
 import kr.co.kalpa.api.dto.response.FileResponse;
 import kr.co.kalpa.api.entity.Diary;
+import kr.co.kalpa.api.entity.FileType;
 import kr.co.kalpa.api.exception.DiaryAlreadyExistsException;
 import kr.co.kalpa.api.exception.DiaryNotFoundException;
 import kr.co.kalpa.api.repository.DiaryRepository;
@@ -52,7 +53,7 @@ public class DiaryService {
                 if(file.isEmpty()) continue;
                 try {
                     FileResponse fileResponse = fileService.saveFile(file);
-                    fileMatchService.createMatch("diary", savedDiary.getId(), fileResponse.getFileId());
+                    fileMatchService.createMatch("diary", savedDiary.getId(), fileResponse.getFileId(), FileType.ATTACHMENT);
                 } catch (IOException e) {
                     log.error("Failed to save file", e);
                     throw new RuntimeException("Failed to save file", e);
@@ -114,7 +115,7 @@ public class DiaryService {
                  if(file.isEmpty()) continue;
                  try {
                      FileResponse fileResponse = fileService.saveFile(file);
-                     fileMatchService.createMatch("diary", diary.getId(), fileResponse.getFileId());
+                     fileMatchService.createMatch("diary", diary.getId(), fileResponse.getFileId(), FileType.ATTACHMENT);
                  } catch (IOException e) {
                      log.error("Failed to save file", e);
                      throw new RuntimeException("Failed to save file", e);
