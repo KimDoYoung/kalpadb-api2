@@ -35,4 +35,11 @@ public class Diary {
         this.content = content;
         this.summary = summary;
     }
+
+    /**
+     * Update content only (for editor image processing)
+     */
+    public void updateContent(String content) {
+        this.content = content;
+    }
 }

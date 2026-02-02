@@ -16,6 +16,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Base64;
+import java.util.Set;
 import java.util.UUID;
 
 @Service
@@ -25,6 +27,12 @@ public class FileService {
 
     @Value("${file.upload.attach-files-dir}")
     private String attachFilesDir;
+
+    @Value("${file.upload.editor-images-dir}")
+    private String editorImagesDir;
+
+    @Value("${file.image.base-url}")
+    private String imageBaseUrl;
 
     private final FilesRepository filesRepository;
 
@@ -126,6 +134,91 @@ public class FileService {
         // Delete from database
         filesRepository.deleteById(fileId);
         log.info("File deleted from database: {}", fileId);
+    }
+
+    /**
+     * Save Base64 image to disk and database
+     */
+    @Transactional
+    public FileResponse saveBase64Image(String base64Data, String imageFormat) throws IOException {
+        // Validate format
+        if (!isValidImageFormat(imageFormat)) {
+            throw new IllegalArgumentException("지원하지 않는 이미지 형식: " + imageFormat);
+        }
+
+        // Decode Base64
+        byte[] imageBytes;
+        try {
+            imageBytes = Base64.getDecoder().decode(base64Data);
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("잘못된 Base64 데이터", e);
+        }
+
+        // Validate size (5MB limit)
+        if (imageBytes.length > 5 * 1024 * 1024) {
+            throw new IllegalArgumentException("이미지 크기가 너무 큽니다 (최대 5MB)");
+        }
+
+        // Generate filename with extension
+        String extension = normalizeImageFormat(imageFormat);
+        String physicalFileName = generatePhysicalFileName() + "." + extension;
+
+        // Create date-based folder structure
+        LocalDateTime now = LocalDateTime.now();
+        String dateFolder = now.format(DateTimeFormatter.ofPattern("yyyy/MM/dd"));
+
+        Path baseDirPath = Paths.get(editorImagesDir).toAbsolutePath();
+        Path folderPath = baseDirPath.resolve(dateFolder);
+
+        // Create directories
+        File dir = folderPath.toFile();
+        if (!dir.exists()) {
+            boolean created = dir.mkdirs();
+            if (!created) {
+                throw new IOException("디렉토리 생성 실패: " + folderPath);
+            }
+        }
+
+        // Save file
+        Path filePath = folderPath.resolve(physicalFileName);
+        java.nio.file.Files.write(filePath, imageBytes);
+        log.info("Editor image saved: {}", filePath);
+
+        // Create Files entity
+        Files fileEntity = Files.builder()
+                .savedFolder(dateFolder)
+                .orgFileName(physicalFileName)
+                .physicalFileName(physicalFileName)
+                .fileSize((long) imageBytes.length)
+                .mimeType("image/" + extension)
+                .createdAt(now)
+                .build();
+
+        Files savedFile = filesRepository.save(fileEntity);
+        log.info("Editor image entity saved - fileId: {}", savedFile.getFileId());
+
+        return FileResponse.from(savedFile);
+    }
+
+    /**
+     * Construct image URL from file entity
+     */
+    public String constructImageUrl(Files file) {
+        return imageBaseUrl + file.getSavedFolder() + "/" + file.getPhysicalFileName();
+    }
+
+    /**
+     * Validate image format
+     */
+    private boolean isValidImageFormat(String format) {
+        return Set.of("png", "jpg", "jpeg", "gif", "webp").contains(format.toLowerCase());
+    }
+
+    /**
+     * Normalize image format (e.g., jpeg -> jpg)
+     */
+    private String normalizeImageFormat(String format) {
+        return format.equalsIgnoreCase("jpeg") ? "jpg" : format.toLowerCase();
     }
 
     /**

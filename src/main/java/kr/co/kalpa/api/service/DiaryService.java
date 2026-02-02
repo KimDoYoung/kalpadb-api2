@@ -6,10 +6,13 @@ import kr.co.kalpa.api.dto.response.DiaryPageResponse;
 import kr.co.kalpa.api.dto.response.DiaryResponse;
 import kr.co.kalpa.api.dto.response.FileResponse;
 import kr.co.kalpa.api.entity.Diary;
+import kr.co.kalpa.api.entity.FileMatch;
 import kr.co.kalpa.api.entity.FileType;
+import kr.co.kalpa.api.entity.Files;
 import kr.co.kalpa.api.exception.DiaryAlreadyExistsException;
 import kr.co.kalpa.api.exception.DiaryNotFoundException;
 import kr.co.kalpa.api.repository.DiaryRepository;
+import kr.co.kalpa.api.util.Base64ImageExtractor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -21,7 +24,11 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -32,6 +39,7 @@ public class DiaryService {
     private final DiaryRepository diaryRepository;
     private final FileService fileService;
     private final FileMatchService fileMatchService;
+    private final Base64ImageExtractor base64ImageExtractor;
 
     @Transactional
     public DiaryResponse createDiary(DiaryCreateRequest request) {
@@ -39,15 +47,26 @@ public class DiaryService {
             throw new DiaryAlreadyExistsException(request.getYmd());
         }
 
+        // Process editor images and replace Base64 with URLs
+        String processedContent = request.getContent();
+        List<Base64ImageExtractor.Base64ImageInfo> base64Images = base64ImageExtractor.extractBase64Images(processedContent);
+
         Diary diary = Diary.builder()
                 .ymd(request.getYmd())
-                .content(request.getContent())
+                .content(processedContent)
                 .summary(request.getSummary())
                 .build();
 
         Diary savedDiary = diaryRepository.save(diary);
 
-        // Files handling
+        // Save editor images and update file_match
+        if (!base64Images.isEmpty()) {
+            processedContent = processEditorImages(processedContent, savedDiary.getId(), base64Images);
+            savedDiary.updateContent(processedContent);
+            diaryRepository.save(savedDiary);
+        }
+
+        // Files handling (attachments)
         if (request.getFiles() != null && !request.getFiles().isEmpty()) {
             for (MultipartFile file : request.getFiles()) {
                 if(file.isEmpty()) continue;
@@ -102,7 +121,20 @@ public class DiaryService {
             throw new DiaryNotFoundException(ymd);
         }
 
-        diary.update(request.getContent(), request.getSummary());
+        // Process editor images and replace Base64 with URLs
+        String processedContent = request.getContent();
+        List<Base64ImageExtractor.Base64ImageInfo> base64Images = base64ImageExtractor.extractBase64Images(processedContent);
+
+        // Save new editor images and update file_match
+        if (!base64Images.isEmpty()) {
+            processedContent = processEditorImages(processedContent, diary.getId(), base64Images);
+        }
+
+        // Clean up orphaned editor images
+        cleanupOrphanedEditorImages(diary.getId(), processedContent);
+
+        // Update diary with processed content
+        diary.update(processedContent, request.getSummary());
 
         if (request.getDeletedFileIds() != null && !request.getDeletedFileIds().isEmpty()) {
             for (Long fileId : request.getDeletedFileIds()) {
@@ -122,7 +154,7 @@ public class DiaryService {
                  }
              }
         }
-        
+
         return DiaryResponse.from(diary);
     }
 
@@ -132,8 +164,113 @@ public class DiaryService {
         if (diary == null) {
             throw new DiaryNotFoundException(ymd);
         }
-        
+
         fileMatchService.deleteMatchesByTarget("diary", diary.getId());
         diaryRepository.delete(diary);
+    }
+
+    /**
+     * Process Base64 images in content: save to file and replace with URLs
+     */
+    private String processEditorImages(String content, Long diaryId, List<Base64ImageExtractor.Base64ImageInfo> base64Images) {
+        if (base64Images.isEmpty()) {
+            return content;
+        }
+
+        log.info("Processing {} editor images for diary {}", base64Images.size(), diaryId);
+
+        String processedContent = content;
+
+        for (Base64ImageExtractor.Base64ImageInfo imageInfo : base64Images) {
+            try {
+                // Save Base64 image to file
+                FileResponse fileResponse = fileService.saveBase64Image(
+                    imageInfo.getBase64Data(),
+                    imageInfo.getFormat()
+                );
+
+                // Create file_match entry
+                fileMatchService.createMatch(
+                    "diary",
+                    diaryId,
+                    fileResponse.getFileId(),
+                    FileType.EDITOR_IMAGE
+                );
+
+                // Get file entity and construct URL
+                Files fileEntity = fileService.getFile(fileResponse.getFileId());
+                String imageUrl = fileService.constructImageUrl(fileEntity);
+
+                // Replace Base64 tag with URL tag
+                String newImgTag = "<img src=\"" + imageUrl + "\">";
+                processedContent = processedContent.replace(
+                    imageInfo.getOriginalTag(),
+                    newImgTag
+                );
+
+                log.info("Replaced Base64 image with URL: {}", imageUrl);
+
+            } catch (Exception e) {
+                log.error("Failed to process editor image for diary {}", diaryId, e);
+                throw new RuntimeException("에디터 이미지 처리 실패", e);
+            }
+        }
+
+        return processedContent;
+    }
+
+    /**
+     * Clean up orphaned editor images that are no longer referenced in content
+     */
+    private void cleanupOrphanedEditorImages(Long diaryId, String newContent) {
+        try {
+            // Get all EDITOR_IMAGE file matches for this diary
+            List<FileMatch> editorImages = fileMatchService.getMatchesByTargetAndType("diary", diaryId, FileType.EDITOR_IMAGE);
+
+            if (editorImages.isEmpty()) {
+                return;
+            }
+
+            // Extract all image URLs currently in content
+            Set<String> usedUrls = extractImageUrls(newContent);
+
+            // Delete file_match entries for images not in new content
+            for (FileMatch match : editorImages) {
+                Files file = fileService.getFile(match.getFileId());
+                String fileUrl = fileService.constructImageUrl(file);
+
+                if (!usedUrls.contains(fileUrl)) {
+                    log.info("Cleaning up orphaned editor image: {}", fileUrl);
+                    fileMatchService.deleteMatch("diary", diaryId, match.getFileId());
+                }
+            }
+        } catch (Exception e) {
+            log.error("Error cleaning up orphaned editor images for diary {}", diaryId, e);
+            // Don't throw exception here, as cleanup should not block the update
+        }
+    }
+
+    /**
+     * Extract all image URLs from HTML content
+     */
+    private Set<String> extractImageUrls(String htmlContent) {
+        Set<String> urls = new HashSet<>();
+
+        if (htmlContent == null || htmlContent.isEmpty()) {
+            return urls;
+        }
+
+        // Pattern to find all image URLs in <img src="...">
+        Pattern pattern = Pattern.compile("<img[^>]*src=[\"']([^\"']+)[\"'][^>]*>");
+        Matcher matcher = pattern.matcher(htmlContent);
+
+        while (matcher.find()) {
+            String url = matcher.group(1);
+            if (!url.startsWith("data:")) {  // Skip Base64 data URIs
+                urls.add(url);
+            }
+        }
+
+        return urls;
     }
 }
