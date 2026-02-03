@@ -47,24 +47,27 @@ public class DiaryService {
             throw new DiaryAlreadyExistsException(request.getYmd());
         }
 
-        // Process editor images and replace Base64 with URLs
+        // Extract Base64 images from content
         String processedContent = request.getContent();
         List<Base64ImageExtractor.Base64ImageInfo> base64Images = base64ImageExtractor.extractBase64Images(processedContent);
 
+        // Create diary with empty content first to get ID
         Diary diary = Diary.builder()
                 .ymd(request.getYmd())
-                .content(processedContent)
+                .content("")  // Empty content for now
                 .summary(request.getSummary())
                 .build();
 
         Diary savedDiary = diaryRepository.save(diary);
 
-        // Save editor images and update file_match
+        // Process Base64 images and replace with URLs
         if (!base64Images.isEmpty()) {
             processedContent = processEditorImages(processedContent, savedDiary.getId(), base64Images);
-            savedDiary.updateContent(processedContent);
-            diaryRepository.save(savedDiary);
         }
+
+        // Update diary with processed content (after Base64 images converted to URLs)
+        savedDiary.updateContent(processedContent);
+        diaryRepository.save(savedDiary);
 
         // Files handling (attachments)
         if (request.getFiles() != null && !request.getFiles().isEmpty()) {
@@ -136,9 +139,13 @@ public class DiaryService {
         // Update diary with processed content
         diary.update(processedContent, request.getSummary());
 
+        // Delete removed attachment files (physical files and database records)
         if (request.getDeletedFileIds() != null && !request.getDeletedFileIds().isEmpty()) {
             for (Long fileId : request.getDeletedFileIds()) {
-                 fileMatchService.deleteMatch("diary", diary.getId(), fileId);
+                fileMatchService.deleteMatch("diary", diary.getId(), fileId);
+                // Delete physical file and database record
+                fileService.deleteFile(fileId);
+                log.info("Attachment file deleted - fileId: {}", fileId);
             }
         }
 
@@ -165,7 +172,25 @@ public class DiaryService {
             throw new DiaryNotFoundException(ymd);
         }
 
+        // Delete attachment files (physical files and database records)
+        List<FileMatch> attachmentFiles = fileMatchService.getMatchesByTargetAndType("diary", diary.getId(), FileType.ATTACHMENT);
+        for (FileMatch match : attachmentFiles) {
+            try {
+                // Delete file_match first before physical file
+                fileMatchService.deleteMatch("diary", diary.getId(), match.getFileId());
+                // Delete physical file and Files record
+                fileService.deleteFile(match.getFileId());
+                log.info("Attachment file deleted during diary deletion - fileId: {}", match.getFileId());
+            } catch (Exception e) {
+                log.error("Error deleting attachment file - fileId: {}", match.getFileId(), e);
+                // Continue with deletion even if file deletion fails
+            }
+        }
+
+        // Delete all remaining file matches (EDITOR_IMAGE, which will remain as orphaned files)
         fileMatchService.deleteMatchesByTarget("diary", diary.getId());
+
+        // Delete diary
         diaryRepository.delete(diary);
     }
 

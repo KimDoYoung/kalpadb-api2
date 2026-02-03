@@ -8,6 +8,7 @@ import kr.co.kalpa.api.dto.response.DiaryPageResponse;
 import kr.co.kalpa.api.dto.response.DiaryResponse;
 import kr.co.kalpa.api.dto.response.FileResponse;
 import kr.co.kalpa.api.entity.FileMatch;
+import kr.co.kalpa.api.entity.FileType;
 import kr.co.kalpa.api.service.DiaryService;
 import kr.co.kalpa.api.service.FileMatchService;
 import kr.co.kalpa.api.service.FileService;
@@ -186,8 +187,8 @@ public class DiaryApiController {
         // Get diary by ymd to get its ID
         DiaryResponse diary = diaryService.getDiary(ymd);
 
-        // Get file matches for this diary
-        List<FileMatch> matches = fileMatchService.getMatchesByTarget("diary", diary.getId());
+        // Get file matches for this diary (only ATTACHMENT type, exclude EDITOR_IMAGE)
+        List<FileMatch> matches = fileMatchService.getMatchesByTargetAndType("diary", diary.getId(), FileType.ATTACHMENT);
 
         // Convert file IDs to FileResponse objects
         List<FileResponse> files = new ArrayList<>();
