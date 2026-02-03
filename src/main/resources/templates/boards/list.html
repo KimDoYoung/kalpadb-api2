@@ -1,105 +1,283 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{layout/default}">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="~{layout/default}">
+
 <head>
     <title>게시판 - KalpaDB</title>
 </head>
+
 <body>
-<main layout:fragment="content">
-    <div x-data="boardsList()" x-init="init()">
-        <!-- 페이지 헤더 -->
-        <div class="flex justify-between items-center mb-8">
-            <h2 class="text-3xl font-bold text-gray-800">📋 게시판</h2>
-        </div>
+    <main layout:fragment="content">
+        <div x-data="boardsList()" x-init="init()">
+            <!-- 페이지 헤더 -->
+            <div class="flex justify-between items-center mb-8">
+                <h2 class="text-3xl font-bold text-gray-800">📋 게시판 관리</h2>
+                <button @click="openCreateModal()" class="btn-primary flex items-center gap-2">
+                    <span>➕</span> 게시판 생성
+                </button>
+            </div>
 
-        <!-- 로딩 상태 -->
-        <div x-show="loading" class="text-center py-8">
-            <p class="text-gray-600">로딩 중...</p>
-        </div>
+            <style>
+                [x-cloak] {
+                    display: none !important;
+                }
+            </style>
 
-        <!-- 에러 메시지 -->
-        <div x-show="error" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
-            <p x:text="error"></p>
-        </div>
+            <!-- 로딩 상태 -->
+            <div x-show="loading" class="text-center py-8">
+                <p class="text-gray-600">로딩 중...</p>
+            </div>
 
-        <!-- 게시판 목록 -->
-        <template x-if="!loading && boards && boards.length > 0">
-            <div class="space-y-4">
-                <template x-for="(board, idx) in boards" :key="idx">
-                    <div class="card hover:shadow-lg transition">
-                        <div class="flex items-center gap-3">
-                            <div class="flex-1">
-                                <a :href="'/boards/' + board.id" class="block">
-                                    <h3 class="text-lg font-bold text-gray-800" x-text="board.boardNameKor"></h3>
-                                    <p class="text-gray-600 text-sm" x-text="board.description || '설명 없음'"></p>
-                                    <p class="text-gray-500 text-xs mt-1">
-                                        <span x-text="'콘텐츠 타입: ' + board.contentType"></span>
+            <!-- 에러 메시지 -->
+            <div x-show="error"
+                class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6 flex justify-between items-center"
+                x-cloak>
+                <p x-text="error"></p>
+                <button @click="error = ''" class="text-red-700 font-bold">&times;</button>
+            </div>
+
+            <!-- 게시판 목록 -->
+            <template x-if="!loading && boards && boards.length > 0">
+                <div class="space-y-4">
+                    <template x-for="(board, idx) in boards" :key="board.id || idx">
+                        <div class="card hover:shadow-lg transition">
+                            <div class="flex items-center justify-between gap-3">
+                                <div class="flex-1 cursor-pointer"
+                                    @click="window.location.href = '/boards/' + board.id">
+                                    <div class="flex items-center gap-2">
+                                        <h3 class="text-lg font-bold text-gray-800" x-text="board.boardNameKor"></h3>
+                                        <span class="text-xs px-2 py-1 rounded bg-gray-100 text-gray-600"
+                                            x-text="board.boardCode"></span>
+                                    </div>
+                                    <p class="text-gray-600 text-sm mt-1" x-text="board.description || '설명 없음'"></p>
+                                    <p class="text-gray-500 text-xs mt-2">
+                                        <span x-text="'Content-Type: ' + board.contentType"></span>
+                                        <span class="mx-2">|</span>
+                                        <span x-text="'ID: ' + board.id"></span>
                                     </p>
-                                </a>
-                            </div>
-                            <div class="text-right flex-shrink-0">
-                                <a :href="'/boards/' + board.id" class="btn-primary">보기</a>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <button @click.stop="openEditModal(board)"
+                                        class="px-3 py-1 bg-blue-100 text-blue-600 rounded hover:bg-blue-200 transition text-sm">
+                                        수정
+                                    </button>
+                                    <button @click.stop="deleteBoard(board.id)"
+                                        class="px-3 py-1 bg-red-100 text-red-600 rounded hover:bg-red-200 transition text-sm">
+                                        삭제
+                                    </button>
+                                </div>
                             </div>
                         </div>
+                    </template>
+                </div>
+            </template>
+
+            <!-- 빈 상태 -->
+            <template x-if="!loading && (!boards || boards.length === 0)">
+                <div class="text-center py-12 bg-gray-50 rounded-lg">
+                    <p class="text-gray-600 text-lg mb-4">등록된 게시판이 없습니다.</p>
+                    <button @click="openCreateModal()" class="text-blue-600 hover:text-blue-800 font-medium">
+                        첫 번째 게시판을 생성해보세요
+                    </button>
+                </div>
+            </template>
+
+            <!-- CRUD Modal -->
+            <div x-show="showModal" class="fixed inset-0 z-50 overflow-y-auto" style="display: none;" x-cloak>
+                <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+                    <!-- Background overlay -->
+                    <div class="fixed inset-0 transition-opacity" aria-hidden="true" @click="closeModal()">
+                        <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
                     </div>
-                </template>
+
+                    <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+
+                    <!-- Modal panel -->
+                    <div
+                        class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+                        <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                            <div class="sm:flex sm:items-start">
+                                <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
+                                    <h3 class="text-lg leading-6 font-medium text-gray-900"
+                                        x-text="isEdit ? '게시판 수정' : '새 게시판 생성'"></h3>
+                                    <div class="mt-4 space-y-4">
+                                        <!-- Board Code -->
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700">게시판 코드</label>
+                                            <input type="text" x-model="form.boardCode" :disabled="isEdit"
+                                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 disabled:bg-gray-100 disabled:text-gray-500"
+                                                placeholder="예: notice (영문 소문자)">
+                                            <p x-show="!isEdit" class="text-xs text-gray-500 mt-1">한번 생성하면 변경할 수 없습니다.
+                                            </p>
+                                        </div>
+
+                                        <!-- Board Name (Korean) -->
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700">게시판 이름</label>
+                                            <input type="text" x-model="form.boardNameKor"
+                                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                                                placeholder="예: 공지사항">
+                                        </div>
+
+                                        <!-- Content Type -->
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700">콘텐츠 타입</label>
+                                            <select x-model="form.contentType" :disabled="isEdit"
+                                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 disabled:bg-gray-100 disabled:text-gray-500">
+                                                <option value="html">HTML (에디터)</option>
+                                                <option value="markdown">Markdown</option>
+                                                <option value="text">Plain Text</option>
+                                                <option value="json">JSON</option>
+                                            </select>
+                                        </div>
+
+                                        <!-- Description -->
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700">설명</label>
+                                            <textarea x-model="form.description" rows="3"
+                                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                                                placeholder="게시판에 대한 설명"></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                            <button type="button" @click="saveBoard()"
+                                class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm">
+                                저장
+                            </button>
+                            <button type="button" @click="closeModal()"
+                                class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
+                                취소
+                            </button>
+                        </div>
+                    </div>
+                </div>
             </div>
-        </template>
+        </div>
 
-        <!-- 빈 상태 -->
-        <template x-if="!loading && (!boards || boards.length === 0)">
-            <div class="text-center py-12">
-                <p class="text-gray-600 text-lg mb-4">게시판이 없습니다.</p>
-            </div>
-        </template>
-    </div>
+        <script>
+            function boardsList() {
+                return {
+                    boards: [],
+                    loading: true,
+                    error: '',
+                    showModal: false,
+                    isEdit: false,
+                    form: {
+                        id: null,
+                        boardCode: '',
+                        boardNameKor: '',
+                        contentType: 'html',
+                        description: ''
+                    },
 
-    <script>
-        function boardsList() {
-            return {
-                boards: [],
-                loading: true,
-                error: '',
+                    init() {
+                        if (this._initialized) return;
+                        this._initialized = true;
+                        this.loadBoards();
+                    },
 
-                init() {
-                    if (this.boards.length > 0 || this._initialized) return;
-                    this._initialized = true;
+                    loadBoards() {
+                        this.loading = true;
+                        fetch('/api/boards')
+                            .then(res => {
+                                if (!res.ok) throw new Error('데이터 로드 실패');
+                                return res.json();
+                            })
+                            .then(data => {
+                                // Extract list from response structure
+                                this.boards = Array.isArray(data.data) ? data.data : (Array.isArray(data) ? data : []);
+                            })
+                            .catch(err => this.error = err.message)
+                            .finally(() => this.loading = false);
+                    },
 
-                    fetch('/api/boards')
-                        .then(response => {
-                            if (!response.ok) {
-                                throw new Error('게시판을 불러올 수 없습니다.');
-                            }
-                            return response.json();
+                    openCreateModal() {
+                        this.isEdit = false;
+                        this.form = {
+                            id: null,
+                            boardCode: '',
+                            boardNameKor: '',
+                            contentType: 'html',
+                            description: ''
+                        };
+                        this.showModal = true;
+                    },
+
+                    openEditModal(board) {
+                        this.isEdit = true;
+                        this.form = {
+                            id: board.id,
+                            boardCode: board.boardCode,
+                            boardNameKor: board.boardNameKor,
+                            contentType: board.contentType,
+                            description: board.description
+                        };
+                        this.showModal = true;
+                    },
+
+                    closeModal() {
+                        this.showModal = false;
+                        this.error = '';
+                    },
+
+                    saveBoard() {
+                        const url = this.isEdit ? `/api/boards/${this.form.id}` : '/api/boards';
+                        const method = this.isEdit ? 'PUT' : 'POST';
+
+                        // Prepare payload
+                        const payload = {
+                            boardNameKor: this.form.boardNameKor,
+                            description: this.form.description
+                        };
+
+                        // Add create-only fields
+                        if (!this.isEdit) {
+                            payload.boardCode = this.form.boardCode;
+                            payload.contentType = this.form.contentType;
+                        }
+
+                        fetch(url, {
+                            method: method,
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(payload)
                         })
-                        .then(data => {
-                            console.log('API 응답:', data);
-                            let boardList = [];
+                            .then(async res => {
+                                const data = await res.json();
+                                if (!res.ok) throw new Error(data.message || '저장 실패');
+                                return data;
+                            })
+                            .then(() => {
+                                this.closeModal();
+                                this.loadBoards(); // Refresh list
+                            })
+                            .catch(err => {
+                                alert(err.message);
+                            });
+                    },
 
-                            // data.data가 배열인 경우
-                            if (Array.isArray(data.data)) {
-                                boardList = data.data;
-                            }
-                            // data가 배열인 경우
-                            else if (Array.isArray(data)) {
-                                boardList = data;
-                            }
+                    deleteBoard(id) {
+                        if (!confirm('정말 이 게시판을 삭제하시겠습니까?\n삭제 시 관련된 모든 게시글도 함께 삭제됩니다.')) return;
 
-                            console.log('최종 게시판 목록:', boardList);
-                            this.boards = boardList;
-                        })
-                        .catch(err => {
-                            this.error = err.message;
-                            console.error('API 에러:', err);
-                        })
-                        .finally(() => {
-                            this.loading = false;
-                        });
+                        fetch(`/api/boards/${id}`, { method: 'DELETE' })
+                            .then(async res => {
+                                const data = await res.json();
+                                if (!res.ok) throw new Error(data.message || '삭제 실패');
+                                return data;
+                            })
+                            .then(() => {
+                                this.loadBoards();
+                            })
+                            .catch(err => {
+                                alert(err.message);
+                            });
+                    }
                 }
             }
-        }
-    </script>
-</main>
+        </script>
+    </main>
 </body>
+
 </html>
