@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/default}">
+<head>
+    <title>장비 등록 - KalpaDB</title>
+    <!-- QuillJS CSS -->
+    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+</head>
+<body>
+<main layout:fragment="content">
+    <div x-data="jangbiCreate()" x-init="init()">
+        <!-- 에러 메시지 -->
+        <div x-show="error" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
+            <p x:text="error"></p>
+        </div>
+
+        <!-- 폼 -->
+        <div class="space-y-6">
+            <!-- 페이지 헤더 -->
+            <h2 class="text-3xl font-bold text-gray-800">➕ 새 장비 등록</h2>
+
+            <!-- 구입일 -->
+            <div>
+                <label for="ymd" class="block text-sm font-medium text-gray-700 mb-2">
+                    구입일 <span class="text-red-500">*</span>
+                </label>
+                <input
+                    type="date"
+                    id="ymd"
+                    x-model="form.ymd"
+                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    required
+                >
+            </div>
+
+            <!-- 품목 -->
+            <div>
+                <label for="item" class="block text-sm font-medium text-gray-700 mb-2">
+                    품목 <span class="text-red-500">*</span>
+                </label>
+                <input
+                    type="text"
+                    id="item"
+                    x-model="form.item"
+                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="장비명이나 품목명"
+                    maxlength="100"
+                    required
+                >
+            </div>
+
+            <!-- 위치 -->
+            <div>
+                <label for="location" class="block text-sm font-medium text-gray-700 mb-2">
+                    위치 (선택사항)
+                </label>
+                <input
+                    type="text"
+                    id="location"
+                    x-model="form.location"
+                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="장비 위치 (예: 거실, 2층 창고)"
+                    maxlength="200"
+                >
+            </div>
+
+            <!-- 가격 -->
+            <div>
+                <label for="cost" class="block text-sm font-medium text-gray-700 mb-2">
+                    가격 (선택사항)
+                </label>
+                <input
+                    type="number"
+                    id="cost"
+                    x-model="form.cost"
+                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="구매 가격 (숫자만)"
+                    min="0"
+                >
+            </div>
+
+            <!-- 레벨 -->
+            <div>
+                <label for="lvl" class="block text-sm font-medium text-gray-700 mb-2">
+                    중요도 <span class="text-red-500">*</span>
+                </label>
+                <select
+                    id="lvl"
+                    x-model="form.lvl"
+                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    required
+                >
+                    <option value="1">1 - 높음 (중요)</option>
+                    <option value="2" selected>2 - 중간</option>
+                    <option value="3">3 - 낮음</option>
+                </select>
+            </div>
+
+            <!-- 스펙/특징 -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">
+                    스펙/특징 (선택사항)
+                </label>
+                <div id="quill-editor" class="bg-white border border-gray-300 rounded-lg w-full"></div>
+                <input type="hidden" id="spec" x-model="form.spec">
+            </div>
+
+            <!-- 첨부파일 -->
+            <div class="border-t pt-6">
+                <h3 class="text-lg font-bold text-gray-800 mb-4">📎 첨부파일</h3>
+
+                <!-- 새 파일 업로드 -->
+                <div class="mb-4">
+                    <label for="file-input" class="block text-sm font-medium text-gray-700 mb-2">
+                        파일 추가
+                    </label>
+                    <div class="flex items-center gap-2">
+                        <input
+                            type="file"
+                            id="file-input"
+                            @change="addNewFiles($event)"
+                            multiple
+                            class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        >
+                    </div>
+                    <p class="text-xs text-gray-500 mt-1">여러 파일을 선택할 수 있습니다</p>
+                </div>
+
+                <!-- 추가된 파일 목록 -->
+                <div x-show="newFiles.length > 0" class="space-y-2">
+                    <h4 class="text-sm font-medium text-gray-700">추가된 파일</h4>
+                    <template x-for="(file, index) in newFiles" :key="index">
+                        <div class="flex items-center justify-between bg-blue-50 p-3 rounded border border-blue-200">
+                            <div class="flex-1">
+                                <p class="text-sm text-gray-700" x-text="file.name"></p>
+                                <p class="text-xs text-gray-500" x-text="'(' + formatFileSize(file.size) + ')'"></p>
+                            </div>
+                            <button
+                                type="button"
+                                @click="removeNewFile(index)"
+                                class="text-red-500 hover:text-red-700 text-sm font-medium"
+                            >
+                                삭제
+                            </button>
+                        </div>
+                    </template>
+                </div>
+            </div>
+
+            <!-- 버튼 -->
+            <div class="flex gap-3">
+                <button @click="save()" class="btn-primary" :disabled="saving">
+                    <span x:text="saving ? '저장 중...' : '저장'">저장</span>
+                </button>
+                <a th:href="@{/jangbi}" class="btn-secondary">취소</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- QuillJS JS -->
+    <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+    <style>
+        #quill-editor {
+            border: 1px solid #d1d5db !important;
+            border-radius: 0.5rem !important;
+        }
+
+        /* Toolbar 스타일 */
+        .ql-toolbar.ql-snow {
+            border-top-left-radius: 0.5rem !important;
+            border-top-right-radius: 0.5rem !important;
+            background-color: #f9fafb !important;
+            border: 1px solid #d1d5db !important;
+            border-bottom: 1px solid #d1d5db !important;
+        }
+
+        /* Toolbar 버튼 활성 상태 */
+        .ql-toolbar.ql-snow button:hover,
+        .ql-toolbar.ql-snow button.ql-active {
+            color: #06b6d4 !important;
+        }
+
+        .ql-toolbar.ql-snow button.ql-active .ql-stroke {
+            stroke: #06b6d4 !important;
+        }
+
+        .ql-toolbar.ql-snow button.ql-active .ql-fill {
+            fill: #06b6d4 !important;
+        }
+
+        /* Editor 컨테이너 */
+        .ql-container.ql-snow {
+            border-bottom-left-radius: 0.5rem !important;
+            border-bottom-right-radius: 0.5rem !important;
+            border: none !important;
+            font-size: 14px !important;
+        }
+
+        .ql-editor {
+            padding: 12px !important;
+            min-height: 250px !important;
+            max-height: 300px !important;
+            overflow-y: auto !important;
+        }
+
+        .ql-editor.ql-blank::before {
+            color: #9ca3af !important;
+        }
+    </style>
+    <script>
+        let quillEditor;
+
+        function jangbiCreate() {
+            return {
+                form: {
+                    ymd: new Date().toISOString().split('T')[0], // YYYY-MM-DD 형식
+                    item: '',
+                    location: '',
+                    cost: '',
+                    spec: '',
+                    lvl: '2'
+                },
+                newFiles: [],
+                saving: false,
+                error: '',
+
+                async init() {
+                    if (quillEditor) return;
+
+                    // QuillJS 에디터 초기화
+                    quillEditor = new Quill('#quill-editor', {
+                        theme: 'snow',
+                        placeholder: '장비 스펙/특징을 입력하세요',
+                        modules: {
+                            toolbar: [
+                                'bold', 'italic', 'underline', 'strike',
+                                { 'list': 'ordered'}, { 'list': 'bullet' },
+                                { 'header': [2, 3, false] },
+                                { 'color': [] },
+                                { 'align': [] },
+                                'clean'
+                            ]
+                        }
+                    });
+
+                    // 내용 변경 감지
+                    quillEditor.on('text-change', () => {
+                        this.form.spec = quillEditor.root.innerHTML;
+                        document.getElementById('spec').value = this.form.spec;
+                    });
+                },
+
+                addNewFiles(event) {
+                    const files = event.target.files;
+                    for (let file of files) {
+                        this.newFiles.push(file);
+                    }
+                    // 파일 선택 초기화
+                    event.target.value = '';
+                },
+
+                removeNewFile(index) {
+                    this.newFiles.splice(index, 1);
+                },
+
+                formatFileSize(bytes) {
+                    if (bytes === 0) return '0 Bytes';
+                    const k = 1024;
+                    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+                    const i = Math.floor(Math.log(bytes) / Math.log(k));
+                    return Math.round((bytes / Math.pow(k, i)) * 100) / 100 + ' ' + sizes[i];
+                },
+
+                async save() {
+                    if (!this.form.ymd) {
+                        alert('구입일을 입력하세요.');
+                        return;
+                    }
+
+                    if (!this.form.item) {
+                        alert('품목을 입력하세요.');
+                        return;
+                    }
+
+                    this.saving = true;
+                    try {
+                        const formData = new FormData();
+                        // 날짜를 YYYYMMDD 형식으로 변환 (YYYY-MM-DD -> YYYYMMDD)
+                        const ymdFormatted = this.form.ymd.replace(/-/g, '');
+                        formData.append('ymd', ymdFormatted);
+                        formData.append('item', this.form.item);
+                        formData.append('location', this.form.location || '');
+                        formData.append('cost', this.form.cost || '');
+                        formData.append('spec', this.form.spec || '');
+                        formData.append('lvl', this.form.lvl);
+
+                        // 새 파일 추가
+                        for (let file of this.newFiles) {
+                            formData.append('files', file);
+                        }
+
+                        const response = await fetch('/api/jangbi', {
+                            method: 'POST',
+                            body: formData,
+                            credentials: 'include'
+                        });
+
+                        if (!response.ok) {
+                            const errorData = await response.json();
+                            throw new Error(errorData.message || '저장에 실패했습니다.');
+                        }
+
+                        const result = await response.json();
+                        alert('저장되었습니다.');
+                        window.location.href = `/jangbi/${result.data.id}`;
+                    } catch (err) {
+                        this.error = err.message;
+                        alert(err.message);
+                        console.error(err);
+                    } finally {
+                        this.saving = false;
+                    }
+                }
+            }
+        }
+    </script>
+</main>
+</body>
+</html>

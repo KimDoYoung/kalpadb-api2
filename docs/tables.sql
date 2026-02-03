@@ -38,16 +38,6 @@ CREATE TABLE `jangbi` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=247 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='구매물품';
 
-drop table if exists essay;
-CREATE TABLE IF NOT EXISTS  `essay` (
-  `id` BIGINT NOT NULL AUTO_INCREMENT COMMENT '일련번호',
-  `title` varchar(300) NOT NULL COMMENT '제목',
-  `content` text DEFAULT NULL COMMENT '내용',
-  `tags` varchar(200) DEFAULT NULL COMMENT '태그',
-  `create_dt` datetime DEFAULT current_timestamp() COMMENT '최초생성일시',
-  `lastmodify_dt` datetime DEFAULT NULL COMMENT '최종수정일시',
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=179 DEFAULT CHARSET=utf8;
 
 -- attach_files
 drop table if exists files;
@@ -95,6 +85,7 @@ CREATE TABLE IF NOT EXISTS `todo` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=763 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='해야할 일';
 
+
 -- 게시판 마스터
 CREATE TABLE IF NOT EXISTS boards (
   id            BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -106,7 +97,7 @@ CREATE TABLE IF NOT EXISTS boards (
   updated_at     TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '수정일',
   PRIMARY KEY (id),
   UNIQUE KEY uk_boards_board_code (board_code),
-  KEY idx_boards_name_kor (board_name_kor),
+  KEY idx_boards_name_kor (board_name_kor)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- 게시글
@@ -115,28 +106,25 @@ CREATE TABLE IF NOT EXISTS posts (
   board_id     BIGINT UNSIGNED NOT NULL COMMENT 'boards.id FK',
   -- 선택1) board_code를 함께 보관해 조인 없이 조회 최적화(정합성은 트리거/앱에서 보정)
   -- board_code  VARCHAR(50)  NULL COMMENT '조인 없이 필터용 캐시 컬럼(선택)',
-
+--
   title    VARCHAR(500) NOT NULL COMMENT '제목 한글',
   author   VARCHAR(100) NOT NULL DEFAULT '관리자' COMMENT '작성자 한글',
-
+-- 
   content_type VARCHAR(30)  NOT NULL DEFAULT 'html' COMMENT '내용의 문서종류(text|html|markdown|json)',
   content  LONGTEXT NULL COMMENT '내용(한글)',
-
   view_count   INT NOT NULL DEFAULT 0 COMMENT '조회횟수',
   base_ymd     VARCHAR(8) NOT NULL COMMENT '기준일(YYYYMMDD)',
   created_at   TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP COMMENT '작성일',
   updated_at   TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '수정일',
-
   PRIMARY KEY (id),
   CONSTRAINT fk_posts_board
     FOREIGN KEY (board_id) REFERENCES boards(id)
     ON DELETE CASCADE
     ON UPDATE CASCADE,
-
   -- 자주 찾을 것 같은 인덱스
   KEY idx_posts_board_id (board_id),
   KEY idx_posts_base_ymd (base_ymd),
-  KEY idx_posts_title (title),
+  KEY idx_posts_title (title)
   -- 선택2) board_code 컬럼을 둘 경우:
   -- KEY idx_posts_board_code (board_code)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

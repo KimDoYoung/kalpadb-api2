@@ -20,7 +20,8 @@
       "Bash(mkdir:*)",
       "Bash(chmod:*)",
       "Bash(npm run build:bundle:*)",
-      "Bash(npm run build:js:*)"
+      "Bash(npm run build:js:*)",
+      "Bash(tree:*)"
     ]
   },
   "language": "korean",

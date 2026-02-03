@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/default}">
+<head>
+    <title>장비 - KalpaDB</title>
+</head>
+<body>
+<main layout:fragment="content">
+    <div x-data="jangbiList()" x-init="init()">
+        <!-- 페이지 헤더 -->
+        <div class="flex justify-between items-center mb-8">
+            <h2 class="text-3xl font-bold text-gray-800">🔧 장비</h2>
+            <a th:href="@{/jangbi/new}" class="btn-primary">새 장비 추가</a>
+        </div>
+
+        <!-- 검색 필터 -->
+        <div class="bg-white rounded-lg shadow p-4 mb-6">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">품목</label>
+                    <input
+                        type="text"
+                        x-model="filters.keyword"
+                        @keyup.enter="search()"
+                        placeholder="품목명 검색"
+                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    >
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">위치</label>
+                    <input
+                        type="text"
+                        x-model="filters.location"
+                        @keyup.enter="search()"
+                        placeholder="위치 검색"
+                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    >
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">레벨</label>
+                    <select
+                        x-model="filters.lvl"
+                        @change="search()"
+                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    >
+                        <option value="">전체</option>
+                        <option value="1">1 (높음)</option>
+                        <option value="2">2 (중간)</option>
+                        <option value="3">3 (낮음)</option>
+                    </select>
+                </div>
+                <div class="flex items-end gap-2">
+                    <button @click="search()" class="btn-primary flex-1">검색</button>
+                    <button @click="resetFilters()" class="btn-secondary flex-1">초기화</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 로딩 상태 -->
+        <div x-show="loading" class="text-center py-8">
+            <p class="text-gray-600">로딩 중...</p>
+        </div>
+
+        <!-- 에러 메시지 -->
+        <div x-show="error" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
+            <p x:text="error"></p>
+        </div>
+
+        <!-- 장비 목록 (테이블) -->
+        <template x-if="!loading && jangbis && jangbis.length > 0">
+            <div class="overflow-x-auto">
+                <table class="w-full border-collapse">
+                    <thead>
+                        <tr class="bg-gray-200">
+                            <th class="border border-gray-300 px-4 py-2 text-left">ID</th>
+                            <th class="border border-gray-300 px-4 py-2 text-left">품목</th>
+                            <th class="border border-gray-300 px-4 py-2 text-left">구입일</th>
+                            <th class="border border-gray-300 px-4 py-2 text-left">위치</th>
+                            <th class="border border-gray-300 px-4 py-2 text-right">가격</th>
+                            <th class="border border-gray-300 px-4 py-2 text-center">레벨</th>
+                            <th class="border border-gray-300 px-4 py-2 text-left">수정일</th>
+                            <th class="border border-gray-300 px-4 py-2 text-center">액션</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <template x-for="(jangbi, idx) in jangbis" :key="idx">
+                            <tr class="hover:bg-gray-100 transition">
+                                <td class="border border-gray-300 px-4 py-2" x-text="jangbi.id"></td>
+                                <td class="border border-gray-300 px-4 py-2">
+                                    <a :href="'/jangbi/' + jangbi.id" class="text-blue-600 hover:underline font-medium" x-text="jangbi.item"></a>
+                                </td>
+                                <td class="border border-gray-300 px-4 py-2" x-text="formatDate(jangbi.ymd)"></td>
+                                <td class="border border-gray-300 px-4 py-2" x-text="jangbi.location || '-'"></td>
+                                <td class="border border-gray-300 px-4 py-2 text-right" x-text="formatCost(jangbi.cost)"></td>
+                                <td class="border border-gray-300 px-4 py-2 text-center">
+                                    <span :class="getLvlClass(jangbi.lvl)" x-text="jangbi.lvl"></span>
+                                </td>
+                                <td class="border border-gray-300 px-4 py-2 text-sm" x-text="formatDateTime(jangbi.modifyDt)"></td>
+                                <td class="border border-gray-300 px-4 py-2 text-center">
+                                    <a :href="'/jangbi/' + jangbi.id + '/edit'" class="btn-primary text-xs inline-block">수정</a>
+                                </td>
+                            </tr>
+                        </template>
+                    </tbody>
+                </table>
+            </div>
+        </template>
+
+        <!-- 빈 상태 -->
+        <template x-if="!loading && (!jangbis || jangbis.length === 0)">
+            <div class="text-center py-12">
+                <p class="text-gray-600 text-lg mb-4">등록된 장비가 없습니다.</p>
+                <a th:href="@{/jangbi/new}" class="btn-primary">첫 번째 장비 등록하기</a>
+            </div>
+        </template>
+    </div>
+
+    <script>
+        function jangbiList() {
+            return {
+                jangbis: [],
+                loading: true,
+                error: '',
+                filters: {
+                    keyword: '',
+                    location: '',
+                    lvl: ''
+                },
+
+                init() {
+                    if (this.jangbis.length > 0 || this._initialized) return;
+                    this._initialized = true;
+                    this.loadJangbis();
+                },
+
+                loadJangbis() {
+                    this.loading = true;
+                    this.error = '';
+
+                    const params = new URLSearchParams();
+                    if (this.filters.keyword) params.append('keyword', this.filters.keyword);
+                    if (this.filters.location) params.append('keyword', this.filters.location);
+                    if (this.filters.lvl) params.append('lvl', this.filters.lvl);
+
+                    const queryString = params.toString();
+                    const url = '/api/jangbi' + (queryString ? '?' + queryString : '');
+
+                    fetch(url)
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error('장비를 불러올 수 없습니다.');
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+                            console.log('API 응답:', data);
+                            let jangbiList = [];
+
+                            // data.data가 배열인 경우
+                            if (Array.isArray(data.data)) {
+                                jangbiList = data.data;
+                            }
+                            // data.data.content가 배열인 경우 (페이지네이션)
+                            else if (data.data && Array.isArray(data.data.content)) {
+                                jangbiList = data.data.content;
+                            }
+                            // data가 배열인 경우
+                            else if (Array.isArray(data)) {
+                                jangbiList = data;
+                            }
+
+                            console.log('최종 장비 목록:', jangbiList);
+                            this.jangbis = jangbiList;
+                        })
+                        .catch(err => {
+                            this.error = err.message;
+                            console.error('API 에러:', err);
+                        })
+                        .finally(() => {
+                            this.loading = false;
+                        });
+                },
+
+                search() {
+                    this.loadJangbis();
+                },
+
+                resetFilters() {
+                    this.filters = {
+                        keyword: '',
+                        location: '',
+                        lvl: ''
+                    };
+                    this.loadJangbis();
+                },
+
+                formatDate(ymd) {
+                    // YYYYMMDD 형식을 YYYY-MM-DD 형식으로 변환
+                    if (!ymd || ymd.length !== 8) return ymd;
+                    return `${ymd.substring(0, 4)}-${ymd.substring(4, 6)}-${ymd.substring(6, 8)}`;
+                },
+
+                formatDateTime(dateTimeString) {
+                    if (!dateTimeString) return '-';
+                    try {
+                        const date = new Date(dateTimeString);
+                        return date.toLocaleString('ko-KR');
+                    } catch (e) {
+                        return dateTimeString;
+                    }
+                },
+
+                formatCost(cost) {
+                    if (!cost) return '-';
+                    return cost.toLocaleString('ko-KR') + ' 원';
+                },
+
+                getLvlClass(lvl) {
+                    const classes = {
+                        '1': 'badge badge-red',
+                        '2': 'badge badge-yellow',
+                        '3': 'badge badge-green'
+                    };
+                    return classes[lvl] || 'badge badge-gray';
+                }
+            }
+        }
+    </script>
+</main>
+</body>
+</html>
