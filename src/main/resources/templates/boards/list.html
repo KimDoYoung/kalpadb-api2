@@ -43,7 +43,7 @@
                         <div class="card hover:shadow-lg transition">
                             <div class="flex items-center justify-between gap-3">
                                 <div class="flex-1 cursor-pointer"
-                                    @click="window.location.href = '/boards/' + board.id">
+                                    @click="window.location.href = '/posts?boardId=' + board.id">
                                     <div class="flex items-center gap-2">
                                         <h3 class="text-lg font-bold text-gray-800" x-text="board.boardNameKor"></h3>
                                         <span class="text-xs px-2 py-1 rounded bg-gray-100 text-gray-600"

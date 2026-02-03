@@ -1,6 +1,5 @@
 package kr.co.kalpa.api.controller;
 
-import jakarta.validation.Valid;
 import kr.co.kalpa.api.dto.ApiResponse;
 import kr.co.kalpa.api.dto.request.PostCreateRequest;
 import kr.co.kalpa.api.dto.request.PostUpdateRequest;

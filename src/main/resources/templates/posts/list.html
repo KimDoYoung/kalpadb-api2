@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="~{layout/default}">
+
+<head>
+    <title>게시글 - KalpaDB</title>
+</head>
+
+<body>
+    <main layout:fragment="content">
+        <div x-data="postsList()" x-init="init()">
+            <!-- 페이지 헤더 -->
+            <div class="flex justify-between items-center mb-8">
+                <h2 class="text-3xl font-bold text-gray-800">📝 게시글</h2>
+                <button @click="goToCreate()" class="btn-primary flex items-center gap-2" x-show="selectedBoardId">
+                    <span>✏️</span> 새 글 쓰기
+                </button>
+            </div>
+
+            <style>
+                [x-cloak] {
+                    display: none !important;
+                }
+            </style>
+
+            <!-- 게시판 선택 -->
+            <div class="mb-6 bg-white p-4 rounded-lg shadow">
+                <label class="block text-sm font-medium text-gray-700 mb-2">게시판 선택</label>
+                <select x-model="selectedBoardId" @change="onBoardChange()"
+                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    <option value="">-- 게시판을 선택하세요 --</option>
+                    <template x-for="board in boards" :key="board.id">
+                        <option :value="board.id" x-text="board.boardNameKor"></option>
+                    </template>
+                </select>
+            </div>
+
+            <!-- 로딩 상태 -->
+            <div x-show="loading" class="text-center py-8">
+                <p class="text-gray-600">로딩 중...</p>
+            </div>
+
+            <!-- 에러 메시지 -->
+            <div x-show="error"
+                class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6 flex justify-between items-center"
+                x-cloak>
+                <p x-text="error"></p>
+                <button @click="error = ''" class="text-red-700 font-bold">&times;</button>
+            </div>
+
+            <!-- 게시글 목록 -->
+            <template x-if="!loading && selectedBoardId && posts.length > 0">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <template x-for="(post, idx) in posts" :key="post.id || idx">
+                        <div class="bg-white rounded-xl shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-300 cursor-pointer overflow-hidden border border-gray-100"
+                            @click="goToView(post.id)">
+                            <!-- Card Header with color accent -->
+                            <div class="h-2 bg-gradient-to-r from-blue-500 to-cyan-500"></div>
+
+                            <!-- Card Content -->
+                            <div class="p-5 space-y-4">
+                                <!-- Title -->
+                                <div>
+                                    <h3 class="text-lg font-bold text-gray-800 line-clamp-2 group-hover:text-blue-600 transition"
+                                        x-text="post.title"></h3>
+                                </div>
+
+                                <!-- Content Type Badge -->
+                                <div>
+                                    <span class="inline-block px-3 py-1 text-xs font-semibold rounded-full transition"
+                                        :class="post.contentType === 'html' ? 'bg-blue-100 text-blue-700' : post.contentType === 'markdown' ? 'bg-purple-100 text-purple-700' : 'bg-gray-100 text-gray-700'"
+                                        x-text="post.contentType.toUpperCase()">
+                                    </span>
+                                </div>
+
+                                <!-- Divider -->
+                                <div class="h-px bg-gray-200"></div>
+
+                                <!-- Footer with metadata -->
+                                <div class="flex flex-wrap items-center justify-between gap-2 text-sm text-gray-600 pt-2">
+                                    <div class="flex items-center gap-3">
+                                        <span class="inline-flex items-center gap-1">
+                                            <span>👤</span>
+                                            <span class="font-medium" x-text="post.author || '관리자'"></span>
+                                        </span>
+                                    </div>
+                                    <div class="flex items-center gap-3">
+                                        <span class="inline-flex items-center gap-1">
+                                            <span>📅</span>
+                                            <span x-text="formatDate(post.createdAt)"></span>
+                                        </span>
+                                        <span class="inline-flex items-center gap-1 bg-gray-100 px-2 py-1 rounded-lg">
+                                            <span>👁️</span>
+                                            <span x-text="post.viewCount"></span>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+            </template>
+
+            <!-- 페이지네이션 -->
+            <template x-if="!loading && selectedBoardId && totalPages > 1">
+                <div class="flex justify-center items-center gap-2 mt-8">
+                    <button @click="previousPage()" :disabled="currentPage === 0"
+                        class="px-4 py-2 border border-gray-300 rounded hover:bg-gray-50 disabled:opacity-50">
+                        이전
+                    </button>
+                    <template x-for="page in Array.from({length: totalPages}, (_, i) => i)">
+                        <button @click="goToPage(page)"
+                            :class="page === currentPage ? 'bg-blue-600 text-white' : 'border border-gray-300 hover:bg-gray-50'"
+                            class="px-3 py-2 rounded"
+                            x-text="page + 1">
+                        </button>
+                    </template>
+                    <button @click="nextPage()" :disabled="currentPage >= totalPages - 1"
+                        class="px-4 py-2 border border-gray-300 rounded hover:bg-gray-50 disabled:opacity-50">
+                        다음
+                    </button>
+                </div>
+            </template>
+
+            <!-- 빈 상태 -->
+            <template x-if="!loading && selectedBoardId && posts.length === 0">
+                <div class="text-center py-12 bg-gray-50 rounded-lg">
+                    <p class="text-gray-600 text-lg mb-4">등록된 게시글이 없습니다.</p>
+                    <button @click="goToCreate()" class="text-blue-600 hover:text-blue-800 font-medium">
+                        첫 번째 게시글을 작성해보세요
+                    </button>
+                </div>
+            </template>
+
+            <!-- 선택하지 않은 상태 -->
+            <template x-if="!selectedBoardId && !loading">
+                <div class="text-center py-12 bg-gray-50 rounded-lg">
+                    <p class="text-gray-600 text-lg">게시판을 선택해주세요.</p>
+                </div>
+            </template>
+        </div>
+
+        <script>
+            function postsList() {
+                const urlParams = new URLSearchParams(window.location.search);
+                const boardIdParam = urlParams.get('boardId');
+
+                return {
+                    boards: [],
+                    posts: [],
+                    selectedBoardId: boardIdParam ? parseInt(boardIdParam) : '',
+                    loading: true,
+                    error: '',
+                    currentPage: 0,
+                    pageSize: 10,
+                    totalPages: 0,
+
+                    init() {
+                        if (this._initialized) return;
+                        this._initialized = true;
+                        this.loadBoards();
+                        if (this.selectedBoardId) {
+                            this.loadPosts();
+                        }
+                    },
+
+                    loadBoards() {
+                        fetch('/api/boards')
+                            .then(res => {
+                                if (!res.ok) throw new Error('게시판 로드 실패');
+                                return res.json();
+                            })
+                            .then(data => {
+                                this.boards = Array.isArray(data.data) ? data.data : [];
+                            })
+                            .catch(err => this.error = err.message);
+                    },
+
+                    loadPosts() {
+                        this.loading = true;
+                        this.error = '';
+
+                        const url = new URL('/api/posts', window.location.origin);
+                        url.searchParams.set('boardId', this.selectedBoardId);
+                        url.searchParams.set('page', this.currentPage);
+                        url.searchParams.set('size', this.pageSize);
+                        url.searchParams.set('sort', 'createdAt,desc');
+
+                        fetch(url)
+                            .then(res => {
+                                if (!res.ok) throw new Error('게시글 로드 실패');
+                                return res.json();
+                            })
+                            .then(data => {
+                                const pageData = data.data || {};
+                                this.posts = Array.isArray(pageData.content) ? pageData.content : [];
+                                this.totalPages = pageData.totalPages || 0;
+                            })
+                            .catch(err => this.error = err.message)
+                            .finally(() => this.loading = false);
+                    },
+
+                    onBoardChange() {
+                        this.currentPage = 0;
+                        if (this.selectedBoardId) {
+                            this.loadPosts();
+                        } else {
+                            this.posts = [];
+                        }
+                    },
+
+                    goToCreate() {
+                        window.location.href = `/posts/new?boardId=${this.selectedBoardId}`;
+                    },
+
+                    goToView(postId) {
+                        window.location.href = `/posts/${postId}`;
+                    },
+
+                    previousPage() {
+                        if (this.currentPage > 0) {
+                            this.currentPage--;
+                            this.loadPosts();
+                            window.scrollTo(0, 0);
+                        }
+                    },
+
+                    nextPage() {
+                        if (this.currentPage < this.totalPages - 1) {
+                            this.currentPage++;
+                            this.loadPosts();
+                            window.scrollTo(0, 0);
+                        }
+                    },
+
+                    goToPage(page) {
+                        this.currentPage = page;
+                        this.loadPosts();
+                        window.scrollTo(0, 0);
+                    },
+
+                    formatDate(dateString) {
+                        if (!dateString) return '';
+                        const date = new Date(dateString);
+                        return date.toLocaleDateString('ko-KR', {
+                            year: 'numeric',
+                            month: '2-digit',
+                            day: '2-digit'
+                        });
+                    }
+                }
+            }
+        </script>
+    </main>
+</body>
+
+</html>
