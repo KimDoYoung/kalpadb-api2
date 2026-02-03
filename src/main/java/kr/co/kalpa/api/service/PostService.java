@@ -42,7 +42,8 @@ public class PostService {
      * 게시글 목록 조회
      */
     @Transactional(readOnly = true)
-    public Page<PostResponse> getPosts(Long boardId, String keyword, String startYmd, String endYmd, Pageable pageable) {
+    public Page<PostResponse> getPosts(Long boardId, String keyword, String startYmd, String endYmd,
+            Pageable pageable) {
         log.info("게시글 목록 조회 - boardId: {}, keyword: {}, startYmd: {}, endYmd: {}", boardId, keyword, startYmd, endYmd);
 
         Page<Post> posts;
@@ -53,7 +54,8 @@ public class PostService {
                     .orElseThrow(() -> new BoardNotFoundException(boardId));
 
             if (keyword != null && !keyword.isEmpty() && startYmd != null && endYmd != null) {
-                posts = postRepository.findByBoardIdAndKeywordAndDateRange(boardId, keyword, startYmd, endYmd, pageable);
+                posts = postRepository.findByBoardIdAndKeywordAndDateRange(boardId, keyword, startYmd, endYmd,
+                        pageable);
             } else if (keyword != null && !keyword.isEmpty()) {
                 posts = postRepository.findByBoardIdAndKeyword(boardId, keyword, pageable);
             } else if (startYmd != null && endYmd != null) {
@@ -71,7 +73,13 @@ public class PostService {
             }
         }
 
-        return posts.map(PostResponse::fromWithoutContent);
+        return posts.map(post -> {
+            PostResponse response = PostResponse.fromWithoutContent(post);
+            int attachmentCount = fileMatchService.countMatchesByTargetAndType("posts", post.getId(),
+                    FileType.ATTACHMENT);
+            response.setAttachmentCount(attachmentCount);
+            return response;
+        });
     }
 
     /**
@@ -118,7 +126,8 @@ public class PostService {
                 if (!file.isEmpty()) {
                     try {
                         var savedFile = fileService.saveFile(file);
-                        fileMatchService.createMatch("posts", saved.getId(), savedFile.getFileId(), FileType.ATTACHMENT);
+                        fileMatchService.createMatch("posts", saved.getId(), savedFile.getFileId(),
+                                FileType.ATTACHMENT);
                     } catch (IOException e) {
                         log.warn("파일 저장 실패: {}", file.getOriginalFilename(), e);
                     }
@@ -146,8 +155,7 @@ public class PostService {
                     request.getAuthor() != null ? request.getAuthor() : post.getAuthor(),
                     request.getContentType() != null ? request.getContentType() : post.getContentType(),
                     request.getContent() != null ? request.getContent() : post.getContent(),
-                    request.getBaseYmd() != null ? request.getBaseYmd() : post.getBaseYmd()
-            );
+                    request.getBaseYmd() != null ? request.getBaseYmd() : post.getBaseYmd());
         }
 
         Post updated = postRepository.save(post);

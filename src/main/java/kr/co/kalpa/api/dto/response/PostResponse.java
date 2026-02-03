@@ -24,6 +24,7 @@ public class PostResponse {
     private String baseYmd;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private Integer attachmentCount;
 
     public static PostResponse from(Post post) {
         return PostResponse.builder()

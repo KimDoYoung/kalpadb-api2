@@ -30,7 +30,8 @@ public class FileMatchService {
                 .build();
 
         FileMatch saved = fileMatchRepository.save(fileMatch);
-        log.info("File match created - table: {}, targetId: {}, fileId: {}, fileType: {}", tableName, targetId, fileId, fileType);
+        log.info("File match created - table: {}, targetId: {}, fileId: {}, fileType: {}", tableName, targetId, fileId,
+                fileType);
 
         return saved;
     }
@@ -49,7 +50,8 @@ public class FileMatchService {
      */
     @Transactional(readOnly = true)
     public List<Long> getFileIdsByTargetAndType(String tableName, Long targetId, FileType fileType) {
-        List<FileMatch> matches = fileMatchRepository.findByTableNameAndTargetIdAndFileType(tableName, targetId, fileType);
+        List<FileMatch> matches = fileMatchRepository.findByTableNameAndTargetIdAndFileType(tableName, targetId,
+                fileType);
         return matches.stream().map(FileMatch::getFileId).toList();
     }
 
@@ -67,6 +69,14 @@ public class FileMatchService {
     @Transactional(readOnly = true)
     public List<FileMatch> getMatchesByTargetAndType(String tableName, Long targetId, FileType fileType) {
         return fileMatchRepository.findByTableNameAndTargetIdAndFileType(tableName, targetId, fileType);
+    }
+
+    /**
+     * Count matches for a target with specific file type
+     */
+    @Transactional(readOnly = true)
+    public int countMatchesByTargetAndType(String tableName, Long targetId, FileType fileType) {
+        return fileMatchRepository.countByTableNameAndTargetIdAndFileType(tableName, targetId, fileType);
     }
 
     /**

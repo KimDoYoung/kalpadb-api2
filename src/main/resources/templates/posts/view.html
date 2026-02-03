@@ -1,226 +1,239 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{layout/default}">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="~{layout/default}">
+
 <head>
     <title>게시글 상세 - KalpaDB</title>
 </head>
 
 <body>
-<main layout:fragment="content">
-    <div x-data="postDetail()" x-init="init()">
-        <!-- 로딩 상태 -->
-        <div x-show="loading" class="text-center py-8">
-            <p class="text-gray-600">로딩 중...</p>
-        </div>
-
-        <!-- 에러 메시지 -->
-        <div x-show="error" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
-            <p x-text="error"></p>
-        </div>
-
-        <!-- 게시글 상세 -->
-        <div x-show="!loading && post" class="space-y-6">
-            <!-- 헤더 -->
-            <div class="border-b pb-6">
-                <h2 class="text-3xl font-bold text-gray-800 mb-4" x-text="post.title"></h2>
-                <div class="flex flex-wrap items-center gap-4 text-sm text-gray-600">
-                    <div class="flex items-center gap-1">
-                        <span>👤</span>
-                        <span x-text="post.author || '관리자'"></span>
-                    </div>
-                    <div class="flex items-center gap-1">
-                        <span>📅</span>
-                        <span x-text="formatDate(post.createdAt)"></span>
-                    </div>
-                    <div class="flex items-center gap-1">
-                        <span>👁️</span>
-                        <span x-text="post.viewCount"></span>
-                    </div>
-                    <div class="flex items-center gap-1">
-                        <span>📌</span>
-                        <span x-text="'기준일: ' + formatYmd(post.baseYmd)"></span>
-                    </div>
-                </div>
-                <div class="flex justify-between items-center mt-6">
-                    <span class="inline-block px-3 py-1 bg-gray-100 text-gray-600 text-xs rounded"
-                        x-text="post.contentType">
-                    </span>
-                    <div class="flex gap-2">
-                        <a :href="'/posts/' + post.id + '/edit'" class="btn-primary">수정</a>
-                        <button @click="deletePost()" class="btn-danger">삭제</button>
-                    </div>
-                </div>
+    <main layout:fragment="content">
+        <div x-data="postDetail()" x-init="init()">
+            <!-- 로딩 상태 -->
+            <div x-show="loading" class="text-center py-8">
+                <p class="text-gray-600">로딩 중...</p>
             </div>
 
-            <!-- 게시글 내용 -->
-            <div class="bg-white rounded-lg p-6 border border-gray-200">
-                <template x-if="post.contentType === 'html'">
-                    <div class="prose max-w-none" x-html="post.content || '(내용 없음)'"></div>
-                </template>
-                <template x-if="post.contentType === 'markdown'">
-                    <div class="prose max-w-none" x-html="markdownToHtml(post.content || '')"></div>
-                </template>
-                <template x-if="post.contentType !== 'html' && post.contentType !== 'markdown'">
-                    <div class="whitespace-pre-wrap text-gray-800" x-text="post.content || '(내용 없음)'"></div>
-                </template>
+            <!-- 에러 메시지 -->
+            <div x-show="error" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
+                <p x-text="error"></p>
             </div>
 
-            <!-- 첨부파일 -->
-            <div class="border-t pt-6">
-                <h3 class="text-lg font-bold text-gray-800 mb-4">📎 첨부파일</h3>
-                <template x-if="attachedFiles && attachedFiles.length > 0">
-                    <div class="space-y-2">
-                        <template x-for="file in attachedFiles" :key="file.fileId">
-                            <div class="flex items-center justify-between bg-gray-50 p-3 rounded border border-gray-200">
-                                <div class="flex-1">
-                                    <a :href="'/api/file/download/' + file.fileId"
-                                       class="text-blue-500 hover:text-blue-700 font-medium"
-                                       x-text="file.orgFileName">
-                                    </a>
-                                    <p class="text-xs text-gray-500" x-text="'(' + formatFileSize(file.fileSize) + ')'"></p>
+            <!-- 게시글 상세 -->
+            <div x-show="!loading && post" class="space-y-6">
+                <!-- 헤더 -->
+                <div class="border-b border-gray-100 pb-8">
+                    <!-- Title -->
+                    <h2 class="text-4xl font-extrabold text-gray-900 mb-6 leading-tight" x-text="post.title"></h2>
+
+                    <!-- Metadata Row -->
+                    <div class="flex flex-wrap items-center gap-4 text-sm text-gray-500 mb-6">
+                        <div class="flex items-center gap-2 bg-gray-50 px-3 py-1.5 rounded-full">
+                            <span class="text-lg">👤</span>
+                            <span class="font-medium text-gray-700" x-text="post.author || '관리자'"></span>
+                        </div>
+                        <div class="flex items-center gap-2 bg-gray-50 px-3 py-1.5 rounded-full">
+                            <span>📅</span>
+                            <span x-text="formatDate(post.createdAt)"></span>
+                        </div>
+                        <div class="flex items-center gap-2 bg-gray-50 px-3 py-1.5 rounded-full">
+                            <span>👁️</span>
+                            <span x-text="post.viewCount"></span>
+                        </div>
+                        <div class="flex items-center gap-2 bg-gray-50 px-3 py-1.5 rounded-full">
+                            <span>📌</span>
+                            <span x-text="'기준일: ' + formatYmd(post.baseYmd)"></span>
+                        </div>
+                        <div class="flex items-center gap-2 px-3 py-1.5 rounded-full"
+                            :class="{'bg-blue-50 text-blue-700': post.contentType === 'html', 'bg-purple-50 text-purple-700': post.contentType === 'markdown', 'bg-gray-100 text-gray-700': post.contentType === 'text'}">
+                            <span class="font-bold" x-text="post.contentType.toUpperCase()"></span>
+                        </div>
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="flex justify-end items-center gap-3">
+                        <a :href="'/posts/' + post.id + '/edit'"
+                            class="inline-flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 rounded-lg text-gray-700 hover:bg-gray-50 hover:text-blue-600 transition shadow-sm">
+                            <span>✏️</span> 수정
+                        </a>
+                        <button @click="deletePost()"
+                            class="inline-flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 rounded-lg text-gray-700 hover:bg-red-50 hover:text-red-600 transition shadow-sm">
+                            <span>🗑️</span> 삭제
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 게시글 내용 -->
+                <div class="bg-white rounded-lg p-6 border border-gray-200">
+                    <template x-if="post.contentType === 'html'">
+                        <div class="prose max-w-none" x-html="post.content || '(내용 없음)'"></div>
+                    </template>
+                    <template x-if="post.contentType === 'markdown'">
+                        <div class="prose max-w-none" x-html="markdownToHtml(post.content || '')"></div>
+                    </template>
+                    <template x-if="post.contentType !== 'html' && post.contentType !== 'markdown'">
+                        <div class="whitespace-pre-wrap text-gray-800" x-text="post.content || '(내용 없음)'"></div>
+                    </template>
+                </div>
+
+                <!-- 첨부파일 -->
+                <div class="border-t pt-6">
+                    <h3 class="text-lg font-bold text-gray-800 mb-4">📎 첨부파일</h3>
+                    <template x-if="attachedFiles && attachedFiles.length > 0">
+                        <div class="space-y-2">
+                            <template x-for="file in attachedFiles" :key="file.fileId">
+                                <div
+                                    class="flex items-center justify-between bg-gray-50 p-3 rounded border border-gray-200">
+                                    <div class="flex-1">
+                                        <a :href="'/api/file/download/' + file.fileId"
+                                            class="text-blue-500 hover:text-blue-700 font-medium"
+                                            x-text="file.orgFileName">
+                                        </a>
+                                        <p class="text-xs text-gray-500"
+                                            x-text="'(' + formatFileSize(file.fileSize) + ')'"></p>
+                                    </div>
                                 </div>
-                            </div>
-                        </template>
-                    </div>
-                </template>
-                <template x-if="!attachedFiles || attachedFiles.length === 0">
-                    <p class="text-gray-600">첨부파일이 없습니다.</p>
-                </template>
-            </div>
+                            </template>
+                        </div>
+                    </template>
+                    <template x-if="!attachedFiles || attachedFiles.length === 0">
+                        <p class="text-gray-600">첨부파일이 없습니다.</p>
+                    </template>
+                </div>
 
-            <!-- 뒤로가기/목록 -->
-            <div class="flex justify-between items-center pt-6 border-t">
-                <button @click="goBack()" class="text-blue-500 hover:text-blue-600 font-medium">
-                    ← 목록으로
-                </button>
+                <!-- 뒤로가기/목록 -->
+                <div class="flex justify-between items-center pt-6 border-t">
+                    <button @click="goBack()" class="text-blue-500 hover:text-blue-600 font-medium">
+                        ← 목록으로
+                    </button>
+                </div>
             </div>
         </div>
-    </div>
 
-    <script>
-        function postDetail() {
-            const postId = window.location.pathname.split('/').pop();
+        <script>
+            function postDetail() {
+                const postId = window.location.pathname.split('/').pop();
 
-            return {
-                postId: postId,
-                post: null,
-                attachedFiles: [],
-                loading: true,
-                error: '',
+                return {
+                    postId: postId,
+                    post: null,
+                    attachedFiles: [],
+                    loading: true,
+                    error: '',
 
-                async init() {
-                    try {
-                        const response = await fetch(`/api/posts/${this.postId}`);
-                        if (!response.ok) {
-                            throw new Error('게시글을 불러올 수 없습니다.');
-                        }
-                        const data = await response.json();
-                        this.post = data.data || data;
-
-                        // 조회수 증가
-                        await this.incrementViewCount();
-
-                        // 첨부파일 로드
-                        await this.loadAttachedFiles();
-                    } catch (err) {
-                        this.error = err.message;
-                        console.error(err);
-                    } finally {
-                        this.loading = false;
-                    }
-                },
-
-                async incrementViewCount() {
-                    try {
-                        const response = await fetch(`/api/posts/${this.postId}/view-count`, {
-                            method: 'PATCH'
-                        });
-                        if (response.ok) {
-                            const data = await response.json();
-                            this.post.viewCount = data.data.viewCount || this.post.viewCount + 1;
-                        }
-                    } catch (err) {
-                        console.error('조회수 증가 실패:', err);
-                    }
-                },
-
-                async loadAttachedFiles() {
-                    try {
-                        const response = await fetch(`/api/posts/${this.postId}/files`);
-                        if (response.ok) {
-                            const data = await response.json();
-                            this.attachedFiles = data.data || [];
-                        }
-                    } catch (err) {
-                        console.error('파일 로드 실패:', err);
-                    }
-                },
-
-                async deletePost() {
-                    if (confirm('정말 삭제하시겠습니까? (첨부파일은 보존됩니다)')) {
+                    async init() {
                         try {
-                            const response = await fetch(`/api/posts/${this.postId}`, {
-                                method: 'DELETE',
-                                credentials: 'include'
+                            const response = await fetch(`/api/posts/${this.postId}`);
+                            if (!response.ok) {
+                                throw new Error('게시글을 불러올 수 없습니다.');
+                            }
+                            const data = await response.json();
+                            this.post = data.data || data;
+
+                            // 조회수 증가
+                            await this.incrementViewCount();
+
+                            // 첨부파일 로드
+                            await this.loadAttachedFiles();
+                        } catch (err) {
+                            this.error = err.message;
+                            console.error(err);
+                        } finally {
+                            this.loading = false;
+                        }
+                    },
+
+                    async incrementViewCount() {
+                        try {
+                            const response = await fetch(`/api/posts/${this.postId}/view-count`, {
+                                method: 'PATCH'
                             });
                             if (response.ok) {
-                                alert('삭제되었습니다.');
-                                window.history.back();
-                            } else {
-                                throw new Error('삭제에 실패했습니다.');
+                                const data = await response.json();
+                                this.post.viewCount = data.data.viewCount || this.post.viewCount + 1;
                             }
                         } catch (err) {
-                            alert(err.message);
-                            console.error(err);
+                            console.error('조회수 증가 실패:', err);
                         }
+                    },
+
+                    async loadAttachedFiles() {
+                        try {
+                            const response = await fetch(`/api/posts/${this.postId}/files`);
+                            if (response.ok) {
+                                const data = await response.json();
+                                this.attachedFiles = data.data || [];
+                            }
+                        } catch (err) {
+                            console.error('파일 로드 실패:', err);
+                        }
+                    },
+
+                    async deletePost() {
+                        if (confirm('정말 삭제하시겠습니까? (첨부파일은 보존됩니다)')) {
+                            try {
+                                const response = await fetch(`/api/posts/${this.postId}`, {
+                                    method: 'DELETE',
+                                    credentials: 'include'
+                                });
+                                if (response.ok) {
+                                    alert('삭제되었습니다.');
+                                    window.history.back();
+                                } else {
+                                    throw new Error('삭제에 실패했습니다.');
+                                }
+                            } catch (err) {
+                                alert(err.message);
+                                console.error(err);
+                            }
+                        }
+                    },
+
+                    goBack() {
+                        window.history.back();
+                    },
+
+                    formatDate(dateString) {
+                        if (!dateString) return '';
+                        const date = new Date(dateString);
+                        return date.toLocaleDateString('ko-KR', {
+                            year: 'numeric',
+                            month: '2-digit',
+                            day: '2-digit',
+                            hour: '2-digit',
+                            minute: '2-digit'
+                        });
+                    },
+
+                    formatYmd(ymd) {
+                        if (!ymd || ymd.length !== 8) return ymd;
+                        return `${ymd.substring(0, 4)}-${ymd.substring(4, 6)}-${ymd.substring(6, 8)}`;
+                    },
+
+                    formatFileSize(bytes) {
+                        if (bytes === 0) return '0 Bytes';
+                        const k = 1024;
+                        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+                        const i = Math.floor(Math.log(bytes) / Math.log(k));
+                        return Math.round((bytes / Math.pow(k, i)) * 100) / 100 + ' ' + sizes[i];
+                    },
+
+                    markdownToHtml(markdown) {
+                        // 간단한 마크다운 변환 (필요하면 marked 라이브러리 사용)
+                        // 여기서는 기본적인 변환만 수행
+                        let html = markdown
+                            .replace(/^### (.*?)$/gm, '<h3>$1</h3>')
+                            .replace(/^## (.*?)$/gm, '<h2>$1</h2>')
+                            .replace(/^# (.*?)$/gm, '<h1>$1</h1>')
+                            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                            .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                            .replace(/\n/g, '<br>');
+                        return html;
                     }
-                },
-
-                goBack() {
-                    window.history.back();
-                },
-
-                formatDate(dateString) {
-                    if (!dateString) return '';
-                    const date = new Date(dateString);
-                    return date.toLocaleDateString('ko-KR', {
-                        year: 'numeric',
-                        month: '2-digit',
-                        day: '2-digit',
-                        hour: '2-digit',
-                        minute: '2-digit'
-                    });
-                },
-
-                formatYmd(ymd) {
-                    if (!ymd || ymd.length !== 8) return ymd;
-                    return `${ymd.substring(0, 4)}-${ymd.substring(4, 6)}-${ymd.substring(6, 8)}`;
-                },
-
-                formatFileSize(bytes) {
-                    if (bytes === 0) return '0 Bytes';
-                    const k = 1024;
-                    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-                    const i = Math.floor(Math.log(bytes) / Math.log(k));
-                    return Math.round((bytes / Math.pow(k, i)) * 100) / 100 + ' ' + sizes[i];
-                },
-
-                markdownToHtml(markdown) {
-                    // 간단한 마크다운 변환 (필요하면 marked 라이브러리 사용)
-                    // 여기서는 기본적인 변환만 수행
-                    let html = markdown
-                        .replace(/^### (.*?)$/gm, '<h3>$1</h3>')
-                        .replace(/^## (.*?)$/gm, '<h2>$1</h2>')
-                        .replace(/^# (.*?)$/gm, '<h1>$1</h1>')
-                        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-                        .replace(/\*(.*?)\*/g, '<em>$1</em>')
-                        .replace(/\n/g, '<br>');
-                    return html;
                 }
             }
-        }
-    </script>
-</main>
+        </script>
+    </main>
 </body>
+
 </html>

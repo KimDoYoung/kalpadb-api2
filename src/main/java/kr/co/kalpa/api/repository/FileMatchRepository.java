@@ -29,4 +29,9 @@ public interface FileMatchRepository extends JpaRepository<FileMatch, Long> {
      * Find by table name, target ID and file ID
      */
     FileMatch findByTableNameAndTargetIdAndFileId(String tableName, Long targetId, Long fileId);
+
+    /**
+     * Count file matches by table name, target ID and file type
+     */
+    int countByTableNameAndTargetIdAndFileType(String tableName, Long targetId, FileType fileType);
 }

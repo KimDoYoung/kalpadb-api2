@@ -564,3 +564,12 @@ VALUES
 - [ ] 게시글 카테고리/태그 관리
 - [ ] 검색 최적화 (Elasticsearch)
 - [ ] 썸네일 이미지 자동 생성
+
+## 프롬프트
+```
+@tables.sql 의 boards와 posts 테이블을 확인해주고.
+@BoardApiController.java @PostApiController.java 의 두 테이블을 위한 api들
+ui를 위한 @PostsController.java 와 @BoardsController.java 을 확인해줘.
+그 의도를 충분히 알 수 있을 듯.
+templates/boards/ 폴더의 list.html과 posts/폴더의 html을 확인해 주기 바랍니다
+```
