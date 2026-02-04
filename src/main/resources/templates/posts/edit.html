@@ -4,8 +4,8 @@
 
 <head>
     <title>게시글 수정 - KalpaDB</title>
-    <!-- QuillJS CSS -->
-    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+    <!-- 에디터 CSS (contentType에 따라 동적으로 로드) -->
+    <link id="editor-css" rel="stylesheet">
 </head>
 
 <body>
@@ -56,12 +56,30 @@
                     </div>
                 </div>
 
-                <!-- 내용 (QuillJS 에디터) -->
+                <!-- 내용 (contentType에 따라 다른 에디터 표시) -->
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">
                         내용 <span class="text-red-600">*</span>
                     </label>
-                    <div id="quill-editor" class="bg-white border border-gray-300 rounded-lg w-full"></div>
+
+                    <!-- HTML 에디터 (QuillJS) -->
+                    <div x-show="contentType === 'html'">
+                        <div id="quill-editor" class="bg-white border border-gray-300 rounded-lg w-full"></div>
+                    </div>
+
+                    <!-- Markdown 에디터 (TUI Editor) -->
+                    <div x-show="contentType === 'markdown'">
+                        <div id="tui-editor" class="bg-white border border-gray-300 rounded-lg w-full"></div>
+                    </div>
+
+                    <!-- Plain Text 에디터 -->
+                    <div x-show="contentType === 'text'">
+                        <textarea id="text-editor" x-model="form.content"
+                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            placeholder="내용을 입력하세요"
+                            style="min-height: 350px; max-height: 400px; resize: vertical;"></textarea>
+                    </div>
+
                     <input type="hidden" id="content" x-model="form.content">
                 </div>
 
@@ -140,15 +158,16 @@
             </div>
         </div>
 
-        <!-- QuillJS JS -->
-        <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+        <!-- 에디터 JS (contentType에 따라 동적으로 로드) -->
+        <script id="editor-js"></script>
+
         <style>
+            /* QuillJS 스타일 */
             #quill-editor {
                 border: 1px solid #d1d5db !important;
                 border-radius: 0.5rem !important;
             }
 
-            /* Toolbar 스타일 */
             .ql-toolbar.ql-snow {
                 border-top-left-radius: 0.5rem !important;
                 border-top-right-radius: 0.5rem !important;
@@ -157,7 +176,6 @@
                 border-bottom: 1px solid #d1d5db !important;
             }
 
-            /* Toolbar 버튼 활성 상태 */
             .ql-toolbar.ql-snow button:hover,
             .ql-toolbar.ql-snow button.ql-active {
                 color: #06b6d4 !important;
@@ -171,7 +189,6 @@
                 fill: #06b6d4 !important;
             }
 
-            /* Editor 컨테이너 */
             .ql-container.ql-snow {
                 border-bottom-left-radius: 0.5rem !important;
                 border-bottom-right-radius: 0.5rem !important;
@@ -189,9 +206,36 @@
             .ql-editor.ql-blank::before {
                 color: #9ca3af !important;
             }
+
+            /* TUI Editor 스타일 */
+            #tui-editor {
+                border: 1px solid #d1d5db !important;
+                border-radius: 0.5rem !important;
+            }
+
+            .toastui-editor-defaultUI {
+                border-radius: 0.5rem !important;
+            }
+
+            .toastui-editor-toolbar {
+                background-color: #f9fafb !important;
+                border-bottom: 1px solid #d1d5db !important;
+            }
+
+            .toastui-editor {
+                font-size: 14px !important;
+            }
+
+            /* Text Editor 스타일 */
+            #text-editor {
+                font-family: 'Courier New', monospace;
+                font-size: 14px;
+            }
         </style>
         <script>
             let quillEditor;
+            let tuiEditor;
+            let loadedEditorType = null;
 
             function postEdit() {
                 const postId = window.location.pathname.split('/')[2];
@@ -199,11 +243,11 @@
                 return {
                     postId: postId,
                     boardId: null,
+                    contentType: '', // html, markdown, text
                     form: {
                         title: '',
                         author: '',
                         baseYmd: '',
-                        contentType: 'html',
                         content: ''
                     },
                     existingFiles: [],
@@ -214,31 +258,6 @@
                     error: '',
 
                     async init() {
-                        if (quillEditor) return;
-
-                        // QuillJS 에디터 초기화
-                        quillEditor = new Quill('#quill-editor', {
-                            theme: 'snow',
-                            placeholder: '게시글 내용을 입력하세요',
-                            modules: {
-                                toolbar: [
-                                    'bold', 'italic', 'underline', 'strike',
-                                    { 'list': 'ordered' }, { 'list': 'bullet' },
-                                    { 'header': [2, 3, false] },
-                                    { 'color': [] },
-                                    { 'align': [] },
-                                    'link', 'image',
-                                    'clean'
-                                ]
-                            }
-                        });
-
-                        // 내용 변경 감지
-                        quillEditor.on('text-change', () => {
-                            this.form.content = quillEditor.root.innerHTML;
-                            document.getElementById('content').value = this.form.content;
-                        });
-
                         try {
                             const response = await fetch(`/api/posts/${this.postId}`);
                             if (!response.ok) {
@@ -257,13 +276,16 @@
                                 title: post.title || '',
                                 author: post.author || '',
                                 baseYmd: baseYmdFormatted,
-                                contentType: post.contentType || 'html',
                                 content: post.content || ''
                             };
 
-                            // QuillJS 에디터에 내용 설정
-                            quillEditor.root.innerHTML = this.form.content;
-                            document.getElementById('content').value = this.form.content;
+                            // board 정보로부터 contentType 결정
+                            await this.loadBoardInfo();
+                            await this.loadEditorResources();
+                            await this.initEditor();
+
+                            // 에디터에 내용 설정
+                            this.setEditorContent();
 
                             // 첨부파일 로드
                             await this.loadAttachedFiles();
@@ -273,6 +295,172 @@
                         } finally {
                             this.loading = false;
                         }
+                    },
+
+                    async loadBoardInfo() {
+                        try {
+                            const response = await fetch(`/api/boards/${this.boardId}`);
+                            if (response.ok) {
+                                const data = await response.json();
+                                const board = data.data || data;
+                                this.contentType = board.contentType || 'html';
+                            }
+                        } catch (err) {
+                            console.error('게시판 정보 로드 실패:', err);
+                            this.contentType = 'html'; // 기본값
+                        }
+                    },
+
+                    async loadEditorResources() {
+                        if (loadedEditorType === this.contentType) {
+                            return;
+                        }
+
+                        this.cleanupEditor();
+
+                        switch (this.contentType) {
+                            case 'markdown':
+                                await this.loadTuiEditorResources();
+                                break;
+                            case 'html':
+                            case 'text':
+                            default:
+                                await this.loadQuillResources();
+                                break;
+                        }
+
+                        loadedEditorType = this.contentType;
+                    },
+
+                    loadQuillResources() {
+                        return new Promise((resolve) => {
+                            const cssLink = document.getElementById('editor-css');
+                            cssLink.href = 'https://cdn.quilljs.com/1.3.6/quill.snow.css';
+
+                            if (window.Quill) {
+                                resolve();
+                                return;
+                            }
+
+                            const script = document.createElement('script');
+                            script.src = 'https://cdn.quilljs.com/1.3.6/quill.js';
+                            script.onload = resolve;
+                            document.head.appendChild(script);
+                        });
+                    },
+
+                    async loadTuiEditorResources() {
+                        return new Promise((resolve) => {
+                            if (!document.querySelector('link[href*="tui.editor"]')) {
+                                const link1 = document.createElement('link');
+                                link1.rel = 'stylesheet';
+                                link1.href = 'https://uicdn.toast.com/editor/latest/toastui-editor.min.css';
+                                document.head.appendChild(link1);
+
+                                const link2 = document.createElement('link');
+                                link2.rel = 'stylesheet';
+                                link2.href = 'https://uicdn.toast.com/editor/latest/toastui-editor-dark.min.css';
+                                document.head.appendChild(link2);
+                            }
+
+                            if (window.toastui && window.toastui.Editor) {
+                                resolve();
+                                return;
+                            }
+
+                            const script1 = document.createElement('script');
+                            script1.src = 'https://uicdn.toast.com/editor/latest/toastui-editor-all.min.js';
+                            script1.onload = resolve;
+                            document.head.appendChild(script1);
+                        });
+                    },
+
+                    cleanupEditor() {
+                        if (quillEditor) {
+                            quillEditor = null;
+                        }
+
+                        if (tuiEditor) {
+                            tuiEditor.destroy();
+                            tuiEditor = null;
+                        }
+
+                        const quillContainer = document.getElementById('quill-editor');
+                        const tuiContainer = document.getElementById('tui-editor');
+                        if (quillContainer) quillContainer.innerHTML = '';
+                        if (tuiContainer) tuiContainer.innerHTML = '';
+                    },
+
+                    async initEditor() {
+                        switch (this.contentType) {
+                            case 'markdown':
+                                this.initTuiEditor();
+                                break;
+                            case 'html':
+                                this.initQuillEditor();
+                                break;
+                            case 'text':
+                                break;
+                        }
+                    },
+
+                    initQuillEditor() {
+                        if (quillEditor) return;
+
+                        quillEditor = new Quill('#quill-editor', {
+                            theme: 'snow',
+                            placeholder: '게시글 내용을 입력하세요',
+                            modules: {
+                                toolbar: [
+                                    'bold', 'italic', 'underline', 'strike',
+                                    { 'list': 'ordered' }, { 'list': 'bullet' },
+                                    { 'header': [2, 3, false] },
+                                    { 'color': [] },
+                                    { 'align': [] },
+                                    'link', 'image',
+                                    'clean'
+                                ]
+                            }
+                        });
+
+                        quillEditor.on('text-change', () => {
+                            this.form.content = quillEditor.root.innerHTML;
+                            document.getElementById('content').value = this.form.content;
+                        });
+                    },
+
+                    initTuiEditor() {
+                        if (tuiEditor) return;
+
+                        tuiEditor = new toastui.Editor({
+                            el: document.getElementById('tui-editor'),
+                            height: '350px',
+                            initialEditType: 'markdown',
+                            previewStyle: 'tab',
+                            placeholder: '게시글 내용을 입력하세요',
+                            toolbarItems: [
+                                ['heading', 'bold', 'italic'],
+                                ['hr', 'quote'],
+                                ['ul', 'ol', 'task', 'indent', 'outdent'],
+                                ['table', 'image', 'link'],
+                                ['code', 'codeblock'],
+                                ['scrollSync']
+                            ]
+                        });
+
+                        tuiEditor.on('change', () => {
+                            this.form.content = tuiEditor.getMarkdown();
+                            document.getElementById('content').value = this.form.content;
+                        });
+                    },
+
+                    setEditorContent() {
+                        if (this.contentType === 'html' && quillEditor) {
+                            quillEditor.root.innerHTML = this.form.content;
+                        } else if (this.contentType === 'markdown' && tuiEditor) {
+                            tuiEditor.setMarkdown(this.form.content);
+                        }
+                        document.getElementById('content').value = this.form.content;
                     },
 
                     async loadAttachedFiles() {
@@ -360,7 +548,12 @@
                             return;
                         }
 
-                        if (!this.form.content || this.form.content === '<p><br></p>') {
+                        // contentType에 따른 content 검증
+                        const isEmptyContent = this.contentType === 'html'
+                            ? (!this.form.content || this.form.content === '<p><br></p>')
+                            : !this.form.content || !this.form.content.trim();
+
+                        if (isEmptyContent) {
                             alert('내용을 입력하세요.');
                             return;
                         }
@@ -378,9 +571,6 @@
                                 // baseYmd를 YYYYMMDD 형식으로 변환
                                 const baseYmdFormatted = this.form.baseYmd.replace(/-/g, '');
                                 formData.append('baseYmd', baseYmdFormatted);
-                            }
-                            if (this.form.contentType) {
-                                formData.append('contentType', this.form.contentType);
                             }
                             if (this.form.content) {
                                 formData.append('content', this.form.content);

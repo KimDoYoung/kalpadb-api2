@@ -20,8 +20,6 @@ public class PostUpdateRequest {
 
     private String author;
 
-    private String contentType; // html, markdown
-
     private String content;
 
     @Size(min = 8, max = 8, message = "기준일은 YYYYMMDD 형식이어야 합니다")

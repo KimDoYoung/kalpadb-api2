@@ -26,9 +26,6 @@ public class PostCreateRequest {
 
     private String author;
 
-    @NotBlank(message = "콘텐츠 타입은 필수입니다")
-    private String contentType; // html, markdown
-
     @NotBlank(message = "내용은 필수입니다")
     private String content;
 

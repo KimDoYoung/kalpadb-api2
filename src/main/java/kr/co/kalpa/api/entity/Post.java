@@ -30,9 +30,6 @@ public class Post {
     @Column(name = "author", length = 100, nullable = false)
     private String author;
 
-    @Column(name = "content_type", length = 30, nullable = false)
-    private String contentType; // html, markdown
-
     @Column(name = "content", columnDefinition = "LONGTEXT")
     private String content;
 
@@ -68,10 +65,9 @@ public class Post {
         updatedAt = LocalDateTime.now();
     }
 
-    public void update(String title, String author, String contentType, String content, String baseYmd) {
+    public void update(String title, String author, String content, String baseYmd) {
         this.title = title;
         this.author = author;
-        this.contentType = contentType;
         this.content = content;
         this.baseYmd = baseYmd;
         this.updatedAt = LocalDateTime.now();

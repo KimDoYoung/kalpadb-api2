@@ -18,7 +18,6 @@ public class PostResponse {
     private Long boardId;
     private String title;
     private String author;
-    private String contentType;
     private String content;
     private Integer viewCount;
     private String baseYmd;
@@ -32,7 +31,6 @@ public class PostResponse {
                 .boardId(post.getBoardId())
                 .title(post.getTitle())
                 .author(post.getAuthor())
-                .contentType(post.getContentType())
                 .content(post.getContent())
                 .viewCount(post.getViewCount())
                 .baseYmd(post.getBaseYmd())

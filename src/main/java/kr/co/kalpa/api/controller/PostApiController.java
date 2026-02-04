@@ -84,7 +84,6 @@ public class PostApiController {
             @RequestParam Long boardId,
             @RequestParam String title,
             @RequestParam(required = false) String author,
-            @RequestParam String contentType,
             @RequestParam String content,
             @RequestParam String baseYmd,
             @RequestParam(required = false) List<MultipartFile> files) {
@@ -92,7 +91,7 @@ public class PostApiController {
         log.info("게시글 생성 - boardId: {}, title: {}", boardId, title);
 
         PostCreateRequest request = new PostCreateRequest(
-                boardId, title, author, contentType, content, baseYmd, files
+                boardId, title, author, content, baseYmd, files
         );
 
         PostResponse response = postService.createPost(request);
@@ -110,7 +109,6 @@ public class PostApiController {
             @PathVariable Long postId,
             @RequestParam(required = false) String title,
             @RequestParam(required = false) String author,
-            @RequestParam(required = false) String contentType,
             @RequestParam(required = false) String content,
             @RequestParam(required = false) String baseYmd,
             @RequestParam(required = false) List<MultipartFile> newFiles,
@@ -119,7 +117,7 @@ public class PostApiController {
         log.info("게시글 수정: {}", postId);
 
         PostUpdateRequest request = new PostUpdateRequest(
-                title, author, contentType, content, baseYmd, newFiles, deletedFileIds
+                title, author, content, baseYmd, newFiles, deletedFileIds
         );
 
         PostResponse response = postService.updatePost(postId, request);

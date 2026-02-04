@@ -109,8 +109,6 @@ CREATE TABLE IF NOT EXISTS posts (
 --
   title    VARCHAR(500) NOT NULL COMMENT '제목 한글',
   author   VARCHAR(100) NOT NULL DEFAULT '관리자' COMMENT '작성자 한글',
--- 
-  content_type VARCHAR(30)  NOT NULL DEFAULT 'html' COMMENT '내용의 문서종류(text|html|markdown|json)',
   content  LONGTEXT NULL COMMENT '내용(한글)',
   view_count   INT NOT NULL DEFAULT 0 COMMENT '조회횟수',
   base_ymd     VARCHAR(8) NOT NULL COMMENT '기준일(YYYYMMDD)',

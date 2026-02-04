@@ -108,7 +108,6 @@ public class PostService {
                 .boardId(request.getBoardId())
                 .title(request.getTitle())
                 .author(request.getAuthor())
-                .contentType(request.getContentType())
                 .content(request.getContent())
                 .baseYmd(request.getBaseYmd())
                 .viewCount(0)
@@ -118,7 +117,7 @@ public class PostService {
         log.info("게시글 생성 완료: {}", saved.getId());
 
         // Content에서 이미지 추출 및 file_match 생성
-        syncContentImages(saved.getId(), request.getContent(), request.getContentType());
+        syncContentImages(saved.getId(), request.getContent());
 
         // 첨부파일 처리
         if (request.getFiles() != null && !request.getFiles().isEmpty()) {
@@ -153,7 +152,6 @@ public class PostService {
             post.update(
                     request.getTitle(),
                     request.getAuthor() != null ? request.getAuthor() : post.getAuthor(),
-                    request.getContentType() != null ? request.getContentType() : post.getContentType(),
                     request.getContent() != null ? request.getContent() : post.getContent(),
                     request.getBaseYmd() != null ? request.getBaseYmd() : post.getBaseYmd());
         }
@@ -162,8 +160,7 @@ public class PostService {
 
         // Content 변경 시 이미지 재동기화
         if (request.getContent() != null) {
-            syncContentImages(updated.getId(), request.getContent(),
-                    request.getContentType() != null ? request.getContentType() : updated.getContentType());
+            syncContentImages(updated.getId(), request.getContent());
         }
 
         // 새로운 첨부파일 추가
@@ -230,7 +227,7 @@ public class PostService {
      * HTML: <img src="/api/file/download/123">
      * Markdown: ![alt](/api/file/download/123)
      */
-    private void syncContentImages(Long postId, String content, String contentType) {
+    private void syncContentImages(Long postId, String content) {
         if (content == null || content.isBlank()) {
             return;
         }
