@@ -573,3 +573,19 @@ ui를 위한 @PostsController.java 와 @BoardsController.java 을 확인해줘.
 그 의도를 충분히 알 수 있을 듯.
 templates/boards/ 폴더의 list.html과 posts/폴더의 html을 확인해 주기 바랍니다
 ```
+
+## 수정사항
+
+- templates/posts 하위의 html 수정
+
+1. view.html
+   1. 수정,삭제, 목록으로 버튼 3개를  `기준일`과 같은 row에 배치하면서 오른쪽 align을 한다.
+2. edit.html
+   1. 수정->저장,삭제,목록으로 를 제일 하단에 배치
+   2. 작성자와 기준일을 같은 row에 배치 왜냐하면 vertical 공간을 작게 해서 최대한 많은 내용을 보려고 함
+3. list.html
+   1. No가 게시판별로 독자적인 번호를 갖어야한다. 지금은 첫번째 게시판에 게시물이 1개 있고 두번째 게시판에 1개 있으면 두 번째 게시판의 리스트에서는 No가 2로 표시된다.
+   2. `제목`표시시 content type을 삭제한다.
+   3. 각 row에 삭제버튼을 둔다.
+4. create.html
+   1. 작성자와 기준일을 같은 row에 둔다. 
