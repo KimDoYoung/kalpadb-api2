@@ -72,7 +72,7 @@
             <!-- 메인 콘텐츠 (사이드바 + 파일영역) -->
             <div class="flex flex-1 min-h-0 border-x border-b border-gray-100 rounded-b-xl overflow-hidden bg-white">
                 <!-- 트리 사이드바 -->
-                <aside :style="`width: ${sidebarWidth}px`" class="border-r border-gray-100 bg-gray-50/50 overflow-y-auto flex-shrink-0 hidden md:block">
+                <aside :style="`width: ${sidebarWidth}px`" class="border-r border-gray-100 bg-gray-50/50 overflow-y-auto flex-shrink-0 hidden md:block select-none">
                     <div class="p-3">
                         <h3 class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2 px-2">폴더</h3>
                         <div x-html="renderTree(treeData)"></div>
@@ -84,90 +84,123 @@
                     class="w-1 flex-shrink-0 bg-gray-100 hover:bg-blue-400 cursor-col-resize transition-colors hidden md:block"></div>
 
                 <!-- 파일 영역 -->
-                <section class="flex-1 overflow-y-auto p-4 min-w-0">
-                    <!-- 로딩 -->
-                    <div x-show="loading" class="flex items-center justify-center py-16">
-                        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
-                    </div>
+                <section class="flex-1 flex flex-col min-w-0 bg-white">
+                    <div class="flex-1 overflow-y-auto p-4" @click.self="selectedIds = []">
+                        <!-- 로딩 -->
+                        <div x-show="loading" class="flex items-center justify-center py-16">
+                            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+                        </div>
 
-                    <!-- Grid View -->
-                    <div x-show="!loading && viewMode === 'grid' && currentFiles.length > 0"
-                        class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3">
-                        <template x-for="item in currentFiles" :key="item.id">
-                            <div @click="selectItem(item, $event)"
-                                @dblclick="openItem(item)"
-                                @contextmenu.prevent="showContextMenu($event, item)"
-                                :class="isSelected(item.id) ? 'ring-2 ring-blue-500 bg-blue-50' : 'bg-white hover:bg-gray-50'"
-                                class="border border-gray-100 rounded-lg p-4 cursor-pointer transition-all group shadow-sm hover:shadow">
-                                <div class="text-4xl text-center mb-2" x-text="getIcon(item)"></div>
-                                <div class="text-xs text-center truncate font-medium text-gray-700" x-text="item.name"></div>
-                                <template x-if="item.nodeType === 'F'">
-                                    <div class="text-xs text-gray-400 text-center mt-1" x-text="formatSize(item.fileSize)"></div>
-                                </template>
-                                <template x-if="item.nodeType === 'D'">
-                                    <div class="text-xs text-gray-400 text-center mt-1" x-text="(item.childCount || 0) + '개 항목'"></div>
-                                </template>
-                            </div>
-                        </template>
-                    </div>
+                        <!-- Grid View -->
+                        <div x-show="!loading && viewMode === 'grid' && currentFiles.length > 0"
+                            class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3">
+                            <template x-for="item in currentFiles" :key="item.id">
+                                <div @click="selectItem(item, $event)"
+                                    @dblclick="openItem(item)"
+                                    @contextmenu.prevent="showContextMenu($event, item)"
+                                    :class="isSelected(item.id) ? 'ring-2 ring-blue-500 bg-blue-50' : 'bg-white hover:bg-gray-50'"
+                                    class="relative border border-gray-100 rounded-lg p-3 cursor-pointer transition-all group shadow-sm hover:shadow h-40 flex flex-col items-center justify-between">
+                                    
+                                    <!-- 삭제 버튼 (Hover 시 표시) -->
+                                    <button @click.stop="deleteItem(item)" 
+                                            class="absolute top-1 right-1 p-1 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                                    </button>
 
-                    <!-- List View -->
-                    <div x-show="!loading && viewMode === 'list' && currentFiles.length > 0"
-                        class="bg-white rounded-lg border border-gray-100 overflow-hidden">
-                        <table class="w-full">
-                            <thead class="bg-gray-50 border-b border-gray-100">
-                                <tr>
-                                    <th class="text-left p-3 text-xs font-semibold text-gray-500 uppercase">이름</th>
-                                    <th class="text-left p-3 text-xs font-semibold text-gray-500 uppercase w-24">크기</th>
-                                    <th class="text-left p-3 text-xs font-semibold text-gray-500 uppercase w-36">수정일</th>
-                                    <th class="text-center p-3 text-xs font-semibold text-gray-500 uppercase w-24">작업</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <template x-for="item in currentFiles" :key="item.id">
-                                    <tr @click="selectItem(item, $event)"
-                                        @dblclick="openItem(item)"
-                                        @contextmenu.prevent="showContextMenu($event, item)"
-                                        :class="isSelected(item.id) ? 'bg-blue-50' : ''"
-                                        class="border-b border-gray-50 hover:bg-gray-50 cursor-pointer transition-colors">
-                                        <td class="p-3">
-                                            <div class="flex items-center gap-2">
-                                                <span class="text-xl flex-shrink-0" x-text="getIcon(item)"></span>
-                                                <span class="text-sm font-medium text-gray-800 truncate" x-text="item.name"></span>
-                                            </div>
-                                        </td>
-                                        <td class="p-3 text-sm text-gray-500" x-text="item.nodeType === 'D' ? '-' : formatSize(item.fileSize)"></td>
-                                        <td class="p-3 text-sm text-gray-500" x-text="formatDate(item.modifyDt || item.createDt)"></td>
-                                        <td class="p-3 text-center">
-                                            <div class="flex items-center justify-center gap-1">
-                                                <button x-show="item.nodeType === 'F'" @click.stop="downloadItem(item)"
-                                                    class="p-1 text-blue-500 hover:text-blue-700 rounded hover:bg-blue-50" title="다운로드">
-                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                                                </button>
-                                                <button @click.stop="deleteItem(item)"
-                                                    class="p-1 text-red-500 hover:text-red-700 rounded hover:bg-red-50" title="삭제">
-                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                                                </button>
-                                            </div>
-                                        </td>
+                                    <!-- 아이콘 / 썸네일 -->
+                                    <div class="flex-1 flex items-center justify-center w-full overflow-hidden mb-2">
+                                        <template x-if="item.url && isImage(item)">
+                                            <img :src="item.url" class="max-h-full max-w-full object-contain rounded" loading="lazy">
+                                        </template>
+                                        <template x-if="!(item.url && isImage(item))">
+                                            <div class="w-16 h-16 text-gray-400" x-html="getIconInfo(item).svg"></div>
+                                        </template>
+                                    </div>
+
+                                    <!-- 파일명 -->
+                                    <div class="w-full text-center">
+                                        <div class="text-xs font-medium text-gray-700 truncate px-1" 
+                                             :class="isSelected(item.id) ? '' : 'truncate'"
+                                             x-text="item.name"
+                                             :title="item.name"></div>
+                                        
+                                        <!-- 메타정보 -->
+                                        <template x-if="item.nodeType === 'F'">
+                                            <div class="text-[10px] text-gray-400 mt-1" x-text="formatSize(item.fileSize)"></div>
+                                        </template>
+                                        <template x-if="item.nodeType === 'D'">
+                                            <div class="text-[10px] text-gray-400 mt-1" x-text="(item.childCount || 0) + '개 항목'"></div>
+                                        </template>
+                                    </div>
+                                </div>
+                            </template>
+                        </div>
+
+                        <!-- List View -->
+                        <div x-show="!loading && viewMode === 'list' && currentFiles.length > 0"
+                            class="bg-white rounded-lg border border-gray-100 overflow-hidden">
+                            <table class="w-full table-fixed">
+                                <thead class="bg-gray-50 border-b border-gray-100">
+                                    <tr>
+                                        <th class="text-left p-3 text-xs font-semibold text-gray-500 uppercase w-7/12">이름</th>
+                                        <th class="text-left p-3 text-xs font-semibold text-gray-500 uppercase w-2/12">크기</th>
+                                        <th class="text-left p-3 text-xs font-semibold text-gray-500 uppercase w-3/12">수정일</th>
                                     </tr>
-                                </template>
-                            </tbody>
-                        </table>
-                    </div>
+                                </thead>
+                                <tbody>
+                                    <template x-for="item in currentFiles" :key="item.id">
+                                        <tr @click="selectItem(item, $event)"
+                                            @dblclick="openItem(item)"
+                                            @contextmenu.prevent="showContextMenu($event, item)"
+                                            :class="isSelected(item.id) ? 'bg-blue-50' : 'hover:bg-gray-50'"
+                                            class="border-b border-gray-50 cursor-pointer transition-colors group">
+                                            <td class="p-2 overflow-hidden">
+                                                <div class="flex items-center gap-3">
+                                                    <!-- 아이콘 -->
+                                                    <div class="w-8 h-8 flex-shrink-0 text-gray-500 flex items-center justify-center">
+                                                         <template x-if="item.url && isImage(item)">
+                                                            <img :src="item.url" class="w-8 h-8 object-cover rounded shadow-sm">
+                                                        </template>
+                                                        <template x-if="!(item.url && isImage(item))">
+                                                            <div class="w-6 h-6" x-html="getIconInfo(item).svg"></div>
+                                                        </template>
+                                                    </div>
+                                                    <span class="text-sm font-medium text-gray-800 truncate" x-text="item.name"></span>
+                                                    
+                                                    <!-- 리스트뷰 호버 액션 -->
+                                                    <div class="ml-auto hidden group-hover:flex items-center gap-1 pr-2">
+                                                        <button @click.stop="renameItem(item)" class="p-1 text-gray-400 hover:text-blue-500 rounded"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg></button>
+                                                        <button @click.stop="deleteItem(item)" class="p-1 text-gray-400 hover:text-red-500 rounded"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg></button>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td class="p-3 text-sm text-gray-500" x-text="item.nodeType === 'D' ? '-' : formatSize(item.fileSize)"></td>
+                                            <td class="p-3 text-sm text-gray-500" x-text="formatDate(item.modifyDt || item.createDt)"></td>
+                                        </tr>
+                                    </template>
+                                </tbody>
+                            </table>
+                        </div>
 
-                    <!-- Empty State -->
-                    <div x-show="!loading && currentFiles.length === 0 && !isSearchMode" class="text-center py-16">
-                        <div class="text-6xl mb-4 opacity-30">&#128194;</div>
-                        <p class="text-gray-400">이 폴더는 비어 있습니다</p>
-                        <p class="text-gray-300 text-sm mt-1">파일을 업로드하거나 새 폴더를 만들어 보세요</p>
+                        <!-- Empty State -->
+                        <div x-show="!loading && currentFiles.length === 0 && !isSearchMode" class="text-center py-16">
+                            <div class="w-20 h-20 mx-auto text-gray-200 mb-4">
+                                <svg fill="currentColor" viewBox="0 0 24 24"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z"/></svg>
+                            </div>
+                            <p class="text-gray-400">이 폴더는 비어 있습니다</p>
+                            <p class="text-gray-300 text-sm mt-1">파일을 드래그하거나 업로드하세요</p>
+                        </div>
                     </div>
-
-                    <!-- Search Empty -->
-                    <div x-show="!loading && currentFiles.length === 0 && isSearchMode" class="text-center py-16">
-                        <div class="text-6xl mb-4 opacity-30">&#128269;</div>
-                        <p class="text-gray-400">검색 결과가 없습니다</p>
-                        <button @click="clearSearch()" class="mt-2 text-blue-500 hover:text-blue-700 text-sm">돌아가기</button>
+                
+                    <!-- Status Bar -->
+                    <div class="bg-gray-50 border-t border-gray-100 px-4 py-2 text-xs text-gray-500 flex justify-between items-center select-none">
+                        <div class="flex gap-4">
+                            <span>전체 <span x-text="currentFiles.length"></span>개 항목</span>
+                            <span x-show="selectedIds.length > 0">선택됨: <span x-text="selectedIds.length"></span>개</span>
+                        </div>
+                        <div x-show="selectedIds.length === 1 && getSelectedItem()" class="max-w-md truncate">
+                             <span x-text="getSelectedItem().name"></span>
+                        </div>
                     </div>
                 </section>
             </div>
@@ -356,20 +389,25 @@
                     if (!nodes || nodes.length === 0) return '';
                     const hasChildren = (n) => n.children && n.children.length > 0;
                     const isExpanded = (id) => this.expandedFolders.has(id);
+                    
+                    const openFolderSvg = '<svg class="w-4 h-4 text-blue-500" fill="currentColor" viewBox="0 0 20 20"><path d="M2 6a2 2 0 012-2h5l2 2h5a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"/></svg>';
+                    const closedFolderSvg = '<svg class="w-4 h-4 text-gray-400" fill="currentColor" viewBox="0 0 20 20"><path d="M2 6a2 2 0 012-2h5l2 2h5a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"/></svg>';
+                    
                     return nodes.map(node => {
                         const expanded = isExpanded(node.id);
                         const hasSub = hasChildren(node);
                         const arrow = hasSub
-                            ? `<span class="text-xs text-gray-400 flex-shrink-0 w-4 text-center cursor-pointer select-none" @click="toggleFolder('${node.id}', $event)">${expanded ? '▼' : '▶'}</span>`
+                            ? `<span class="text-xs text-gray-400 flex-shrink-0 w-4 text-center cursor-pointer select-none hover:text-gray-600" @click="toggleFolder('${node.id}', $event)">${expanded ? '▼' : '▶'}</span>`
                             : `<span class="w-4 flex-shrink-0"></span>`;
-                        const icon = hasSub && expanded ? '\u{1F4C2}' : '\u{1F4C1}';
+                        const icon = expanded ? openFolderSvg : closedFolderSvg;
                         const childHtml = hasSub && expanded ? this.renderTree(node.children, level + 1) : '';
+                        
                         return `
                         <div style="margin-left: ${level * 12}px" class="my-0.5">
-                            <div class="flex items-center gap-1 px-2 py-1.5 rounded-md hover:bg-gray-200/70 cursor-pointer text-sm transition-colors ${this.currentFolderId === node.id ? 'bg-blue-100 text-blue-700 font-medium' : 'text-gray-700'}"
+                            <div class="flex items-center gap-1 px-2 py-1.5 rounded-md hover:bg-gray-100 cursor-pointer text-sm transition-colors ${this.currentFolderId === node.id ? 'bg-blue-100 text-blue-700 font-medium' : 'text-gray-700'}"
                                 @click="loadFolder('${node.id}'); expandedFolders.add('${node.id}'); _saveExpanded()">
                                 ${arrow}
-                                <span class="text-sm flex-shrink-0">${icon}</span>
+                                <span class="flex-shrink-0">${icon}</span>
                                 <span class="truncate">${node.name}</span>
                             </div>
                             ${childHtml}
@@ -379,11 +417,13 @@
 
                 renderMoveTree(nodes, level = 0) {
                     if (!nodes || nodes.length === 0) return '';
+                    const folderSvg = '<svg class="w-4 h-4 text-gray-400" fill="currentColor" viewBox="0 0 20 20"><path d="M2 6a2 2 0 012-2h5l2 2h5a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"/></svg>';
+                    
                     return nodes.map(node => `
                         <div style="margin-left: ${level * 12}px" class="my-0.5">
                             <div class="flex items-center gap-1.5 px-2 py-1.5 rounded cursor-pointer text-sm transition-colors ${this.moveTargetId === node.id ? 'bg-blue-100 text-blue-700 font-medium' : 'text-gray-700 hover:bg-gray-100'}"
                                 @click="moveTargetId = '${node.id}'">
-                                <span class="text-sm">\u{1F4C1}</span>
+                                <span class="flex-shrink-0">${folderSvg}</span>
                                 <span class="truncate">${node.name}</span>
                             </div>
                             ${node.children ? this.renderMoveTree(node.children, level + 1) : ''}
@@ -598,28 +638,57 @@
                     }
                 },
 
+                isImage(item) {
+                    return item.nodeType === 'F' && 
+                           (item.contentType && item.contentType.startsWith('image/') || 
+                            /\.(jpg|jpeg|png|gif|webp|svg)$/i.test(item.name));
+                },
+
+                getIconInfo(item) {
+                    if (item.nodeType === 'D') {
+                        return { svg: '<svg class="w-full h-full text-blue-500" fill="currentColor" viewBox="0 0 20 20"><path d="M2 6a2 2 0 012-2h5l2 2h5a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"/></svg>' };
+                    }
+
+                    const ext = (item.name || '').split('.').pop()?.toLowerCase();
+                    let svg = '';
+
+                    // Basic File Icon (Gray)
+                    const baseFile = '<svg class="w-full h-full text-gray-400" fill="currentColor" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6z"/></svg>';
+                    
+                    switch (ext) {
+                        case 'pdf':
+                            svg = '<svg class="w-full h-full text-red-500" fill="currentColor" viewBox="0 0 24 24"><path d="M20 2H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-8.5 7.5c0 .83-.67 1.5-1.5 1.5H9v2H7.5V7H10c.83 0 1.5.67 1.5 1.5v1zm5 2c0 .83-.67 1.5-1.5 1.5h-2.5V7H15c.83 0 1.5.67 1.5 1.5v3zm4-3H19v1h1.5V11H19v2h-1.5V7h2zM9 9.5h1v-1H9v1zM4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm10 5.5h1v-3h-1v3z"/></svg>';
+                            break;
+                        case 'doc': case 'docx':
+                            svg = '<svg class="w-full h-full text-blue-500" fill="currentColor" viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>';
+                            break;
+                        case 'xls': case 'xlsx': case 'csv':
+                            svg = '<svg class="w-full h-full text-green-500" fill="currentColor" viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>';
+                            break;
+                        case 'zip': case 'rar': case '7z': case 'tar': case 'gz':
+                            svg = '<svg class="w-full h-full text-yellow-600" fill="currentColor" viewBox="0 0 24 24"><path d="M20 6h-4V4c0-1.11-.89-2-2-2h-4c-1.11 0-2 .89-2 2v2H4c-1.11 0-2 .89-2 2v10c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2zM10 4h4v2h-4V4zm10 14H4V8h16v10z"/></svg>';
+                            break;
+                        case 'mp3': case 'wav':
+                            svg = '<svg class="w-full h-full text-purple-500" fill="currentColor" viewBox="0 0 24 24"><path d="M12 3v9.28c-.47-.17-.97-.28-1.5-.28C8.01 12 6 14.01 6 16.5S8.01 21 10.5 21c2.31 0 4.2-1.75 4.45-4H15V6h4V3h-7z"/></svg>';
+                            break;
+                         case 'mp4': case 'avi': case 'mov':
+                            svg = '<svg class="w-full h-full text-pink-500" fill="currentColor" viewBox="0 0 24 24"><path d="M18 4l2 4h-3l-2-4h-2l2 4h-3l-2-4H8l2 4H7L5 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V4h-4z"/></svg>';
+                            break;
+                        default:
+                            svg = baseFile;
+                    }
+                    return { svg };
+                },
+
+                getSelectedItem() {
+                    if (this.selectedIds.length !== 1) return null;
+                    return this.currentFiles.find(f => f.id === this.selectedIds[0]);
+                },
+
                 clearSearch() {
                     this.searchKeyword = '';
                     this.isSearchMode = false;
                     this.loadFolder(this.currentFolderId);
-                },
-
-                getIcon(item) {
-                    if (item.nodeType === 'D') return '\u{1F4C1}';
-
-                    const ext = (item.name || '').split('.').pop()?.toLowerCase();
-                    const icons = {
-                        pdf: '\u{1F4C4}', txt: '\u{1F4C4}', doc: '\u{1F4DD}', docx: '\u{1F4DD}',
-                        jpg: '\u{1F5BC}', jpeg: '\u{1F5BC}', png: '\u{1F5BC}', gif: '\u{1F5BC}', svg: '\u{1F5BC}', webp: '\u{1F5BC}',
-                        mp4: '\u{1F3AC}', avi: '\u{1F3AC}', mov: '\u{1F3AC}',
-                        mp3: '\u{1F3B5}', wav: '\u{1F3B5}',
-                        zip: '\u{1F4E6}', rar: '\u{1F4E6}', '7z': '\u{1F4E6}', gz: '\u{1F4E6}',
-                        xls: '\u{1F4CA}', xlsx: '\u{1F4CA}', csv: '\u{1F4CA}',
-                        ppt: '\u{1F4CA}', pptx: '\u{1F4CA}',
-                        html: '\u{1F310}', css: '\u{1F310}', js: '\u{1F310}',
-                        java: '\u{2615}', py: '\u{1F40D}'
-                    };
-                    return icons[ext] || '\u{1F4C4}';
                 },
 
                 formatSize(bytes) {

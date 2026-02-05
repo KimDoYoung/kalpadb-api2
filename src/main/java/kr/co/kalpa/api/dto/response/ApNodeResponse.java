@@ -30,6 +30,9 @@ public class ApNodeResponse {
     private Long fileSize;
     private String contentType;
     private String originalName;
+    private String url;
+    private String thumbnailUrl;
+    private String savedPath;
 
     // 트리용 필드
     private List<ApNodeResponse> children;
@@ -49,10 +52,11 @@ public class ApNodeResponse {
         ApFile file = node.getApFile();
         if (file != null) {
             builder.fileSize(file.getFileSize())
-                   .contentType(file.getContentType())
-                   .originalName(file.getOriginalName());
+                    .contentType(file.getContentType())
+                    .originalName(file.getOriginalName())
+                    .savedPath(file.getSavedPath()); // Service에서 URL 조합을 위해 사용
         }
-
+        
         return builder.build();
     }
 }

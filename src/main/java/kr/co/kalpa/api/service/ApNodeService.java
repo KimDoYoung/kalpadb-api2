@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import com.github.f4b6a3.uuid.UuidCreator;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -37,8 +38,11 @@ public class ApNodeService {
     @Value("${apnode.file.base-dir}")
     private String apnodeBaseDir;
 
+    @Value("${apnode.file.base-url}")
+    private String apnodeBaseUrl;
+
     private String generateId() {
-        return UUID.randomUUID().toString().replace("-", "");
+        return UuidCreator.getTimeOrderedEpoch().toString();
     }
 
     // ─── 폴더 관련 ────────────────────────────────────────
@@ -217,8 +221,21 @@ public class ApNodeService {
 
         List<ApNode> children = apNodeRepository.findChildrenWithFile(folderId);
         return children.stream()
-                .map(ApNodeResponse::from)
+                .map(node -> populateUrls(ApNodeResponse.from(node)))
                 .collect(Collectors.toList());
+    }
+
+    private ApNodeResponse populateUrls(ApNodeResponse response) {
+        if ("F".equals(response.getNodeType()) && response.getSavedPath() != null) {
+            String fullUrl = apnodeBaseUrl + response.getSavedPath();
+            response.setUrl(fullUrl);
+            
+            // 이미지인 경우 썸네일 URL (현재는 원본과 동일하게 설정, 필요 시 변경)
+            if (response.getContentType() != null && response.getContentType().startsWith("image/")) {
+                response.setThumbnailUrl(fullUrl);
+            }
+        }
+        return response;
     }
 
     /**
@@ -285,7 +302,7 @@ public class ApNodeService {
     public List<ApNodeResponse> search(String keyword) {
         List<ApNode> results = apNodeRepository.searchByName(keyword);
         return results.stream()
-                .map(ApNodeResponse::from)
+                .map(node -> populateUrls(ApNodeResponse.from(node)))
                 .collect(Collectors.toList());
     }
 
@@ -383,7 +400,9 @@ public class ApNodeService {
             resp.setFileSize(file.getSize());
             resp.setContentType(file.getContentType());
             resp.setOriginalName(originalName);
-            responses.add(resp);
+            resp.setSavedPath(savedPath);
+
+            responses.add(populateUrls(resp));
         }
 
         // 부모의 child_count 갱신
