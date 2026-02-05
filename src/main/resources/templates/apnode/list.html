@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="~{layout/default}">
+
+<head>
+    <title>파일 탐색기 - KalpaDB</title>
+</head>
+
+<body>
+    <main layout:fragment="content">
+        <div x-data="fileExplorer()" x-init="init()" class="flex flex-col" style="height: calc(100vh - 120px);">
+
+            <!-- 상단 툴바 -->
+            <header class="bg-white rounded-t-xl shadow-sm border border-gray-100 p-4">
+                <!-- Breadcrumb -->
+                <nav class="flex items-center gap-1 mb-3 text-sm">
+                    <template x-for="(item, idx) in breadcrumb" :key="item.id">
+                        <div class="flex items-center gap-1">
+                            <button @click="navigateTo(item.id)"
+                                class="px-2 py-1 rounded hover:bg-blue-50 hover:text-blue-600 transition-colors"
+                                :class="idx === breadcrumb.length - 1 ? 'font-semibold text-gray-800' : 'text-gray-500'"
+                                x-text="item.name">
+                            </button>
+                            <span x-show="idx < breadcrumb.length - 1" class="text-gray-300">/</span>
+                        </div>
+                    </template>
+                </nav>
+
+                <!-- 액션 버튼 & 뷰 전환 -->
+                <div class="flex items-center justify-between">
+                    <div class="flex gap-2">
+                        <button @click="showCreateFolderDialog()"
+                            class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors text-sm font-medium flex items-center gap-1.5">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                            새 폴더
+                        </button>
+                        <button @click="triggerUpload()"
+                            class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors text-sm font-medium flex items-center gap-1.5">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
+                            업로드
+                        </button>
+                        <input type="file" x-ref="fileInput" @change="handleUpload($event)" multiple class="hidden">
+                    </div>
+
+                    <div class="flex items-center gap-2">
+                        <!-- 검색 -->
+                        <div class="relative">
+                            <input type="text" x-model="searchKeyword"
+                                @keydown.enter="doSearch()"
+                                placeholder="검색..."
+                                class="pl-9 pr-4 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-300 focus:border-blue-300 w-48">
+                            <svg class="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                        </div>
+
+                        <!-- 뷰 전환 -->
+                        <div class="flex border border-gray-200 rounded-lg overflow-hidden">
+                            <button @click="viewMode = 'grid'"
+                                :class="viewMode === 'grid' ? 'bg-gray-700 text-white' : 'bg-white text-gray-600 hover:bg-gray-50'"
+                                class="px-3 py-2 text-sm transition-colors">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
+                            </button>
+                            <button @click="viewMode = 'list'"
+                                :class="viewMode === 'list' ? 'bg-gray-700 text-white' : 'bg-white text-gray-600 hover:bg-gray-50'"
+                                class="px-3 py-2 text-sm transition-colors">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- 메인 콘텐츠 (사이드바 + 파일영역) -->
+            <div class="flex flex-1 min-h-0 border-x border-b border-gray-100 rounded-b-xl overflow-hidden bg-white">
+                <!-- 트리 사이드바 -->
+                <aside class="w-60 border-r border-gray-100 bg-gray-50/50 overflow-y-auto flex-shrink-0 hidden md:block">
+                    <div class="p-3">
+                        <h3 class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2 px-2">폴더</h3>
+                        <div x-html="renderTree(treeData)"></div>
+                    </div>
+                </aside>
+
+                <!-- 파일 영역 -->
+                <section class="flex-1 overflow-y-auto p-4">
+                    <!-- 로딩 -->
+                    <div x-show="loading" class="flex items-center justify-center py-16">
+                        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+                    </div>
+
+                    <!-- Grid View -->
+                    <div x-show="!loading && viewMode === 'grid' && currentFiles.length > 0"
+                        class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3">
+                        <template x-for="item in currentFiles" :key="item.id">
+                            <div @click="selectItem(item, $event)"
+                                @dblclick="openItem(item)"
+                                @contextmenu.prevent="showContextMenu($event, item)"
+                                :class="isSelected(item.id) ? 'ring-2 ring-blue-500 bg-blue-50' : 'bg-white hover:bg-gray-50'"
+                                class="border border-gray-100 rounded-lg p-4 cursor-pointer transition-all group shadow-sm hover:shadow">
+                                <div class="text-4xl text-center mb-2" x-text="getIcon(item)"></div>
+                                <div class="text-xs text-center truncate font-medium text-gray-700" x-text="item.name"></div>
+                                <template x-if="item.nodeType === 'F'">
+                                    <div class="text-xs text-gray-400 text-center mt-1" x-text="formatSize(item.fileSize)"></div>
+                                </template>
+                                <template x-if="item.nodeType === 'D'">
+                                    <div class="text-xs text-gray-400 text-center mt-1" x-text="(item.childCount || 0) + '개 항목'"></div>
+                                </template>
+                            </div>
+                        </template>
+                    </div>
+
+                    <!-- List View -->
+                    <div x-show="!loading && viewMode === 'list' && currentFiles.length > 0"
+                        class="bg-white rounded-lg border border-gray-100 overflow-hidden">
+                        <table class="w-full">
+                            <thead class="bg-gray-50 border-b border-gray-100">
+                                <tr>
+                                    <th class="text-left p-3 text-xs font-semibold text-gray-500 uppercase">이름</th>
+                                    <th class="text-left p-3 text-xs font-semibold text-gray-500 uppercase w-24">크기</th>
+                                    <th class="text-left p-3 text-xs font-semibold text-gray-500 uppercase w-36">수정일</th>
+                                    <th class="text-center p-3 text-xs font-semibold text-gray-500 uppercase w-24">작업</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <template x-for="item in currentFiles" :key="item.id">
+                                    <tr @click="selectItem(item, $event)"
+                                        @dblclick="openItem(item)"
+                                        @contextmenu.prevent="showContextMenu($event, item)"
+                                        :class="isSelected(item.id) ? 'bg-blue-50' : ''"
+                                        class="border-b border-gray-50 hover:bg-gray-50 cursor-pointer transition-colors">
+                                        <td class="p-3">
+                                            <div class="flex items-center gap-2">
+                                                <span class="text-xl flex-shrink-0" x-text="getIcon(item)"></span>
+                                                <span class="text-sm font-medium text-gray-800 truncate" x-text="item.name"></span>
+                                            </div>
+                                        </td>
+                                        <td class="p-3 text-sm text-gray-500" x-text="item.nodeType === 'D' ? '-' : formatSize(item.fileSize)"></td>
+                                        <td class="p-3 text-sm text-gray-500" x-text="formatDate(item.modifyDt || item.createDt)"></td>
+                                        <td class="p-3 text-center">
+                                            <div class="flex items-center justify-center gap-1">
+                                                <button x-show="item.nodeType === 'F'" @click.stop="downloadItem(item)"
+                                                    class="p-1 text-blue-500 hover:text-blue-700 rounded hover:bg-blue-50" title="다운로드">
+                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                                                </button>
+                                                <button @click.stop="deleteItem(item)"
+                                                    class="p-1 text-red-500 hover:text-red-700 rounded hover:bg-red-50" title="삭제">
+                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </template>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Empty State -->
+                    <div x-show="!loading && currentFiles.length === 0 && !isSearchMode" class="text-center py-16">
+                        <div class="text-6xl mb-4 opacity-30">&#128194;</div>
+                        <p class="text-gray-400">이 폴더는 비어 있습니다</p>
+                        <p class="text-gray-300 text-sm mt-1">파일을 업로드하거나 새 폴더를 만들어 보세요</p>
+                    </div>
+
+                    <!-- Search Empty -->
+                    <div x-show="!loading && currentFiles.length === 0 && isSearchMode" class="text-center py-16">
+                        <div class="text-6xl mb-4 opacity-30">&#128269;</div>
+                        <p class="text-gray-400">검색 결과가 없습니다</p>
+                        <button @click="clearSearch()" class="mt-2 text-blue-500 hover:text-blue-700 text-sm">돌아가기</button>
+                    </div>
+                </section>
+            </div>
+
+            <!-- Context Menu -->
+            <div x-show="contextMenu.show"
+                @click.away="contextMenu.show = false"
+                :style="`top: ${contextMenu.y}px; left: ${contextMenu.x}px`"
+                class="fixed bg-white shadow-xl rounded-lg border border-gray-100 py-1 z-50 min-w-[160px]"
+                x-transition>
+                <button @click="renameItem(contextMenu.item)"
+                    class="flex items-center gap-2 w-full text-left px-4 py-2 text-sm hover:bg-gray-50 transition-colors">
+                    <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                    이름 변경
+                </button>
+                <button @click="promptMoveItem(contextMenu.item)"
+                    class="flex items-center gap-2 w-full text-left px-4 py-2 text-sm hover:bg-gray-50 transition-colors">
+                    <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"></path></svg>
+                    이동
+                </button>
+                <template x-if="contextMenu.item && contextMenu.item.nodeType === 'F'">
+                    <button @click="downloadItem(contextMenu.item)"
+                        class="flex items-center gap-2 w-full text-left px-4 py-2 text-sm hover:bg-gray-50 transition-colors">
+                        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                        다운로드
+                    </button>
+                </template>
+                <hr class="my-1 border-gray-100">
+                <button @click="deleteItem(contextMenu.item)"
+                    class="flex items-center gap-2 w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                    삭제
+                </button>
+            </div>
+
+            <!-- 폴더 생성 모달 -->
+            <div x-show="showFolderModal" class="fixed inset-0 bg-black/40 flex items-center justify-center z-50" x-transition>
+                <div @click.away="showFolderModal = false" class="bg-white rounded-xl shadow-2xl p-6 w-96">
+                    <h3 class="text-lg font-bold text-gray-800 mb-4">새 폴더</h3>
+                    <input type="text" x-model="newFolderName" x-ref="folderNameInput"
+                        @keydown.enter="createFolder()"
+                        @keydown.escape="showFolderModal = false"
+                        placeholder="폴더 이름"
+                        class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-300 focus:border-blue-300">
+                    <div class="flex justify-end gap-2 mt-4">
+                        <button @click="showFolderModal = false"
+                            class="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors text-sm">취소</button>
+                        <button @click="createFolder()"
+                            class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors text-sm">생성</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 이동 모달 -->
+            <div x-show="showMoveModal" class="fixed inset-0 bg-black/40 flex items-center justify-center z-50" x-transition>
+                <div @click.away="showMoveModal = false" class="bg-white rounded-xl shadow-2xl p-6 w-96 max-h-[70vh] flex flex-col">
+                    <h3 class="text-lg font-bold text-gray-800 mb-4">이동할 폴더 선택</h3>
+                    <div class="flex-1 overflow-y-auto border border-gray-100 rounded-lg p-2 mb-4">
+                        <div x-html="renderMoveTree(treeData)"></div>
+                    </div>
+                    <div class="flex justify-end gap-2">
+                        <button @click="showMoveModal = false"
+                            class="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors text-sm">취소</button>
+                        <button @click="confirmMove()"
+                            :disabled="!moveTargetId"
+                            :class="moveTargetId ? 'bg-blue-500 hover:bg-blue-600' : 'bg-gray-300 cursor-not-allowed'"
+                            class="px-4 py-2 text-white rounded-lg transition-colors text-sm">이동</button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <script>
+        function fileExplorer() {
+            return {
+                treeData: [],
+                currentFiles: [],
+                breadcrumb: [],
+                currentFolderId: 'root',
+                viewMode: 'grid',
+                selectedIds: [],
+                loading: true,
+                searchKeyword: '',
+                isSearchMode: false,
+                contextMenu: { show: false, x: 0, y: 0, item: null },
+                showFolderModal: false,
+                newFolderName: '',
+                showMoveModal: false,
+                moveTargetId: null,
+                moveItem: null,
+
+                async init() {
+                    await this.loadTree();
+                    await this.loadFolder('root');
+                },
+
+                async loadTree() {
+                    try {
+                        const res = await fetch('/api/nodes/tree');
+                        const data = await res.json();
+                        this.treeData = data.data || [];
+                    } catch (e) {
+                        console.error('트리 로드 실패:', e);
+                    }
+                },
+
+                async loadFolder(folderId) {
+                    this.loading = true;
+                    this.isSearchMode = false;
+                    this.currentFolderId = folderId;
+                    this.selectedIds = [];
+
+                    try {
+                        const [filesRes, breadcrumbRes] = await Promise.all([
+                            fetch(`/api/nodes/${folderId}/children`),
+                            fetch(`/api/nodes/${folderId}/breadcrumb`)
+                        ]);
+
+                        const filesData = await filesRes.json();
+                        const breadcrumbData = await breadcrumbRes.json();
+
+                        this.currentFiles = filesData.data || [];
+                        this.breadcrumb = breadcrumbData.data || [];
+                    } catch (e) {
+                        console.error('폴더 로드 실패:', e);
+                    } finally {
+                        this.loading = false;
+                    }
+                },
+
+                renderTree(nodes, level = 0) {
+                    if (!nodes || nodes.length === 0) return '';
+                    return nodes.map(node => `
+                        <div style="margin-left: ${level * 12}px" class="my-0.5">
+                            <div class="flex items-center gap-1.5 px-2 py-1.5 rounded-md hover:bg-gray-200/70 cursor-pointer text-sm transition-colors ${this.currentFolderId === node.id ? 'bg-blue-100 text-blue-700 font-medium' : 'text-gray-700'}"
+                                @click="loadFolder('${node.id}')">
+                                <span class="text-sm flex-shrink-0">${node.children && node.children.length > 0 ? '\u{1F4C2}' : '\u{1F4C1}'}</span>
+                                <span class="truncate">${node.name}</span>
+                            </div>
+                            ${node.children ? this.renderTree(node.children, level + 1) : ''}
+                        </div>
+                    `).join('');
+                },
+
+                renderMoveTree(nodes, level = 0) {
+                    if (!nodes || nodes.length === 0) return '';
+                    return nodes.map(node => `
+                        <div style="margin-left: ${level * 12}px" class="my-0.5">
+                            <div class="flex items-center gap-1.5 px-2 py-1.5 rounded cursor-pointer text-sm transition-colors ${this.moveTargetId === node.id ? 'bg-blue-100 text-blue-700 font-medium' : 'text-gray-700 hover:bg-gray-100'}"
+                                @click="moveTargetId = '${node.id}'">
+                                <span class="text-sm">\u{1F4C1}</span>
+                                <span class="truncate">${node.name}</span>
+                            </div>
+                            ${node.children ? this.renderMoveTree(node.children, level + 1) : ''}
+                        </div>
+                    `).join('');
+                },
+
+                navigateTo(folderId) {
+                    this.searchKeyword = '';
+                    this.loadFolder(folderId);
+                },
+
+                selectItem(item, event) {
+                    if (event.ctrlKey || event.metaKey) {
+                        if (this.selectedIds.includes(item.id)) {
+                            this.selectedIds = this.selectedIds.filter(id => id !== item.id);
+                        } else {
+                            this.selectedIds.push(item.id);
+                        }
+                    } else {
+                        this.selectedIds = [item.id];
+                    }
+                },
+
+                isSelected(id) {
+                    return this.selectedIds.includes(id);
+                },
+
+                openItem(item) {
+                    if (item.nodeType === 'D') {
+                        this.loadFolder(item.id);
+                        this.loadTree();
+                    } else {
+                        this.downloadItem(item);
+                    }
+                },
+
+                showContextMenu(event, item) {
+                    this.contextMenu = {
+                        show: true,
+                        x: event.clientX,
+                        y: event.clientY,
+                        item: item
+                    };
+                },
+
+                showCreateFolderDialog() {
+                    this.newFolderName = '';
+                    this.showFolderModal = true;
+                    this.$nextTick(() => this.$refs.folderNameInput?.focus());
+                },
+
+                async createFolder() {
+                    if (!this.newFolderName.trim()) return;
+
+                    try {
+                        const res = await fetch('/api/nodes', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                nodeType: 'D',
+                                parentId: this.currentFolderId === 'root' ?
+                                    (this.breadcrumb.length > 0 ? this.breadcrumb[0].id : 'root') :
+                                    this.currentFolderId,
+                                name: this.newFolderName.trim()
+                            })
+                        });
+                        const data = await res.json();
+                        if (!data.success) {
+                            alert(data.message || '폴더 생성에 실패했습니다');
+                            return;
+                        }
+                        this.showFolderModal = false;
+                        this.loadFolder(this.currentFolderId);
+                        this.loadTree();
+                    } catch (e) {
+                        alert('폴더 생성 실패: ' + e.message);
+                    }
+                },
+
+                triggerUpload() {
+                    this.$refs.fileInput.click();
+                },
+
+                async handleUpload(event) {
+                    const files = event.target.files;
+                    if (!files || files.length === 0) return;
+
+                    const formData = new FormData();
+                    for (let file of files) {
+                        formData.append('files', file);
+                    }
+                    const uploadFolderId = this.currentFolderId === 'root' ?
+                        (this.breadcrumb.length > 0 ? this.breadcrumb[0].id : 'root') :
+                        this.currentFolderId;
+                    formData.append('folderId', uploadFolderId);
+
+                    try {
+                        const res = await fetch('/api/nodes/upload', {
+                            method: 'POST',
+                            body: formData
+                        });
+                        const data = await res.json();
+                        if (!data.success) {
+                            alert(data.message || '업로드에 실패했습니다');
+                            return;
+                        }
+                        this.loadFolder(this.currentFolderId);
+                    } catch (e) {
+                        alert('업로드 실패: ' + e.message);
+                    }
+
+                    event.target.value = '';
+                },
+
+                async renameItem(item) {
+                    this.contextMenu.show = false;
+                    const newName = prompt('새 이름:', item.name);
+                    if (!newName || newName === item.name) return;
+
+                    try {
+                        const res = await fetch(`/api/nodes/${item.id}`, {
+                            method: 'PUT',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ name: newName })
+                        });
+                        const data = await res.json();
+                        if (!data.success) {
+                            alert(data.message || '이름 변경에 실패했습니다');
+                            return;
+                        }
+                        this.loadFolder(this.currentFolderId);
+                        if (item.nodeType === 'D') this.loadTree();
+                    } catch (e) {
+                        alert('이름 변경 실패: ' + e.message);
+                    }
+                },
+
+                promptMoveItem(item) {
+                    this.contextMenu.show = false;
+                    this.moveItem = item;
+                    this.moveTargetId = null;
+                    this.showMoveModal = true;
+                },
+
+                async confirmMove() {
+                    if (!this.moveTargetId || !this.moveItem) return;
+
+                    try {
+                        const res = await fetch(`/api/nodes/${this.moveItem.id}/move`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ targetParentId: this.moveTargetId })
+                        });
+                        const data = await res.json();
+                        if (!data.success) {
+                            alert(data.message || '이동에 실패했습니다');
+                            return;
+                        }
+                        this.showMoveModal = false;
+                        this.loadFolder(this.currentFolderId);
+                        this.loadTree();
+                    } catch (e) {
+                        alert('이동 실패: ' + e.message);
+                    }
+                },
+
+                async deleteItem(item) {
+                    this.contextMenu.show = false;
+                    const type = item.nodeType === 'D' ? '폴더' : '파일';
+                    if (!confirm(`"${item.name}" ${type}을(를) 삭제하시겠습니까?`)) return;
+
+                    try {
+                        const res = await fetch(`/api/nodes/${item.id}`, { method: 'DELETE' });
+                        const data = await res.json();
+                        if (!data.success) {
+                            alert(data.message || '삭제에 실패했습니다');
+                            return;
+                        }
+                        this.loadFolder(this.currentFolderId);
+                        if (item.nodeType === 'D') this.loadTree();
+                    } catch (e) {
+                        alert('삭제 실패: ' + e.message);
+                    }
+                },
+
+                downloadItem(item) {
+                    if (item.nodeType === 'F') {
+                        window.open(`/api/nodes/${item.id}/download`, '_blank');
+                    }
+                    this.contextMenu.show = false;
+                },
+
+                async doSearch() {
+                    const kw = this.searchKeyword.trim();
+                    if (!kw) {
+                        this.clearSearch();
+                        return;
+                    }
+
+                    this.loading = true;
+                    this.isSearchMode = true;
+
+                    try {
+                        const res = await fetch(`/api/nodes/search?keyword=${encodeURIComponent(kw)}`);
+                        const data = await res.json();
+                        this.currentFiles = data.data || [];
+                    } catch (e) {
+                        console.error('검색 실패:', e);
+                    } finally {
+                        this.loading = false;
+                    }
+                },
+
+                clearSearch() {
+                    this.searchKeyword = '';
+                    this.isSearchMode = false;
+                    this.loadFolder(this.currentFolderId);
+                },
+
+                getIcon(item) {
+                    if (item.nodeType === 'D') return '\u{1F4C1}';
+
+                    const ext = (item.name || '').split('.').pop()?.toLowerCase();
+                    const icons = {
+                        pdf: '\u{1F4C4}', txt: '\u{1F4C4}', doc: '\u{1F4DD}', docx: '\u{1F4DD}',
+                        jpg: '\u{1F5BC}', jpeg: '\u{1F5BC}', png: '\u{1F5BC}', gif: '\u{1F5BC}', svg: '\u{1F5BC}', webp: '\u{1F5BC}',
+                        mp4: '\u{1F3AC}', avi: '\u{1F3AC}', mov: '\u{1F3AC}',
+                        mp3: '\u{1F3B5}', wav: '\u{1F3B5}',
+                        zip: '\u{1F4E6}', rar: '\u{1F4E6}', '7z': '\u{1F4E6}', gz: '\u{1F4E6}',
+                        xls: '\u{1F4CA}', xlsx: '\u{1F4CA}', csv: '\u{1F4CA}',
+                        ppt: '\u{1F4CA}', pptx: '\u{1F4CA}',
+                        html: '\u{1F310}', css: '\u{1F310}', js: '\u{1F310}',
+                        java: '\u{2615}', py: '\u{1F40D}'
+                    };
+                    return icons[ext] || '\u{1F4C4}';
+                },
+
+                formatSize(bytes) {
+                    if (!bytes) return '-';
+                    const units = ['B', 'KB', 'MB', 'GB'];
+                    let size = bytes;
+                    let unitIndex = 0;
+                    while (size >= 1024 && unitIndex < units.length - 1) {
+                        size /= 1024;
+                        unitIndex++;
+                    }
+                    return `${size.toFixed(1)} ${units[unitIndex]}`;
+                },
+
+                formatDate(dateStr) {
+                    if (!dateStr) return '-';
+                    const date = new Date(dateStr);
+                    const today = new Date();
+                    const isToday = date.getDate() === today.getDate() &&
+                        date.getMonth() === today.getMonth() &&
+                        date.getFullYear() === today.getFullYear();
+
+                    if (isToday) {
+                        return date.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' });
+                    }
+                    return date.toLocaleDateString('ko-KR', {
+                        year: 'numeric', month: '2-digit', day: '2-digit'
+                    });
+                }
+            }
+        }
+        </script>
+    </main>
+</body>
+
+</html>

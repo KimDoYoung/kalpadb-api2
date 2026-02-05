@@ -316,3 +316,8 @@ WITH RECURSIVE tree AS (
 )
 SELECT * FROM tree ORDER BY path;
 ```
+
+1. docs/ap_node_file.md를 읽을 것.
+2. api contoller ApNodeApiController와 그에 따른 service, dto등을 작성할 것
+3. ui controller ApNodeController를 작성할 것.
+4. templates/apnode/ folder 생성, list.html을 작성하고 `기능`을 구현해 볼 것.

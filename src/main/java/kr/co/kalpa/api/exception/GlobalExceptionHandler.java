@@ -139,6 +139,20 @@ public class GlobalExceptionHandler {
     }
 
     /**
+     * 노드 없음 예외
+     */
+    @ExceptionHandler(ApNodeNotFoundException.class)
+    public ResponseEntity<ApiResponse<Void>> handleApNodeNotFoundException(
+            ApNodeNotFoundException ex) {
+
+        log.error("ApNode not found: {}", ex.getMessage());
+
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(ApiResponse.error(ex.getMessage()));
+    }
+
+    /**
      * 일반 예외
      */
     @ExceptionHandler(Exception.class)
