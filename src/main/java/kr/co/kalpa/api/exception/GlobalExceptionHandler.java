@@ -139,6 +139,20 @@ public class GlobalExceptionHandler {
     }
 
     /**
+     * 잘못된 인자 예외 (비즈니스 검증 실패)
+     */
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ApiResponse<Void>> handleIllegalArgumentException(
+            IllegalArgumentException ex) {
+
+        log.warn("Bad request: {}", ex.getMessage());
+
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(ApiResponse.error(ex.getMessage()));
+    }
+
+    /**
      * 노드 없음 예외
      */
     @ExceptionHandler(ApNodeNotFoundException.class)

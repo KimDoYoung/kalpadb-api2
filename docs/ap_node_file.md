@@ -321,3 +321,15 @@ SELECT * FROM tree ORDER BY path;
 2. api contoller ApNodeApiController와 그에 따른 service, dto등을 작성할 것
 3. ui controller ApNodeController를 작성할 것.
 4. templates/apnode/ folder 생성, list.html을 작성하고 `기능`을 구현해 볼 것.
+
+
+### 수정요망
+
+1. folder을 이동, 삭제, 이름변경의 UI는 어떻게 하는게 좋을까? 현재 구현되어 있지 않음.
+2. file의 이동, 이름변경의 UI는 어떻게 하는게 좋을까?
+3. file이 이미지일때 thumb로 보기할때 icon을 emoji를 쓰는데 svg로 파일들로 만들어서 사용하면 더 멋있지 않을까?
+4. file이 이미지일때 thumb로 보기할때 card의 오른쪽 윗쪽에 x -> 삭제를 의미하게 할 수 있을까?
+5. file이 선택되면 file명이 길때 full 파일명을 보여주면 좋을 듯.
+6. file이 이미지일때 미리보기가 있으면 좋을 것 같은데...
+7. 각 file들이 url을 갖게 해야할 듯.
+8. 하단에 status bar를 갖고 있으면 어떨까?

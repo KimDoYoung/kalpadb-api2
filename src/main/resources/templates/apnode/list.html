@@ -72,15 +72,19 @@
             <!-- 메인 콘텐츠 (사이드바 + 파일영역) -->
             <div class="flex flex-1 min-h-0 border-x border-b border-gray-100 rounded-b-xl overflow-hidden bg-white">
                 <!-- 트리 사이드바 -->
-                <aside class="w-60 border-r border-gray-100 bg-gray-50/50 overflow-y-auto flex-shrink-0 hidden md:block">
+                <aside :style="`width: ${sidebarWidth}px`" class="border-r border-gray-100 bg-gray-50/50 overflow-y-auto flex-shrink-0 hidden md:block">
                     <div class="p-3">
                         <h3 class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2 px-2">폴더</h3>
                         <div x-html="renderTree(treeData)"></div>
                     </div>
                 </aside>
 
+                <!-- 리사이즈 핸들 -->
+                <div @mousedown="startResize($event)"
+                    class="w-1 flex-shrink-0 bg-gray-100 hover:bg-blue-400 cursor-col-resize transition-colors hidden md:block"></div>
+
                 <!-- 파일 영역 -->
-                <section class="flex-1 overflow-y-auto p-4">
+                <section class="flex-1 overflow-y-auto p-4 min-w-0">
                     <!-- 로딩 -->
                     <div x-show="loading" class="flex items-center justify-center py-16">
                         <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
@@ -255,10 +259,62 @@
                 showMoveModal: false,
                 moveTargetId: null,
                 moveItem: null,
+                sidebarWidth: parseInt(localStorage.getItem('apnode_sidebar_width')) || 240,
+                _resizing: false,
+                expandedFolders: new Set(JSON.parse(localStorage.getItem('apnode_expanded') || '[]')),
 
                 async init() {
                     await this.loadTree();
+                    // 루트 노드는 항상 펼침
+                    if (this.treeData.length > 0) {
+                        this.treeData.forEach(n => this.expandedFolders.add(n.id));
+                    }
                     await this.loadFolder('root');
+                },
+
+                toggleFolder(nodeId, e) {
+                    e.stopPropagation();
+                    if (this.expandedFolders.has(nodeId)) {
+                        this.expandedFolders.delete(nodeId);
+                    } else {
+                        this.expandedFolders.add(nodeId);
+                    }
+                    this._saveExpanded();
+                },
+
+                expandToFolder(folderId) {
+                    // breadcrumb 경로의 모든 폴더를 펼침
+                    for (const item of this.breadcrumb) {
+                        this.expandedFolders.add(item.id);
+                    }
+                    this._saveExpanded();
+                },
+
+                _saveExpanded() {
+                    localStorage.setItem('apnode_expanded', JSON.stringify([...this.expandedFolders]));
+                },
+
+                startResize(e) {
+                    this._resizing = true;
+                    const startX = e.clientX;
+                    const startWidth = this.sidebarWidth;
+
+                    const onMouseMove = (e) => {
+                        const newWidth = Math.min(Math.max(startWidth + e.clientX - startX, 150), 600);
+                        this.sidebarWidth = newWidth;
+                    };
+                    const onMouseUp = () => {
+                        this._resizing = false;
+                        document.removeEventListener('mousemove', onMouseMove);
+                        document.removeEventListener('mouseup', onMouseUp);
+                        document.body.style.cursor = '';
+                        document.body.style.userSelect = '';
+                        localStorage.setItem('apnode_sidebar_width', this.sidebarWidth);
+                    };
+                    document.addEventListener('mousemove', onMouseMove);
+                    document.addEventListener('mouseup', onMouseUp);
+                    document.body.style.cursor = 'col-resize';
+                    document.body.style.userSelect = 'none';
                 },
 
                 async loadTree() {
@@ -288,6 +344,7 @@
 
                         this.currentFiles = filesData.data || [];
                         this.breadcrumb = breadcrumbData.data || [];
+                        this.expandToFolder(folderId);
                     } catch (e) {
                         console.error('폴더 로드 실패:', e);
                     } finally {
@@ -297,16 +354,27 @@
 
                 renderTree(nodes, level = 0) {
                     if (!nodes || nodes.length === 0) return '';
-                    return nodes.map(node => `
+                    const hasChildren = (n) => n.children && n.children.length > 0;
+                    const isExpanded = (id) => this.expandedFolders.has(id);
+                    return nodes.map(node => {
+                        const expanded = isExpanded(node.id);
+                        const hasSub = hasChildren(node);
+                        const arrow = hasSub
+                            ? `<span class="text-xs text-gray-400 flex-shrink-0 w-4 text-center cursor-pointer select-none" @click="toggleFolder('${node.id}', $event)">${expanded ? '▼' : '▶'}</span>`
+                            : `<span class="w-4 flex-shrink-0"></span>`;
+                        const icon = hasSub && expanded ? '\u{1F4C2}' : '\u{1F4C1}';
+                        const childHtml = hasSub && expanded ? this.renderTree(node.children, level + 1) : '';
+                        return `
                         <div style="margin-left: ${level * 12}px" class="my-0.5">
-                            <div class="flex items-center gap-1.5 px-2 py-1.5 rounded-md hover:bg-gray-200/70 cursor-pointer text-sm transition-colors ${this.currentFolderId === node.id ? 'bg-blue-100 text-blue-700 font-medium' : 'text-gray-700'}"
-                                @click="loadFolder('${node.id}')">
-                                <span class="text-sm flex-shrink-0">${node.children && node.children.length > 0 ? '\u{1F4C2}' : '\u{1F4C1}'}</span>
+                            <div class="flex items-center gap-1 px-2 py-1.5 rounded-md hover:bg-gray-200/70 cursor-pointer text-sm transition-colors ${this.currentFolderId === node.id ? 'bg-blue-100 text-blue-700 font-medium' : 'text-gray-700'}"
+                                @click="loadFolder('${node.id}'); expandedFolders.add('${node.id}'); _saveExpanded()">
+                                ${arrow}
+                                <span class="text-sm flex-shrink-0">${icon}</span>
                                 <span class="truncate">${node.name}</span>
                             </div>
-                            ${node.children ? this.renderTree(node.children, level + 1) : ''}
-                        </div>
-                    `).join('');
+                            ${childHtml}
+                        </div>`;
+                    }).join('');
                 },
 
                 renderMoveTree(nodes, level = 0) {

@@ -1,6 +1,5 @@
 package kr.co.kalpa.api.service;
 
-import com.github.f4b6a3.uuid.UuidCreator;
 import kr.co.kalpa.api.dto.request.ApNodeCreateRequest;
 import kr.co.kalpa.api.dto.request.ApNodeMoveRequest;
 import kr.co.kalpa.api.dto.response.ApNodeResponse;
@@ -39,7 +38,7 @@ public class ApNodeService {
     private String apnodeBaseDir;
 
     private String generateId() {
-        return UuidCreator.getTimeOrderedEpoch().toString();
+        return UUID.randomUUID().toString().replace("-", "");
     }
 
     // ─── 폴더 관련 ────────────────────────────────────────
@@ -313,6 +312,7 @@ public class ApNodeService {
 
         int newDepth = parent.getDepth() + 1;
         List<ApNodeResponse> responses = new ArrayList<>();
+        Set<String> usedNames = new HashSet<>();
 
         // 날짜 기반 폴더 생성
         String dateFolder = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy/MM/dd"));
@@ -327,7 +327,12 @@ public class ApNodeService {
 
             String nodeId = generateId();
             String originalName = file.getOriginalFilename();
-            String physicalName = generateId().replace("-", "");
+
+            // 동일 이름 중복 시 자동 리네임: 1.jpg → 1 (1).jpg → 1 (2).jpg
+            originalName = resolveUniqueName(targetFolderId, originalName, usedNames);
+            usedNames.add(originalName);
+
+            String physicalName = generateId();
 
             // 확장자 보존
             String ext = "";
@@ -358,7 +363,7 @@ public class ApNodeService {
                     .childCount(0)
                     .totalSize(0L)
                     .build();
-            apNodeRepository.save(fileNode);
+            fileNode = apNodeRepository.save(fileNode);
 
             // ap_file 생성
             ApFile apFile = ApFile.builder()
@@ -439,6 +444,26 @@ public class ApNodeService {
                 updateDescendantsDepth(child.getId(), depthDiff);
             }
         }
+    }
+
+    private String resolveUniqueName(String parentId, String name, Set<String> usedNames) {
+        if (!usedNames.contains(name) && !apNodeRepository.existsByParentIdAndNameAndIsDeletedFalse(parentId, name)) {
+            return name;
+        }
+        String baseName = name;
+        String ext = "";
+        int dotIdx = name.lastIndexOf(".");
+        if (dotIdx > 0) {
+            baseName = name.substring(0, dotIdx);
+            ext = name.substring(dotIdx);
+        }
+        for (int i = 1; i <= 100; i++) {
+            String candidate = baseName + " (" + i + ")" + ext;
+            if (!usedNames.contains(candidate) && !apNodeRepository.existsByParentIdAndNameAndIsDeletedFalse(parentId, candidate)) {
+                return candidate;
+            }
+        }
+        return baseName + " (" + System.currentTimeMillis() + ")" + ext;
     }
 
     private String computeSha256(Path filePath) {
