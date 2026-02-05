@@ -21,22 +21,31 @@
                                 :class="idx === breadcrumb.length - 1 ? 'font-semibold text-gray-800' : 'text-gray-500'"
                                 x-text="item.name">
                             </button>
-                            <span x-show="idx < breadcrumb.length - 1" class="text-gray-300">/</span>
+                            <span x-show="idx < breadcrumb.length - 1 && item.name !== '/'"
+                                class="text-gray-300 mx-1">/</span>
                         </div>
                     </template>
                 </nav>
 
                 <!-- 액션 버튼 & 뷰 전환 -->
+                <!-- 액션 버튼 & 뷰 전환 -->
                 <div class="flex items-center justify-between">
                     <div class="flex gap-2">
                         <button @click="showCreateFolderDialog()"
-                            class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors text-sm font-medium flex items-center gap-1.5">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                            class="px-4 py-2 bg-emerald-400 text-white rounded-xl hover:bg-emerald-500 transition-colors text-sm font-bold shadow-sm shadow-emerald-100 flex items-center gap-1.5 backdrop-blur-sm">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 4v16m8-8H4"></path>
+                            </svg>
                             새 폴더
                         </button>
                         <button @click="triggerUpload()"
-                            class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors text-sm font-medium flex items-center gap-1.5">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
+                            class="px-4 py-2 bg-sky-400 text-white rounded-xl hover:bg-sky-500 transition-colors text-sm font-bold shadow-sm shadow-sky-100 flex items-center gap-1.5 backdrop-blur-sm">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12">
+                                </path>
+                            </svg>
                             업로드
                         </button>
                         <input type="file" x-ref="fileInput" @change="handleUpload($event)" multiple class="hidden">
@@ -45,24 +54,33 @@
                     <div class="flex items-center gap-2">
                         <!-- 검색 -->
                         <div class="relative">
-                            <input type="text" x-model="searchKeyword"
-                                @keydown.enter="doSearch()"
-                                placeholder="검색..."
-                                class="pl-9 pr-4 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-300 focus:border-blue-300 w-48">
-                            <svg class="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                            <input type="text" x-model="searchKeyword" @keydown.enter="doSearch()" placeholder="검색..."
+                                class="pl-9 pr-4 py-2 border border-gray-100 bg-gray-50/50 rounded-xl text-sm focus:ring-2 focus:ring-sky-200 focus:border-sky-300 w-48 transition-all">
+                            <svg class="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" fill="none"
+                                stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                            </svg>
                         </div>
 
                         <!-- 뷰 전환 -->
-                        <div class="flex border border-gray-200 rounded-lg overflow-hidden">
+                        <div class="flex border border-gray-100 bg-gray-50 rounded-xl overflow-hidden p-1 gap-1">
                             <button @click="viewMode = 'grid'"
-                                :class="viewMode === 'grid' ? 'bg-gray-700 text-white' : 'bg-white text-gray-600 hover:bg-gray-50'"
-                                class="px-3 py-2 text-sm transition-colors">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
+                                :class="viewMode === 'grid' ? 'bg-white text-sky-500 shadow-sm' : 'text-gray-400 hover:text-gray-600'"
+                                class="px-2 py-1.5 rounded-lg text-sm transition-all">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z">
+                                    </path>
+                                </svg>
                             </button>
                             <button @click="viewMode = 'list'"
-                                :class="viewMode === 'list' ? 'bg-gray-700 text-white' : 'bg-white text-gray-600 hover:bg-gray-50'"
-                                class="px-3 py-2 text-sm transition-colors">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"></path></svg>
+                                :class="viewMode === 'list' ? 'bg-white text-sky-500 shadow-sm' : 'text-gray-400 hover:text-gray-600'"
+                                class="px-2 py-1.5 rounded-lg text-sm transition-all">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M4 6h16M4 10h16M4 14h16M4 18h16"></path>
+                                </svg>
                             </button>
                         </div>
                     </div>
@@ -72,7 +90,8 @@
             <!-- 메인 콘텐츠 (사이드바 + 파일영역) -->
             <div class="flex flex-1 min-h-0 border-x border-b border-gray-100 rounded-b-xl overflow-hidden bg-white">
                 <!-- 트리 사이드바 -->
-                <aside :style="`width: ${sidebarWidth}px`" class="border-r border-gray-100 bg-gray-50/50 overflow-y-auto flex-shrink-0 hidden md:block select-none">
+                <aside :style="`width: ${sidebarWidth}px`"
+                    class="border-r border-gray-100 bg-gray-50/50 overflow-y-auto flex-shrink-0 hidden md:block select-none">
                     <div class="p-3">
                         <h3 class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2 px-2">폴더</h3>
                         <div x-html="renderTree(treeData)"></div>
@@ -81,55 +100,78 @@
 
                 <!-- 리사이즈 핸들 -->
                 <div @mousedown="startResize($event)"
-                    class="w-1 flex-shrink-0 bg-gray-100 hover:bg-blue-400 cursor-col-resize transition-colors hidden md:block"></div>
+                    class="w-1 flex-shrink-0 bg-gray-50 hover:bg-sky-300 cursor-col-resize transition-colors hidden md:block">
+                </div>
 
                 <!-- 파일 영역 -->
-                <section class="flex-1 flex flex-col min-w-0 bg-white">
+                <section class="flex-1 flex flex-col min-w-0 bg-white relative" @dragenter.prevent="onDragEnter($event)"
+                    @dragover.prevent="onDragOver($event)" @dragleave.prevent="onDragLeave($event)"
+                    @drop.prevent="handleDrop($event)">
                     <div class="flex-1 overflow-y-auto p-4" @click.self="selectedIds = []">
+
+                        <!-- Drag Overlay -->
+                        <div x-show="isDragging" x-transition.opacity
+                            class="absolute inset-0 bg-sky-50/90 z-50 flex items-center justify-center border-2 border-dashed border-sky-400 m-2 rounded-xl pointer-events-none">
+                            <div class="text-center">
+                                <svg class="w-16 h-16 text-sky-400 mx-auto mb-4" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12">
+                                    </path>
+                                </svg>
+                                <p class="text-xl font-bold text-sky-600">파일을 여기에 놓으세요</p>
+                            </div>
+                        </div>
                         <!-- 로딩 -->
                         <div x-show="loading" class="flex items-center justify-center py-16">
-                            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+                            <div class="animate-spin rounded-full h-10 w-10 border-4 border-gray-100 border-t-sky-400">
+                            </div>
                         </div>
 
                         <!-- Grid View -->
                         <div x-show="!loading && viewMode === 'grid' && currentFiles.length > 0"
-                            class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3">
+                            class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
                             <template x-for="item in currentFiles" :key="item.id">
-                                <div @click="selectItem(item, $event)"
-                                    @dblclick="openItem(item)"
+                                <div @click="selectItem(item, $event)" @dblclick="openItem(item)"
                                     @contextmenu.prevent="showContextMenu($event, item)"
-                                    :class="isSelected(item.id) ? 'ring-2 ring-blue-500 bg-blue-50' : 'bg-white hover:bg-gray-50'"
-                                    class="relative border border-gray-100 rounded-lg p-3 cursor-pointer transition-all group shadow-sm hover:shadow h-40 flex flex-col items-center justify-between">
-                                    
+                                    :class="isSelected(item.id) ? 'ring-2 ring-sky-300 bg-sky-50/50' : 'bg-white hover:bg-gray-50 hover:shadow-md'"
+                                    class="relative border border-gray-100 rounded-2xl p-4 cursor-pointer transition-all group shadow-sm h-44 flex flex-col items-center justify-between">
+
                                     <!-- 삭제 버튼 (Hover 시 표시) -->
-                                    <button @click.stop="deleteItem(item)" 
-                                            class="absolute top-1 right-1 p-1 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                                    <button @click.stop="deleteItem(item)"
+                                        class="absolute top-1 right-1 p-1 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M6 18L18 6M6 6l12 12"></path>
+                                        </svg>
                                     </button>
 
                                     <!-- 아이콘 / 썸네일 -->
                                     <div class="flex-1 flex items-center justify-center w-full overflow-hidden mb-2">
                                         <template x-if="item.url && isImage(item)">
-                                            <img :src="item.url" class="max-h-full max-w-full object-contain rounded" loading="lazy">
+                                            <img :src="item.url" class="max-h-full max-w-full object-contain rounded"
+                                                loading="lazy">
                                         </template>
                                         <template x-if="!(item.url && isImage(item))">
-                                            <div class="w-16 h-16 text-gray-400" x-html="getIconInfo(item).svg"></div>
+                                            <div class="w-16 h-16 transition-transform group-hover:scale-105 duration-200"
+                                                x-html="getIconInfo(item).svg"></div>
                                         </template>
                                     </div>
 
                                     <!-- 파일명 -->
                                     <div class="w-full text-center">
-                                        <div class="text-xs font-medium text-gray-700 truncate px-1" 
-                                             :class="isSelected(item.id) ? '' : 'truncate'"
-                                             x-text="item.name"
-                                             :title="item.name"></div>
-                                        
+                                        <div class="text-sm font-medium text-gray-700 truncate px-1"
+                                            :class="isSelected(item.id) ? 'text-sky-700' : 'truncate'"
+                                            x-text="item.name" :title="item.name"></div>
+
                                         <!-- 메타정보 -->
                                         <template x-if="item.nodeType === 'F'">
-                                            <div class="text-[10px] text-gray-400 mt-1" x-text="formatSize(item.fileSize)"></div>
+                                            <div class="text-[10px] text-gray-400 mt-1"
+                                                x-text="formatSize(item.fileSize)"></div>
                                         </template>
                                         <template x-if="item.nodeType === 'D'">
-                                            <div class="text-[10px] text-gray-400 mt-1" x-text="(item.childCount || 0) + '개 항목'"></div>
+                                            <div class="text-[10px] text-gray-400 mt-1"
+                                                x-text="(item.childCount || 0) + '개 항목'"></div>
                                         </template>
                                     </div>
                                 </div>
@@ -142,40 +184,64 @@
                             <table class="w-full table-fixed">
                                 <thead class="bg-gray-50 border-b border-gray-100">
                                     <tr>
-                                        <th class="text-left p-3 text-xs font-semibold text-gray-500 uppercase w-7/12">이름</th>
-                                        <th class="text-left p-3 text-xs font-semibold text-gray-500 uppercase w-2/12">크기</th>
-                                        <th class="text-left p-3 text-xs font-semibold text-gray-500 uppercase w-3/12">수정일</th>
+                                        <th class="text-left p-3 text-xs font-semibold text-gray-500 uppercase w-7/12">
+                                            이름</th>
+                                        <th class="text-right p-3 text-xs font-semibold text-gray-500 uppercase w-2/12">
+                                            크기</th>
+                                        <th class="text-left p-3 text-xs font-semibold text-gray-500 uppercase w-3/12">
+                                            수정일</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <template x-for="item in currentFiles" :key="item.id">
-                                        <tr @click="selectItem(item, $event)"
-                                            @dblclick="openItem(item)"
+                                        <tr @click="selectItem(item, $event)" @dblclick="openItem(item)"
                                             @contextmenu.prevent="showContextMenu($event, item)"
-                                            :class="isSelected(item.id) ? 'bg-blue-50' : 'hover:bg-gray-50'"
+                                            :class="isSelected(item.id) ? 'bg-sky-50' : 'hover:bg-gray-50'"
                                             class="border-b border-gray-50 cursor-pointer transition-colors group">
                                             <td class="p-2 overflow-hidden">
                                                 <div class="flex items-center gap-3">
                                                     <!-- 아이콘 -->
-                                                    <div class="w-8 h-8 flex-shrink-0 text-gray-500 flex items-center justify-center">
-                                                         <template x-if="item.url && isImage(item)">
-                                                            <img :src="item.url" class="w-8 h-8 object-cover rounded shadow-sm">
+                                                    <div
+                                                        class="w-8 h-8 flex-shrink-0 text-gray-500 flex items-center justify-center">
+                                                        <template x-if="item.url && isImage(item)">
+                                                            <img :src="item.url"
+                                                                class="w-8 h-8 object-cover rounded shadow-sm">
                                                         </template>
                                                         <template x-if="!(item.url && isImage(item))">
                                                             <div class="w-6 h-6" x-html="getIconInfo(item).svg"></div>
                                                         </template>
                                                     </div>
-                                                    <span class="text-sm font-medium text-gray-800 truncate" x-text="item.name"></span>
-                                                    
+                                                    <span class="text-sm font-medium text-gray-800 truncate"
+                                                        x-text="item.name"></span>
+
                                                     <!-- 리스트뷰 호버 액션 -->
-                                                    <div class="ml-auto hidden group-hover:flex items-center gap-1 pr-2">
-                                                        <button @click.stop="renameItem(item)" class="p-1 text-gray-400 hover:text-blue-500 rounded"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg></button>
-                                                        <button @click.stop="deleteItem(item)" class="p-1 text-gray-400 hover:text-red-500 rounded"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg></button>
+                                                    <div
+                                                        class="ml-auto hidden group-hover:flex items-center gap-1 pr-2">
+                                                        <button @click.stop="renameItem(item)"
+                                                            class="p-1 text-gray-400 hover:text-blue-500 rounded"><svg
+                                                                class="w-4 h-4" fill="none" stroke="currentColor"
+                                                                viewBox="0 0 24 24">
+                                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                                    stroke-width="2"
+                                                                    d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z">
+                                                                </path>
+                                                            </svg></button>
+                                                        <button @click.stop="deleteItem(item)"
+                                                            class="p-1 text-gray-400 hover:text-red-500 rounded"><svg
+                                                                class="w-4 h-4" fill="none" stroke="currentColor"
+                                                                viewBox="0 0 24 24">
+                                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                                    stroke-width="2"
+                                                                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
+                                                                </path>
+                                                            </svg></button>
                                                     </div>
                                                 </div>
                                             </td>
-                                            <td class="p-3 text-sm text-gray-500" x-text="item.nodeType === 'D' ? '-' : formatSize(item.fileSize)"></td>
-                                            <td class="p-3 text-sm text-gray-500" x-text="formatDate(item.modifyDt || item.createDt)"></td>
+                                            <td class="p-3 text-sm text-gray-500 text-right"
+                                                x-text="item.nodeType === 'D' ? '-' : formatSize(item.fileSize)"></td>
+                                            <td class="p-3 text-sm text-gray-500"
+                                                x-text="formatDate(item.modifyDt || item.createDt)"></td>
                                         </tr>
                                     </template>
                                 </tbody>
@@ -184,79 +250,97 @@
 
                         <!-- Empty State -->
                         <div x-show="!loading && currentFiles.length === 0 && !isSearchMode" class="text-center py-16">
-                            <div class="w-20 h-20 mx-auto text-gray-200 mb-4">
-                                <svg fill="currentColor" viewBox="0 0 24 24"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z"/></svg>
+                            <div class="w-24 h-24 mx-auto text-sky-100 mb-4">
+                                <svg fill="currentColor" viewBox="0 0 24 24">
+                                    <path
+                                        d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z" />
+                                </svg>
                             </div>
-                            <p class="text-gray-400">이 폴더는 비어 있습니다</p>
-                            <p class="text-gray-300 text-sm mt-1">파일을 드래그하거나 업로드하세요</p>
+                            <p class="text-gray-400 font-medium">이 폴더는 비어 있습니다</p>
+                            <p class="text-gray-300 text-sm mt-2">파일을 드래그하거나 업로드하세요</p>
                         </div>
                     </div>
-                
+
                     <!-- Status Bar -->
-                    <div class="bg-gray-50 border-t border-gray-100 px-4 py-2 text-xs text-gray-500 flex justify-between items-center select-none">
+                    <div
+                        class="bg-gray-50 border-t border-gray-100 px-4 py-2 text-xs text-gray-500 flex justify-between items-center select-none">
                         <div class="flex gap-4">
                             <span>전체 <span x-text="currentFiles.length"></span>개 항목</span>
                             <span x-show="selectedIds.length > 0">선택됨: <span x-text="selectedIds.length"></span>개</span>
                         </div>
                         <div x-show="selectedIds.length === 1 && getSelectedItem()" class="max-w-md truncate">
-                             <span x-text="getSelectedItem().name"></span>
+                            <span x-text="getSelectedItem().name"></span>
                         </div>
                     </div>
                 </section>
             </div>
 
             <!-- Context Menu -->
-            <div x-show="contextMenu.show"
-                @click.away="contextMenu.show = false"
+            <div x-show="contextMenu.show" @click.away="contextMenu.show = false"
                 :style="`top: ${contextMenu.y}px; left: ${contextMenu.x}px`"
-                class="fixed bg-white shadow-xl rounded-lg border border-gray-100 py-1 z-50 min-w-[160px]"
-                x-transition>
+                class="fixed bg-white shadow-xl rounded-lg border border-gray-100 py-1 z-50 min-w-[160px]" x-transition>
                 <button @click="renameItem(contextMenu.item)"
                     class="flex items-center gap-2 w-full text-left px-4 py-2 text-sm hover:bg-gray-50 transition-colors">
-                    <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                    <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z">
+                        </path>
+                    </svg>
                     이름 변경
                 </button>
                 <button @click="promptMoveItem(contextMenu.item)"
                     class="flex items-center gap-2 w-full text-left px-4 py-2 text-sm hover:bg-gray-50 transition-colors">
-                    <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"></path></svg>
+                    <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"></path>
+                    </svg>
                     이동
                 </button>
                 <template x-if="contextMenu.item && contextMenu.item.nodeType === 'F'">
                     <button @click="downloadItem(contextMenu.item)"
                         class="flex items-center gap-2 w-full text-left px-4 py-2 text-sm hover:bg-gray-50 transition-colors">
-                        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
+                            </path>
+                        </svg>
                         다운로드
                     </button>
                 </template>
                 <hr class="my-1 border-gray-100">
                 <button @click="deleteItem(contextMenu.item)"
                     class="flex items-center gap-2 w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
+                        </path>
+                    </svg>
                     삭제
                 </button>
             </div>
 
             <!-- 폴더 생성 모달 -->
-            <div x-show="showFolderModal" class="fixed inset-0 bg-black/40 flex items-center justify-center z-50" x-transition>
+            <div x-show="showFolderModal" class="fixed inset-0 bg-black/40 flex items-center justify-center z-50"
+                x-transition>
                 <div @click.away="showFolderModal = false" class="bg-white rounded-xl shadow-2xl p-6 w-96">
                     <h3 class="text-lg font-bold text-gray-800 mb-4">새 폴더</h3>
-                    <input type="text" x-model="newFolderName" x-ref="folderNameInput"
-                        @keydown.enter="createFolder()"
-                        @keydown.escape="showFolderModal = false"
-                        placeholder="폴더 이름"
+                    <input type="text" x-model="newFolderName" x-ref="folderNameInput" @keydown.enter="createFolder()"
+                        @keydown.escape="showFolderModal = false" placeholder="폴더 이름"
                         class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-300 focus:border-blue-300">
                     <div class="flex justify-end gap-2 mt-4">
                         <button @click="showFolderModal = false"
-                            class="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors text-sm">취소</button>
+                            class="px-4 py-2 text-gray-500 hover:bg-gray-100 rounded-xl transition-colors text-sm font-medium">취소</button>
                         <button @click="createFolder()"
-                            class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors text-sm">생성</button>
+                            class="px-4 py-2 bg-sky-400 text-white rounded-xl hover:bg-sky-500 transition-colors text-sm font-bold shadow-sm shadow-sky-100">생성</button>
                     </div>
                 </div>
             </div>
 
             <!-- 이동 모달 -->
-            <div x-show="showMoveModal" class="fixed inset-0 bg-black/40 flex items-center justify-center z-50" x-transition>
-                <div @click.away="showMoveModal = false" class="bg-white rounded-xl shadow-2xl p-6 w-96 max-h-[70vh] flex flex-col">
+            <div x-show="showMoveModal" class="fixed inset-0 bg-black/40 flex items-center justify-center z-50"
+                x-transition>
+                <div @click.away="showMoveModal = false"
+                    class="bg-white rounded-xl shadow-2xl p-6 w-96 max-h-[70vh] flex flex-col">
                     <h3 class="text-lg font-bold text-gray-800 mb-4">이동할 폴더 선택</h3>
                     <div class="flex-1 overflow-y-auto border border-gray-100 rounded-lg p-2 mb-4">
                         <div x-html="renderMoveTree(treeData)"></div>
@@ -264,8 +348,7 @@
                     <div class="flex justify-end gap-2">
                         <button @click="showMoveModal = false"
                             class="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors text-sm">취소</button>
-                        <button @click="confirmMove()"
-                            :disabled="!moveTargetId"
+                        <button @click="confirmMove()" :disabled="!moveTargetId"
                             :class="moveTargetId ? 'bg-blue-500 hover:bg-blue-600' : 'bg-gray-300 cursor-not-allowed'"
                             class="px-4 py-2 text-white rounded-lg transition-colors text-sm">이동</button>
                     </div>
@@ -275,451 +358,515 @@
         </div>
 
         <script>
-        function fileExplorer() {
-            return {
-                treeData: [],
-                currentFiles: [],
-                breadcrumb: [],
-                currentFolderId: 'root',
-                viewMode: 'grid',
-                selectedIds: [],
-                loading: true,
-                searchKeyword: '',
-                isSearchMode: false,
-                contextMenu: { show: false, x: 0, y: 0, item: null },
-                showFolderModal: false,
-                newFolderName: '',
-                showMoveModal: false,
-                moveTargetId: null,
-                moveItem: null,
-                sidebarWidth: parseInt(localStorage.getItem('apnode_sidebar_width')) || 240,
-                _resizing: false,
-                expandedFolders: new Set(JSON.parse(localStorage.getItem('apnode_expanded') || '[]')),
+            function fileExplorer() {
+                return {
+                    treeData: [],
+                    currentFiles: [],
+                    breadcrumb: [],
+                    currentFolderId: 'root',
+                    viewMode: 'grid',
+                    selectedIds: [],
+                    loading: true,
+                    searchKeyword: '',
+                    isSearchMode: false,
+                    searchKeyword: '',
+                    isSearchMode: false,
+                    isDragging: false,
+                    contextMenu: { show: false, x: 0, y: 0, item: null },
+                    showFolderModal: false,
+                    newFolderName: '',
+                    showMoveModal: false,
+                    moveTargetId: null,
+                    moveItem: null,
+                    sidebarWidth: parseInt(localStorage.getItem('apnode_sidebar_width')) || 240,
+                    _resizing: false,
+                    expandedFolders: new Set(JSON.parse(localStorage.getItem('apnode_expanded') || '[]')),
 
-                async init() {
-                    await this.loadTree();
-                    // 루트 노드는 항상 펼침
-                    if (this.treeData.length > 0) {
-                        this.treeData.forEach(n => this.expandedFolders.add(n.id));
-                    }
-                    await this.loadFolder('root');
-                },
+                    async init() {
+                        await this.loadTree();
+                        // 루트 노드는 항상 펼침
+                        if (this.treeData.length > 0) {
+                            this.treeData.forEach(n => this.expandedFolders.add(n.id));
+                        }
+                        await this.loadFolder('root');
+                    },
 
-                toggleFolder(nodeId, e) {
-                    e.stopPropagation();
-                    if (this.expandedFolders.has(nodeId)) {
-                        this.expandedFolders.delete(nodeId);
-                    } else {
-                        this.expandedFolders.add(nodeId);
-                    }
-                    this._saveExpanded();
-                },
+                    toggleFolder(nodeId, e) {
+                        e.stopPropagation();
+                        if (this.expandedFolders.has(nodeId)) {
+                            this.expandedFolders.delete(nodeId);
+                        } else {
+                            this.expandedFolders.add(nodeId);
+                        }
+                        this._saveExpanded();
+                    },
 
-                expandToFolder(folderId) {
-                    // breadcrumb 경로의 모든 폴더를 펼침
-                    for (const item of this.breadcrumb) {
-                        this.expandedFolders.add(item.id);
-                    }
-                    this._saveExpanded();
-                },
+                    expandToFolder(folderId) {
+                        // breadcrumb 경로의 모든 폴더를 펼침
+                        for (const item of this.breadcrumb) {
+                            this.expandedFolders.add(item.id);
+                        }
+                        this._saveExpanded();
+                    },
 
-                _saveExpanded() {
-                    localStorage.setItem('apnode_expanded', JSON.stringify([...this.expandedFolders]));
-                },
+                    _saveExpanded() {
+                        localStorage.setItem('apnode_expanded', JSON.stringify([...this.expandedFolders]));
+                    },
 
-                startResize(e) {
-                    this._resizing = true;
-                    const startX = e.clientX;
-                    const startWidth = this.sidebarWidth;
+                    startResize(e) {
+                        this._resizing = true;
+                        const startX = e.clientX;
+                        const startWidth = this.sidebarWidth;
 
-                    const onMouseMove = (e) => {
-                        const newWidth = Math.min(Math.max(startWidth + e.clientX - startX, 150), 600);
-                        this.sidebarWidth = newWidth;
-                    };
-                    const onMouseUp = () => {
-                        this._resizing = false;
-                        document.removeEventListener('mousemove', onMouseMove);
-                        document.removeEventListener('mouseup', onMouseUp);
-                        document.body.style.cursor = '';
-                        document.body.style.userSelect = '';
-                        localStorage.setItem('apnode_sidebar_width', this.sidebarWidth);
-                    };
-                    document.addEventListener('mousemove', onMouseMove);
-                    document.addEventListener('mouseup', onMouseUp);
-                    document.body.style.cursor = 'col-resize';
-                    document.body.style.userSelect = 'none';
-                },
+                        const onMouseMove = (e) => {
+                            const newWidth = Math.min(Math.max(startWidth + e.clientX - startX, 150), 600);
+                            this.sidebarWidth = newWidth;
+                        };
+                        const onMouseUp = () => {
+                            this._resizing = false;
+                            document.removeEventListener('mousemove', onMouseMove);
+                            document.removeEventListener('mouseup', onMouseUp);
+                            document.body.style.cursor = '';
+                            document.body.style.userSelect = '';
+                            localStorage.setItem('apnode_sidebar_width', this.sidebarWidth);
+                        };
+                        document.addEventListener('mousemove', onMouseMove);
+                        document.addEventListener('mouseup', onMouseUp);
+                        document.body.style.cursor = 'col-resize';
+                        document.body.style.userSelect = 'none';
+                    },
 
-                async loadTree() {
-                    try {
-                        const res = await fetch('/api/nodes/tree');
-                        const data = await res.json();
-                        this.treeData = data.data || [];
-                    } catch (e) {
-                        console.error('트리 로드 실패:', e);
-                    }
-                },
+                    async loadTree() {
+                        try {
+                            const res = await fetch('/api/nodes/tree');
+                            const data = await res.json();
+                            this.treeData = data.data || [];
+                        } catch (e) {
+                            console.error('트리 로드 실패:', e);
+                        }
+                    },
 
-                async loadFolder(folderId) {
-                    this.loading = true;
-                    this.isSearchMode = false;
-                    this.currentFolderId = folderId;
-                    this.selectedIds = [];
+                    async loadFolder(folderId) {
+                        this.loading = true;
+                        this.isSearchMode = false;
+                        this.currentFolderId = folderId;
+                        this.selectedIds = [];
 
-                    try {
-                        const [filesRes, breadcrumbRes] = await Promise.all([
-                            fetch(`/api/nodes/${folderId}/children`),
-                            fetch(`/api/nodes/${folderId}/breadcrumb`)
-                        ]);
+                        try {
+                            const [filesRes, breadcrumbRes] = await Promise.all([
+                                fetch(`/api/nodes/${folderId}/children`),
+                                fetch(`/api/nodes/${folderId}/breadcrumb`)
+                            ]);
 
-                        const filesData = await filesRes.json();
-                        const breadcrumbData = await breadcrumbRes.json();
+                            const filesData = await filesRes.json();
+                            const breadcrumbData = await breadcrumbRes.json();
 
-                        this.currentFiles = filesData.data || [];
-                        this.breadcrumb = breadcrumbData.data || [];
-                        this.expandToFolder(folderId);
-                    } catch (e) {
-                        console.error('폴더 로드 실패:', e);
-                    } finally {
-                        this.loading = false;
-                    }
-                },
+                            this.currentFiles = filesData.data || [];
+                            this.breadcrumb = breadcrumbData.data || [];
+                            this.expandToFolder(folderId);
+                        } catch (e) {
+                            console.error('폴더 로드 실패:', e);
+                        } finally {
+                            this.loading = false;
+                        }
+                    },
 
-                renderTree(nodes, level = 0) {
-                    if (!nodes || nodes.length === 0) return '';
-                    const hasChildren = (n) => n.children && n.children.length > 0;
-                    const isExpanded = (id) => this.expandedFolders.has(id);
-                    
-                    const openFolderSvg = '<svg class="w-4 h-4 text-blue-500" fill="currentColor" viewBox="0 0 20 20"><path d="M2 6a2 2 0 012-2h5l2 2h5a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"/></svg>';
-                    const closedFolderSvg = '<svg class="w-4 h-4 text-gray-400" fill="currentColor" viewBox="0 0 20 20"><path d="M2 6a2 2 0 012-2h5l2 2h5a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"/></svg>';
-                    
-                    return nodes.map(node => {
-                        const expanded = isExpanded(node.id);
-                        const hasSub = hasChildren(node);
-                        const arrow = hasSub
-                            ? `<span class="text-xs text-gray-400 flex-shrink-0 w-4 text-center cursor-pointer select-none hover:text-gray-600" @click="toggleFolder('${node.id}', $event)">${expanded ? '▼' : '▶'}</span>`
-                            : `<span class="w-4 flex-shrink-0"></span>`;
-                        const icon = expanded ? openFolderSvg : closedFolderSvg;
-                        const childHtml = hasSub && expanded ? this.renderTree(node.children, level + 1) : '';
-                        
-                        return `
+                    renderTree(nodes, level = 0) {
+                        if (!nodes || nodes.length === 0) return '';
+                        const hasChildren = (n) => n.children && n.children.length > 0;
+                        const isExpanded = (id) => this.expandedFolders.has(id);
+
+                        // 투톤 폴더 아이콘 (Open/Closed)
+                        const closedFolderSvg = `
+                            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" fill="#F59E0B"/>
+                            </svg>`;
+
+                        const openFolderSvg = `
+                            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M4 6a2 2 0 012-2h4l2 2h7.5a2 2 0 012 2v3H3V6z" fill="#D97706"/>
+                                <path d="M22.5 12l-2.4 9.1a1.5 1.5 0 0 1-1.4 1.1H3.3a1.5 1.5 0 0 1-1.4-1.9l2.4-9.1a1.5 1.5 0 0 1 1.4-1.1h15.4a1.5 1.5 0 0 1 1.4 1.1z" fill="#FBBF24"/>
+                            </svg>`;
+
+                        return nodes.map(node => {
+                            const expanded = isExpanded(node.id);
+                            const hasSub = hasChildren(node);
+                            const arrow = hasSub
+                                ? `<span class="text-[10px] text-gray-400 flex-shrink-0 w-4 text-center cursor-pointer select-none hover:text-gray-600 transition-transform ${expanded ? 'rotate-90' : ''}" @click="toggleFolder('${node.id}', $event)">▶</span>`
+                                : `<span class="w-4 flex-shrink-0"></span>`;
+                            const icon = expanded ? openFolderSvg : closedFolderSvg;
+                            const childHtml = hasSub && expanded ? this.renderTree(node.children, level + 1) : '';
+
+                            return `
                         <div style="margin-left: ${level * 12}px" class="my-0.5">
-                            <div class="flex items-center gap-1 px-2 py-1.5 rounded-md hover:bg-gray-100 cursor-pointer text-sm transition-colors ${this.currentFolderId === node.id ? 'bg-blue-100 text-blue-700 font-medium' : 'text-gray-700'}"
+                            <div class="flex items-center gap-1.5 px-2 py-1.5 rounded-lg cursor-pointer text-sm transition-colors group ${this.currentFolderId === node.id ? 'bg-sky-100 text-sky-800 font-bold' : 'text-gray-600 hover:bg-gray-50'}"
                                 @click="loadFolder('${node.id}'); expandedFolders.add('${node.id}'); _saveExpanded()">
                                 ${arrow}
-                                <span class="flex-shrink-0">${icon}</span>
+                                <span class="flex-shrink-0 transform transition-transform group-hover:scale-105">${icon}</span>
                                 <span class="truncate">${node.name}</span>
                             </div>
                             ${childHtml}
                         </div>`;
-                    }).join('');
-                },
+                        }).join('');
+                    },
 
-                renderMoveTree(nodes, level = 0) {
-                    if (!nodes || nodes.length === 0) return '';
-                    const folderSvg = '<svg class="w-4 h-4 text-gray-400" fill="currentColor" viewBox="0 0 20 20"><path d="M2 6a2 2 0 012-2h5l2 2h5a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"/></svg>';
-                    
-                    return nodes.map(node => `
+                    renderMoveTree(nodes, level = 0) {
+                        if (!nodes || nodes.length === 0) return '';
+
+                        const folderSvg = `
+                            <svg class="w-5 h-5 flex-shrink-0" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" fill="#F59E0B"/>
+                            </svg>`;
+
+                        return nodes.map(node => `
                         <div style="margin-left: ${level * 12}px" class="my-0.5">
-                            <div class="flex items-center gap-1.5 px-2 py-1.5 rounded cursor-pointer text-sm transition-colors ${this.moveTargetId === node.id ? 'bg-blue-100 text-blue-700 font-medium' : 'text-gray-700 hover:bg-gray-100'}"
+                            <div class="flex items-center gap-1.5 px-2 py-1.5 rounded-lg cursor-pointer text-sm transition-colors ${this.moveTargetId === node.id ? 'bg-sky-50 text-sky-700 font-bold' : 'text-gray-600 hover:bg-gray-50'}"
                                 @click="moveTargetId = '${node.id}'">
-                                <span class="flex-shrink-0">${folderSvg}</span>
+                                ${folderSvg}
                                 <span class="truncate">${node.name}</span>
                             </div>
                             ${node.children ? this.renderMoveTree(node.children, level + 1) : ''}
                         </div>
                     `).join('');
-                },
+                    },
 
-                navigateTo(folderId) {
-                    this.searchKeyword = '';
-                    this.loadFolder(folderId);
-                },
+                    navigateTo(folderId) {
+                        this.searchKeyword = '';
+                        this.loadFolder(folderId);
+                    },
 
-                selectItem(item, event) {
-                    if (event.ctrlKey || event.metaKey) {
-                        if (this.selectedIds.includes(item.id)) {
-                            this.selectedIds = this.selectedIds.filter(id => id !== item.id);
+                    selectItem(item, event) {
+                        if (event.ctrlKey || event.metaKey) {
+                            if (this.selectedIds.includes(item.id)) {
+                                this.selectedIds = this.selectedIds.filter(id => id !== item.id);
+                            } else {
+                                this.selectedIds.push(item.id);
+                            }
                         } else {
-                            this.selectedIds.push(item.id);
+                            this.selectedIds = [item.id];
                         }
-                    } else {
-                        this.selectedIds = [item.id];
-                    }
-                },
+                    },
 
-                isSelected(id) {
-                    return this.selectedIds.includes(id);
-                },
+                    isSelected(id) {
+                        return this.selectedIds.includes(id);
+                    },
 
-                openItem(item) {
-                    if (item.nodeType === 'D') {
-                        this.loadFolder(item.id);
-                        this.loadTree();
-                    } else {
-                        this.downloadItem(item);
-                    }
-                },
+                    openItem(item) {
+                        if (item.nodeType === 'D') {
+                            this.loadFolder(item.id);
+                            this.loadTree();
+                        } else {
+                            this.downloadItem(item);
+                        }
+                    },
 
-                showContextMenu(event, item) {
-                    this.contextMenu = {
-                        show: true,
-                        x: event.clientX,
-                        y: event.clientY,
-                        item: item
-                    };
-                },
+                    showContextMenu(event, item) {
+                        this.contextMenu = {
+                            show: true,
+                            x: event.clientX,
+                            y: event.clientY,
+                            item: item
+                        };
+                    },
 
-                showCreateFolderDialog() {
-                    this.newFolderName = '';
-                    this.showFolderModal = true;
-                    this.$nextTick(() => this.$refs.folderNameInput?.focus());
-                },
+                    showCreateFolderDialog() {
+                        this.newFolderName = '';
+                        this.showFolderModal = true;
+                        this.$nextTick(() => this.$refs.folderNameInput?.focus());
+                    },
 
-                async createFolder() {
-                    if (!this.newFolderName.trim()) return;
+                    async createFolder() {
+                        if (!this.newFolderName.trim()) return;
 
-                    try {
-                        const res = await fetch('/api/nodes', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({
-                                nodeType: 'D',
-                                parentId: this.currentFolderId === 'root' ?
-                                    (this.breadcrumb.length > 0 ? this.breadcrumb[0].id : 'root') :
-                                    this.currentFolderId,
-                                name: this.newFolderName.trim()
-                            })
+                        try {
+                            const res = await fetch('/api/nodes', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({
+                                    nodeType: 'D',
+                                    parentId: this.currentFolderId === 'root' ?
+                                        (this.breadcrumb.length > 0 ? this.breadcrumb[0].id : 'root') :
+                                        this.currentFolderId,
+                                    name: this.newFolderName.trim()
+                                })
+                            });
+                            const data = await res.json();
+                            if (!data.success) {
+                                alert(data.message || '폴더 생성에 실패했습니다');
+                                return;
+                            }
+                            this.showFolderModal = false;
+                            this.loadFolder(this.currentFolderId);
+                            this.loadTree();
+                        } catch (e) {
+                            alert('폴더 생성 실패: ' + e.message);
+                        }
+                    },
+
+                    triggerUpload() {
+                        this.$refs.fileInput.click();
+                    },
+
+                    async uploadFiles(files) {
+                        if (!files || files.length === 0) return;
+
+                        const formData = new FormData();
+                        Array.from(files).forEach(file => {
+                            formData.append('files', file);
                         });
-                        const data = await res.json();
-                        if (!data.success) {
-                            alert(data.message || '폴더 생성에 실패했습니다');
+                        const uploadFolderId = this.currentFolderId === 'root' ?
+                            (this.breadcrumb.length > 0 ? this.breadcrumb[0].id : 'root') :
+                            this.currentFolderId;
+                        formData.append('folderId', uploadFolderId);
+
+                        try {
+                            const res = await fetch('/api/nodes/upload', {
+                                method: 'POST',
+                                body: formData
+                            });
+                            const data = await res.json();
+                            if (!data.success) {
+                                alert(data.message || '업로드에 실패했습니다');
+                                return;
+                            }
+                            this.loadFolder(this.currentFolderId);
+                        } catch (e) {
+                            alert('업로드 실패: ' + e.message);
+                        }
+                    },
+
+                    handleUpload(event) {
+                        this.uploadFiles(event.target.files);
+                        event.target.value = '';
+                    },
+
+                    handleDrop(event) {
+                        this.isDragging = false;
+                        const files = event.dataTransfer.files;
+                        this.uploadFiles(files);
+                    },
+
+                    onDragEnter(event) {
+                        this.isDragging = true;
+                    },
+
+                    onDragOver(event) {
+                        this.isDragging = true;
+                        event.dataTransfer.dropEffect = 'copy';
+                    },
+
+                    onDragLeave(event) {
+                        // If we are leaving to an element inside the container, ignore
+                        if (event.relatedTarget && event.currentTarget.contains(event.relatedTarget)) {
                             return;
                         }
-                        this.showFolderModal = false;
+                        this.isDragging = false;
+                    },
+
+                    async renameItem(item) {
+                        this.contextMenu.show = false;
+                        const newName = prompt('새 이름:', item.name);
+                        if (!newName || newName === item.name) return;
+
+                        try {
+                            const res = await fetch(`/api/nodes/${item.id}`, {
+                                method: 'PUT',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ name: newName })
+                            });
+                            const data = await res.json();
+                            if (!data.success) {
+                                alert(data.message || '이름 변경에 실패했습니다');
+                                return;
+                            }
+                            this.loadFolder(this.currentFolderId);
+                            if (item.nodeType === 'D') this.loadTree();
+                        } catch (e) {
+                            alert('이름 변경 실패: ' + e.message);
+                        }
+                    },
+
+                    promptMoveItem(item) {
+                        this.contextMenu.show = false;
+                        this.moveItem = item;
+                        this.moveTargetId = null;
+                        this.showMoveModal = true;
+                    },
+
+                    async confirmMove() {
+                        if (!this.moveTargetId || !this.moveItem) return;
+
+                        try {
+                            const res = await fetch(`/api/nodes/${this.moveItem.id}/move`, {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ targetParentId: this.moveTargetId })
+                            });
+                            const data = await res.json();
+                            if (!data.success) {
+                                alert(data.message || '이동에 실패했습니다');
+                                return;
+                            }
+                            this.showMoveModal = false;
+                            this.loadFolder(this.currentFolderId);
+                            this.loadTree();
+                        } catch (e) {
+                            alert('이동 실패: ' + e.message);
+                        }
+                    },
+
+                    async deleteItem(item) {
+                        this.contextMenu.show = false;
+                        const type = item.nodeType === 'D' ? '폴더' : '파일';
+                        if (!confirm(`"${item.name}" ${type}을(를) 삭제하시겠습니까?`)) return;
+
+                        try {
+                            const res = await fetch(`/api/nodes/${item.id}`, { method: 'DELETE' });
+                            const data = await res.json();
+                            if (!data.success) {
+                                alert(data.message || '삭제에 실패했습니다');
+                                return;
+                            }
+                            this.loadFolder(this.currentFolderId);
+                            if (item.nodeType === 'D') this.loadTree();
+                        } catch (e) {
+                            alert('삭제 실패: ' + e.message);
+                        }
+                    },
+
+                    downloadItem(item) {
+                        if (item.nodeType === 'F') {
+                            window.open(`/api/nodes/${item.id}/download`, '_blank');
+                        }
+                        this.contextMenu.show = false;
+                    },
+
+                    async doSearch() {
+                        const kw = this.searchKeyword.trim();
+                        if (!kw) {
+                            this.clearSearch();
+                            return;
+                        }
+
+                        this.loading = true;
+                        this.isSearchMode = true;
+
+                        try {
+                            const res = await fetch(`/api/nodes/search?keyword=${encodeURIComponent(kw)}`);
+                            const data = await res.json();
+                            this.currentFiles = data.data || [];
+                        } catch (e) {
+                            console.error('검색 실패:', e);
+                        } finally {
+                            this.loading = false;
+                        }
+                    },
+
+                    isImage(item) {
+                        return item.nodeType === 'F' &&
+                            (item.contentType && item.contentType.startsWith('image/') ||
+                                /\.(jpg|jpeg|png|gif|webp|svg)$/i.test(item.name));
+                    },
+
+                    getIconInfo(item) {
+                        if (item.nodeType === 'D') {
+                            // Large Folder Icon for Grid View
+                            return {
+                                svg: `
+                                <svg class="w-full h-full drop-shadow-sm" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M10 30C10 24.4772 14.4772 20 20 20H40C42.6522 20 45.1957 21.0536 47.0711 22.9289L52.9289 28.7868C54.8043 30.6621 57.3478 31.7157 60 31.7157H80C85.5228 31.7157 90 36.1929 90 41.7157V70C90 75.5228 85.5228 80 80 80H20C14.4772 80 10 75.5228 10 70V30Z" fill="#D97706"/>
+                                    <path d="M10 40H90V70C90 75.5228 85.5228 80 80 80H20C14.4772 80 10 75.5228 10 70V40Z" fill="#F59E0B"/>
+                                </svg>`
+                            };
+                        }
+
+                        const ext = (item.name || '').split('.').pop()?.toLowerCase();
+                        let svg = '';
+
+                        // Helper to create file icon
+                        const createFileIcon = (color, label) => `
+                             <svg class="w-full h-full drop-shadow-sm" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M20 10C14.4772 10 10 14.4772 10 20V80C10 85.5228 14.4772 90 20 90H80C85.5228 90 90 85.5228 90 80V30L70 10H20Z" fill="white" stroke="${color}" stroke-width="2"/>
+                                <path d="M70 10V30H90" fill="${color}" fill-opacity="0.3"/>
+                                <rect x="25" y="45" width="50" height="6" rx="3" fill="${color}" fill-opacity="0.3"/>
+                                <rect x="25" y="60" width="30" height="6" rx="3" fill="${color}" fill-opacity="0.3"/>
+                                <text x="50" y="75" font-family="Arial" font-size="20" fill="${color}" text-anchor="middle" font-weight="bold">${label}</text>
+                            </svg>`;
+
+                        // Basic File Icon (Gray)
+                        const baseFile = createFileIcon('#9CA3AF', ext ? ext.toUpperCase().slice(0, 4) : 'FILE');
+
+                        switch (ext) {
+                            case 'pdf':
+                                svg = createFileIcon('#EF4444', 'PDF');
+                                break;
+                            case 'doc': case 'docx':
+                                svg = createFileIcon('#3B82F6', 'DOC');
+                                break;
+                            case 'xls': case 'xlsx': case 'csv':
+                                svg = createFileIcon('#10B981', 'XLS');
+                                break;
+                            case 'ppt': case 'pptx':
+                                svg = createFileIcon('#F97316', 'PPT');
+                                break;
+                            case 'zip': case 'rar': case '7z': case 'tar': case 'gz':
+                                svg = createFileIcon('#EAB308', 'ZIP');
+                                break;
+                            case 'mp3': case 'wav':
+                                svg = createFileIcon('#A855F7', 'AUDIO');
+                                break;
+                            case 'mp4': case 'avi': case 'mov':
+                                svg = createFileIcon('#EC4899', 'VIDEO');
+                                break;
+                            case 'txt': case 'md':
+                                svg = createFileIcon('#6366F1', 'TXT');
+                                break;
+                            default:
+                                svg = baseFile;
+                        }
+                        return { svg };
+                    },
+
+                    getSelectedItem() {
+                        if (this.selectedIds.length !== 1) return null;
+                        return this.currentFiles.find(f => f.id === this.selectedIds[0]);
+                    },
+
+                    clearSearch() {
+                        this.searchKeyword = '';
+                        this.isSearchMode = false;
                         this.loadFolder(this.currentFolderId);
-                        this.loadTree();
-                    } catch (e) {
-                        alert('폴더 생성 실패: ' + e.message);
-                    }
-                },
+                    },
 
-                triggerUpload() {
-                    this.$refs.fileInput.click();
-                },
+                    formatSize(bytes) {
+                        if (!bytes) return '-';
+                        const units = ['B', 'KB', 'MB', 'GB'];
+                        let size = bytes;
+                        let unitIndex = 0;
+                        while (size >= 1024 && unitIndex < units.length - 1) {
+                            size /= 1024;
+                            unitIndex++;
+                        }
+                        return `${size.toFixed(1)} ${units[unitIndex]}`;
+                    },
 
-                async handleUpload(event) {
-                    const files = event.target.files;
-                    if (!files || files.length === 0) return;
+                    formatDate(dateStr) {
+                        if (!dateStr) return '-';
+                        const date = new Date(dateStr);
+                        const today = new Date();
+                        const isToday = date.getDate() === today.getDate() &&
+                            date.getMonth() === today.getMonth() &&
+                            date.getFullYear() === today.getFullYear();
 
-                    const formData = new FormData();
-                    for (let file of files) {
-                        formData.append('files', file);
-                    }
-                    const uploadFolderId = this.currentFolderId === 'root' ?
-                        (this.breadcrumb.length > 0 ? this.breadcrumb[0].id : 'root') :
-                        this.currentFolderId;
-                    formData.append('folderId', uploadFolderId);
-
-                    try {
-                        const res = await fetch('/api/nodes/upload', {
-                            method: 'POST',
-                            body: formData
+                        if (isToday) {
+                            return date.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' });
+                        }
+                        return date.toLocaleDateString('ko-KR', {
+                            year: 'numeric', month: '2-digit', day: '2-digit'
                         });
-                        const data = await res.json();
-                        if (!data.success) {
-                            alert(data.message || '업로드에 실패했습니다');
-                            return;
-                        }
-                        this.loadFolder(this.currentFolderId);
-                    } catch (e) {
-                        alert('업로드 실패: ' + e.message);
                     }
-
-                    event.target.value = '';
-                },
-
-                async renameItem(item) {
-                    this.contextMenu.show = false;
-                    const newName = prompt('새 이름:', item.name);
-                    if (!newName || newName === item.name) return;
-
-                    try {
-                        const res = await fetch(`/api/nodes/${item.id}`, {
-                            method: 'PUT',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ name: newName })
-                        });
-                        const data = await res.json();
-                        if (!data.success) {
-                            alert(data.message || '이름 변경에 실패했습니다');
-                            return;
-                        }
-                        this.loadFolder(this.currentFolderId);
-                        if (item.nodeType === 'D') this.loadTree();
-                    } catch (e) {
-                        alert('이름 변경 실패: ' + e.message);
-                    }
-                },
-
-                promptMoveItem(item) {
-                    this.contextMenu.show = false;
-                    this.moveItem = item;
-                    this.moveTargetId = null;
-                    this.showMoveModal = true;
-                },
-
-                async confirmMove() {
-                    if (!this.moveTargetId || !this.moveItem) return;
-
-                    try {
-                        const res = await fetch(`/api/nodes/${this.moveItem.id}/move`, {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ targetParentId: this.moveTargetId })
-                        });
-                        const data = await res.json();
-                        if (!data.success) {
-                            alert(data.message || '이동에 실패했습니다');
-                            return;
-                        }
-                        this.showMoveModal = false;
-                        this.loadFolder(this.currentFolderId);
-                        this.loadTree();
-                    } catch (e) {
-                        alert('이동 실패: ' + e.message);
-                    }
-                },
-
-                async deleteItem(item) {
-                    this.contextMenu.show = false;
-                    const type = item.nodeType === 'D' ? '폴더' : '파일';
-                    if (!confirm(`"${item.name}" ${type}을(를) 삭제하시겠습니까?`)) return;
-
-                    try {
-                        const res = await fetch(`/api/nodes/${item.id}`, { method: 'DELETE' });
-                        const data = await res.json();
-                        if (!data.success) {
-                            alert(data.message || '삭제에 실패했습니다');
-                            return;
-                        }
-                        this.loadFolder(this.currentFolderId);
-                        if (item.nodeType === 'D') this.loadTree();
-                    } catch (e) {
-                        alert('삭제 실패: ' + e.message);
-                    }
-                },
-
-                downloadItem(item) {
-                    if (item.nodeType === 'F') {
-                        window.open(`/api/nodes/${item.id}/download`, '_blank');
-                    }
-                    this.contextMenu.show = false;
-                },
-
-                async doSearch() {
-                    const kw = this.searchKeyword.trim();
-                    if (!kw) {
-                        this.clearSearch();
-                        return;
-                    }
-
-                    this.loading = true;
-                    this.isSearchMode = true;
-
-                    try {
-                        const res = await fetch(`/api/nodes/search?keyword=${encodeURIComponent(kw)}`);
-                        const data = await res.json();
-                        this.currentFiles = data.data || [];
-                    } catch (e) {
-                        console.error('검색 실패:', e);
-                    } finally {
-                        this.loading = false;
-                    }
-                },
-
-                isImage(item) {
-                    return item.nodeType === 'F' && 
-                           (item.contentType && item.contentType.startsWith('image/') || 
-                            /\.(jpg|jpeg|png|gif|webp|svg)$/i.test(item.name));
-                },
-
-                getIconInfo(item) {
-                    if (item.nodeType === 'D') {
-                        return { svg: '<svg class="w-full h-full text-blue-500" fill="currentColor" viewBox="0 0 20 20"><path d="M2 6a2 2 0 012-2h5l2 2h5a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"/></svg>' };
-                    }
-
-                    const ext = (item.name || '').split('.').pop()?.toLowerCase();
-                    let svg = '';
-
-                    // Basic File Icon (Gray)
-                    const baseFile = '<svg class="w-full h-full text-gray-400" fill="currentColor" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6z"/></svg>';
-                    
-                    switch (ext) {
-                        case 'pdf':
-                            svg = '<svg class="w-full h-full text-red-500" fill="currentColor" viewBox="0 0 24 24"><path d="M20 2H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-8.5 7.5c0 .83-.67 1.5-1.5 1.5H9v2H7.5V7H10c.83 0 1.5.67 1.5 1.5v1zm5 2c0 .83-.67 1.5-1.5 1.5h-2.5V7H15c.83 0 1.5.67 1.5 1.5v3zm4-3H19v1h1.5V11H19v2h-1.5V7h2zM9 9.5h1v-1H9v1zM4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm10 5.5h1v-3h-1v3z"/></svg>';
-                            break;
-                        case 'doc': case 'docx':
-                            svg = '<svg class="w-full h-full text-blue-500" fill="currentColor" viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>';
-                            break;
-                        case 'xls': case 'xlsx': case 'csv':
-                            svg = '<svg class="w-full h-full text-green-500" fill="currentColor" viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>';
-                            break;
-                        case 'zip': case 'rar': case '7z': case 'tar': case 'gz':
-                            svg = '<svg class="w-full h-full text-yellow-600" fill="currentColor" viewBox="0 0 24 24"><path d="M20 6h-4V4c0-1.11-.89-2-2-2h-4c-1.11 0-2 .89-2 2v2H4c-1.11 0-2 .89-2 2v10c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2zM10 4h4v2h-4V4zm10 14H4V8h16v10z"/></svg>';
-                            break;
-                        case 'mp3': case 'wav':
-                            svg = '<svg class="w-full h-full text-purple-500" fill="currentColor" viewBox="0 0 24 24"><path d="M12 3v9.28c-.47-.17-.97-.28-1.5-.28C8.01 12 6 14.01 6 16.5S8.01 21 10.5 21c2.31 0 4.2-1.75 4.45-4H15V6h4V3h-7z"/></svg>';
-                            break;
-                         case 'mp4': case 'avi': case 'mov':
-                            svg = '<svg class="w-full h-full text-pink-500" fill="currentColor" viewBox="0 0 24 24"><path d="M18 4l2 4h-3l-2-4h-2l2 4h-3l-2-4H8l2 4H7L5 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V4h-4z"/></svg>';
-                            break;
-                        default:
-                            svg = baseFile;
-                    }
-                    return { svg };
-                },
-
-                getSelectedItem() {
-                    if (this.selectedIds.length !== 1) return null;
-                    return this.currentFiles.find(f => f.id === this.selectedIds[0]);
-                },
-
-                clearSearch() {
-                    this.searchKeyword = '';
-                    this.isSearchMode = false;
-                    this.loadFolder(this.currentFolderId);
-                },
-
-                formatSize(bytes) {
-                    if (!bytes) return '-';
-                    const units = ['B', 'KB', 'MB', 'GB'];
-                    let size = bytes;
-                    let unitIndex = 0;
-                    while (size >= 1024 && unitIndex < units.length - 1) {
-                        size /= 1024;
-                        unitIndex++;
-                    }
-                    return `${size.toFixed(1)} ${units[unitIndex]}`;
-                },
-
-                formatDate(dateStr) {
-                    if (!dateStr) return '-';
-                    const date = new Date(dateStr);
-                    const today = new Date();
-                    const isToday = date.getDate() === today.getDate() &&
-                        date.getMonth() === today.getMonth() &&
-                        date.getFullYear() === today.getFullYear();
-
-                    if (isToday) {
-                        return date.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' });
-                    }
-                    return date.toLocaleDateString('ko-KR', {
-                        year: 'numeric', month: '2-digit', day: '2-digit'
-                    });
                 }
             }
-        }
         </script>
     </main>
 </body>

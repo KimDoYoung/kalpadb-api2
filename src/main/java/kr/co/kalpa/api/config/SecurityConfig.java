@@ -22,7 +22,6 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import jakarta.servlet.http.HttpServletResponse;
 import java.time.LocalDateTime;
-import java.io.IOException;
 
 @Configuration
 @EnableWebSecurity
@@ -45,8 +44,7 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
 
                 // Session 설정 (UI: SESSION, API: STATELESS)
-                .sessionManagement(session ->
-                        session.sessionCreationPolicy(SessionCreationPolicy.ALWAYS))
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.ALWAYS))
 
                 // 권한 설정
                 .authorizeHttpRequests(auth -> auth
@@ -61,15 +59,16 @@ public class SecurityConfig {
                         .requestMatchers("/api/**").authenticated()
 
                         // UI 페이지는 로그인 필요
-                        .requestMatchers("/diary/**", "/todo/**", "/books/**", "/movies/**", "/essay/**", "/notes/**", "/calendar/**").authenticated()
+                        .requestMatchers("/diary/**", "/todo/**", "/books/**", "/movies/**", "/essay/**", "/notes/**",
+                                "/calendar/**")
+                        .authenticated()
 
                         // 그 외 경로
                         .requestMatchers("/error").permitAll()
                         .requestMatchers("/actuator/health").permitAll()
 
                         // 나머지는 인증 필요
-                        .anyRequest().authenticated()
-                )
+                        .anyRequest().authenticated())
 
                 // JWT 필터 추가 (API 인증용)
                 .addFilterBefore(jwtAuthenticationFilter,
@@ -91,8 +90,7 @@ public class SecurityConfig {
                                     request.getParameter("username"),
                                     exception.getMessage());
                             response.sendRedirect("/login?error");
-                        })
-                )
+                        }))
 
                 // 로그아웃 설정
                 .logout(logout -> logout
@@ -103,8 +101,7 @@ public class SecurityConfig {
                         })
                         .invalidateHttpSession(true)
                         .deleteCookies("JSESSIONID")
-                        .permitAll()
-                )
+                        .permitAll())
 
                 // 예외 처리
                 .exceptionHandling(exception -> exception
@@ -117,8 +114,7 @@ public class SecurityConfig {
                                 String jsonResponse = String.format(
                                         "{\"success\":false,\"message\":\"인증이 필요합니다\",\"error\":\"%s\",\"timestamp\":\"%s\"}",
                                         authException.getMessage(),
-                                        LocalDateTime.now().toString()
-                                );
+                                        LocalDateTime.now().toString());
                                 response.getWriter().write(jsonResponse);
                             } else {
                                 // UI 요청이면 로그인 페이지로 리다이렉트
@@ -134,16 +130,14 @@ public class SecurityConfig {
                                 String jsonResponse = String.format(
                                         "{\"success\":false,\"message\":\"접근 권한이 없습니다\",\"error\":\"%s\",\"timestamp\":\"%s\"}",
                                         accessDeniedException.getMessage(),
-                                        LocalDateTime.now().toString()
-                                );
+                                        LocalDateTime.now().toString());
                                 response.getWriter().write(jsonResponse);
                             } else {
                                 // UI 요청이면 403 에러 페이지
                                 response.setStatus(HttpServletResponse.SC_FORBIDDEN);
                                 response.sendRedirect("/error");
                             }
-                        })
-                );
+                        }));
 
         return http.build();
     }
