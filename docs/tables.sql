@@ -1,16 +1,30 @@
 drop table if exists users;
 CREATE TABLE IF NOT EXISTS `users` (
   `id` BIGINT NOT NULL AUTO_INCREMENT COMMENT '사용자ID',
-  `user_id` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '사용자id',
-  `user_pw` varchar(200) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '사용자PW',
-  `user_nm` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '사용자명',
-  PRIMARY KEY (`id`)
+  `user_id` VARCHAR(50) NOT NULL COMMENT '사용자id',  -- NOT NULL 추가
+  `user_pw` VARCHAR(200) NOT NULL COMMENT '사용자PW',
+  `user_nm` VARCHAR(100) DEFAULT NULL COMMENT '사용자명',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_user_id` (`user_id`)  -- 마지막 콤마 제거
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='사용자';
 
 -- 기본 사용자 데이터 (bcrypt 암호화, 비밀번호: 1111)
 INSERT INTO users (user_id, user_pw, user_nm) VALUES
 ('kdy987', '$2a$10$vUYXTNVJV7h9pXpQR0W5s.E7pGvS.0OcvJqUMo3D3VFxq4nqquM3e', 'KimDoYoung'),
 ('admin', '$2a$10$Z3RTwwcpMPh4Egi/3P75N.x5JCu3iiUkPz7v2mwvFTHh2.nNvZX7K', 'Admin');
+
+-- 사용자 설정
+DROP TABLE IF EXISTS `user_settings`;
+CREATE TABLE IF NOT EXISTS `user_settings` (
+    setting_id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '설정ID',
+    user_id VARCHAR(50) NOT NULL COMMENT '사용자ID',
+    setting_key VARCHAR(50) NOT NULL COMMENT '설정키',     -- 'theme', 'language', 'timezone' 등
+    setting_value TEXT COMMENT '설정값',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT '생성일시',
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '수정일시',
+    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE,
+    UNIQUE KEY uk_user_setting (user_id, setting_key)
+)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='사용자설정';
 
 -- diary (개선: id를 PK로, ymd는 UNIQUE 인덱스)
 DROP TABLE IF EXISTS `diary`;
