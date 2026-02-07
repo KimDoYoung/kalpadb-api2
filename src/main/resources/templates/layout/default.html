@@ -1,6 +1,6 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -14,7 +14,10 @@
     <!-- KalpaDB 번들 스타일 (모든 페이지별 CSS) -->
     <link rel="stylesheet" th:href="@{/css/kalpadb.css}">
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <!-- 페이지별 스타일 -->
+    <th:block layout:fragment="css"></th:block>
 </head>
+
 <body class="bg-gray-50">
     <!-- 헤더 -->
     <header th:replace="~{fragments/header}"></header>
@@ -28,5 +31,9 @@
 
     <!-- KalpaDB 번들 JavaScript (모든 페이지별 JS) -->
     <script th:src="@{/js/kalpadb.js(v=${#dates.createNow().time})}"></script>
+
+    <!-- 페이지별 스크립트 -->
+    <th:block layout:fragment="script"></th:block>
 </body>
+
 </html>
