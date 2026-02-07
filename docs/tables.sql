@@ -141,16 +141,19 @@ CREATE TABLE IF NOT EXISTS posts (
   -- KEY idx_posts_board_code (board_code)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- calendar
-drop table if exists calendar;
+-- 달력
+DROP TABLE IF EXISTS `calendar`;
 CREATE TABLE if not exists `calendar` (
-  `id` bigint NOT NULL AUTO_INCREMENT COMMENT 'id',
-  `ymd` varchar(8) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '일자',
-  `content` text COLLATE utf8mb4_unicode_ci COMMENT '내용',
-  `lvl` varchar(1) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '2' COMMENT '레벨',
-  `modify_dt` datetime NOT NULL DEFAULT current_timestamp() COMMENT '수정일시',
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=247 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='일정';
+  `id` INT NOT NULL AUTO_INCREMENT COMMENT 'id',
+  `gubun` CHAR(1) NOT NULL COMMENT 'H:공휴일, E:이벤트, Y:매년, M:매월, S:절기',
+  `sorl` CHAR(1) NOT NULL DEFAULT 'S' COMMENT 'S:양력, L:음력',
+  `ymd` VARCHAR(8) NOT NULL COMMENT 'H,E:YYYYMMDD | Y:MMDD | M:DD',
+  `content` VARCHAR(200) NOT NULL COMMENT '내용',
+  `created_dt` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  INDEX idx_gubun_ymd (gubun, ymd),
+  INDEX idx_sorl (sorl)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='캘린더';
 
 -- 공공데이터 전용 테이블
 drop table if exists calendar_public;
@@ -163,4 +166,3 @@ CREATE TABLE if not exists `calendar_public` (
   PRIMARY KEY (`id`),
   UNIQUE KEY uk_ymd_type (ymd, data_type)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='공공데이터(공휴일,기념일,절기)';
-

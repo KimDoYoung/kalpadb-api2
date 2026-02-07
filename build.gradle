@@ -22,6 +22,7 @@ configurations {
 
 repositories {
     mavenCentral()
+    maven { url 'https://jitpack.io' }
 }
 
 dependencies {
@@ -69,6 +70,9 @@ dependencies {
     testImplementation 'org.springframework.security:spring-security-test'
     testImplementation 'io.rest-assured:rest-assured:5.5.0'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+    // Korean Lunar Calendar
+    implementation 'com.github.usingsky:KoreanLunarCalendar:0.3.1'
 }
 
 tasks.named('test') {

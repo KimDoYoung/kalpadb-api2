@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="ko" layout:decorate="~{layout/default}" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+
+<head>
+    <title>3개월 달력</title>
+    <style layout:fragment="css">
+        .page-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            border-radius: 12px 12px 0 0;
+            margin-bottom: 20px;
+        }
+
+        .page-header h1 {
+            text-align: center;
+            font-size: 28px;
+            margin-bottom: 15px;
+        }
+
+        .calendar-nav {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .calendar-nav button {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 10px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+
+        .calendar-nav button:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .calendars-wrapper {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .calendar-container {
+            background: white;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            scroll-margin-top: 100px;
+            position: relative;
+            margin-bottom: 0;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .calendar-container.current-month {
+            border-left: 4px solid #667eea;
+            box-shadow: 0 2px 12px rgba(102, 126, 234, 0.2);
+        }
+
+        .calendar-body {
+            padding: 20px;
+        }
+
+        /* Year-Month Badges */
+        .year-month-badge {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 16px;
+            font-weight: 600;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            z-index: 10;
+        }
+
+        .calendar-container.current-month .year-month-badge {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        .month-label-in-cell {
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            right: 5px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 700;
+            text-align: center;
+            z-index: 5;
+        }
+
+        .year-month-vertical {
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%) rotate(-90deg);
+            transform-origin: left center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            white-space: nowrap;
+            margin-left: 20px;
+        }
+
+        .row {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 1px;
+            background: #e0e0e0;
+        }
+
+        .col-week {
+            background: #f8f9fa;
+            padding: 15px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 14px;
+            color: #495057;
+        }
+
+        .col-week.text-danger {
+            color: #dc3545;
+        }
+
+        .col-week.text-saterday {
+            color: #007bff;
+        }
+
+        .day {
+            background: white;
+            min-height: 100px;
+            padding: 10px;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .day:hover {
+            background: #f8f9ff;
+            transform: scale(1.02);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            z-index: 10;
+        }
+
+        .day.bg-today {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+        }
+
+        .day.first-day {
+            padding-top: 35px;
+        }
+
+        .day-number {
+            display: flex;
+            align-items: baseline;
+            gap: 4px;
+            margin-bottom: 6px;
+        }
+
+        .day span.solar-day {
+            display: inline-block;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .lunar-date {
+            font-size: 10px;
+            font-style: italic;
+            color: #6c757d;
+            white-space: nowrap;
+        }
+
+        .day .text-normal {
+            color: #212529;
+        }
+
+        .day .text-holiday {
+            color: #dc3545;
+        }
+
+        .day .text-saterday {
+            color: #007bff;
+        }
+
+        .day .text-today {
+            color: #fff;
+            background: #ffc107;
+            border-radius: 50%;
+            width: 28px;
+            height: 28px;
+            line-height: 28px;
+            text-align: center;
+        }
+
+        .day .not-this-month {
+            color: #adb5bd;
+        }
+
+        .day .not-this-month-holiday,
+        .day .not-this-month-saterday {
+            color: #dee2e6;
+        }
+
+        .holiday {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 3px 6px;
+            border-radius: 3px;
+            font-size: 11px;
+            margin-top: 3px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .ipo_event {
+            padding: 3px 6px;
+            border-radius: 3px;
+            font-size: 11px;
+            margin-top: 3px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .gubun-event {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+
+        .gubun-year {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .gubun-month {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .scroll-to-current {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 20px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s;
+            z-index: 99;
+        }
+
+        .option-selector {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .option-selector label {
+            margin-right: 20px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .option-selector input[type="radio"] {
+            margin-right: 5px;
+        }
+
+        [x-cloak] {
+            display: none !important;
+        }
+    </style>
+</head>
+
+<body>
+    <div layout:fragment="content">
+        <div x-data="calendar3mApp()" x-init="init()" x-cloak>
+            <div class="page-header">
+                <h1>📅 3개월 달력</h1>
+                <div class="calendar-nav">
+                    <button @click="prevPeriod()">◀ 이전</button>
+                    <button @click="goToday()">오늘로</button>
+                    <button @click="nextPeriod()">다음 ▶</button>
+                </div>
+            </div>
+
+            <div class="calendars-wrapper">
+                <div class="option-selector">
+                    <strong>년월 표시 방식:</strong>
+                    <label>
+                        <input type="radio" name="yearMonthStyle" value="badge" x-model="yearMonthStyle">
+                        옵션1: 좌측상단 뱃지
+                    </label>
+                    <label>
+                        <input type="radio" name="yearMonthStyle" value="cell" x-model="yearMonthStyle">
+                        옵션2: 1일 셀 안에
+                    </label>
+                    <label>
+                        <input type="radio" name="yearMonthStyle" value="vertical" x-model="yearMonthStyle">
+                        옵션3: 좌측 세로 라벨
+                    </label>
+                </div>
+
+                <div id="calendars-wrapper">
+                    <template x-for="(cal, calIndex) in calendars" :key="calIndex">
+                        <div class="calendar-container" :class="cal.isCenter ? 'current-month' : ''"
+                            :id="`calendar-${cal.year}-${cal.month}`">
+
+                            <!-- Style: Badge -->
+                            <template x-if="yearMonthStyle === 'badge'">
+                                <div class="year-month-badge" x-text="`${cal.year}년 ${cal.month}월`"></div>
+                            </template>
+                            <!-- Style: Vertical -->
+                            <template x-if="yearMonthStyle === 'vertical'">
+                                <div class="year-month-vertical" x-text="`${cal.year}년 ${cal.month}월`"></div>
+                            </template>
+
+                            <div class="calendar-body">
+                                <!-- Week Header (Only for Center Calendar) -->
+                                <template x-if="cal.isCenter">
+                                    <div class="row">
+                                        <div class="col-week text-danger">일</div>
+                                        <div class="col-week">월</div>
+                                        <div class="col-week">화</div>
+                                        <div class="col-week">수</div>
+                                        <div class="col-week">목</div>
+                                        <div class="col-week">금</div>
+                                        <div class="col-week text-saterday">토</div>
+                                    </div>
+                                </template>
+
+                                <div class="row">
+                                    <template x-for="(day, dIndex) in cal.days" :key="dIndex">
+                                        <div class="day" :class="[
+                                            day.isToday ? 'bg-today' : '',
+                                            (day.isFirstDay && !cal.isCenter && yearMonthStyle === 'cell') ? 'first-day' : ''
+                                         ]" :data-ymd="day.ymd">
+
+                                            <!-- Style: Cell (Month Label) -->
+                                            <template x-if="yearMonthStyle === 'cell' && day.isFirstDay">
+                                                <div class="month-label-in-cell" x-text="`${cal.year}년 ${cal.month}월`">
+                                                </div>
+                                            </template>
+
+                                            <div class="day-number">
+                                                <span class="solar-day" :class="day.dayNumberClass"
+                                                    x-text="parseInt(day.ymd.substring(6))"></span>
+                                                <!-- Lunar Date (Every Sunday or similar logic? cal5.html does every Sunday) -->
+                                                <!-- Since we don't have lunar date from API yet, skipping or we could add it if implemented in backend -->
+                                                <!-- Assuming API handles events, but not explicit lunar date string yet. -->
+                                            </div>
+
+                                            <!-- Holidays -->
+                                            <template x-for="event in day.holidays">
+                                                <div class="holiday" x-text="event.content"></div>
+                                            </template>
+
+                                            <!-- Events -->
+                                            <template x-for="event in day.events">
+                                                <div class="ipo_event" :class="getEventClassName(event.type)"
+                                                    x-text="event.content"></div>
+                                            </template>
+                                        </div>
+                                    </template>
+                                </div>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+            </div>
+
+            <button class="scroll-to-current" @click="scrollToCurrentMonth()">
+                📍 이번 달로
+            </button>
+        </div>
+    </div>
+
+    <th:block layout:fragment="script">
+        <script>
+            function calendar3mApp() {
+                return {
+                    centerYear: new Date().getFullYear(),
+                    centerMonth: new Date().getMonth() + 1,
+                    yearMonthStyle: 'badge',
+                    calendars: [],
+                    allEvents: [],
+
+                    init() {
+                        this.renderCalendars();
+                    },
+
+                    zeroPad(num) {
+                        return num < 10 ? '0' + num : num.toString();
+                    },
+
+                    todayYmd() {
+                        const today = new Date();
+                        return today.getFullYear() +
+                            this.zeroPad(today.getMonth() + 1) +
+                            this.zeroPad(today.getDate());
+                    },
+
+                    getPrevMonth(year, month) {
+                        if (month === 1) return [year - 1, 12];
+                        return [year, month - 1];
+                    },
+
+                    getNextMonth(year, month) {
+                        if (month === 12) return [year + 1, 1];
+                        return [year, month + 1];
+                    },
+
+                    getStartEndYmd(year, month) {
+                        const firstDate = new Date(year, month - 1, 1);
+                        const startYoil = firstDate.getDay();
+
+                        const lastDate = new Date(year, month, 0);
+                        const endYoil = lastDate.getDay();
+
+                        // Calculate Start YMD
+                        const tempStart = new Date(firstDate);
+                        tempStart.setDate(tempStart.getDate() - startYoil);
+                        const startYmd = tempStart.getFullYear() + this.zeroPad(tempStart.getMonth() + 1) + this.zeroPad(tempStart.getDate());
+
+                        // Calculate End YMD
+                        const tempEnd = new Date(lastDate);
+                        tempEnd.setDate(tempEnd.getDate() + (6 - endYoil));
+                        const endYmd = tempEnd.getFullYear() + this.zeroPad(tempEnd.getMonth() + 1) + this.zeroPad(tempEnd.getDate());
+
+                        return [startYmd, endYmd];
+                    },
+
+                    async fetchAllEvents(minYmd, maxYmd) {
+                        try {
+                            const response = await fetch(`/api/calendar?start=${minYmd}&end=${maxYmd}`);
+                            if (response.ok) {
+                                this.allEvents = await response.json();
+                            } else {
+                                this.allEvents = [];
+                            }
+                        } catch (e) {
+                            console.error(e);
+                            this.allEvents = [];
+                        }
+                    },
+
+                    async renderCalendars() {
+                        // Calculate 3 months
+                        const [prevYear, prevMonth] = this.getPrevMonth(this.centerYear, this.centerMonth);
+                        const [nextYear, nextMonth] = this.getNextMonth(this.centerYear, this.centerMonth);
+
+                        const months = [
+                            { year: prevYear, month: prevMonth, isCenter: false },
+                            { year: this.centerYear, month: this.centerMonth, isCenter: true },
+                            { year: nextYear, month: nextMonth, isCenter: false }
+                        ];
+
+                        // Determine total date range to fetch
+                        // Min start: start of prev month's grid
+                        // Max end: end of next month's grid
+                        const [minStart, _] = this.getStartEndYmd(prevYear, prevMonth);
+                        const [__, maxEnd] = this.getStartEndYmd(nextYear, nextMonth);
+
+                        await this.fetchAllEvents(minStart, maxEnd);
+
+                        const newCalendars = [];
+                        const today = this.todayYmd();
+
+                        for (const m of months) {
+                            const [startYmd, endYmd] = this.getStartEndYmd(m.year, m.month);
+                            const days = [];
+                            const thisYm = m.year + this.zeroPad(m.month);
+                            const monthStart = m.year + this.zeroPad(m.month) + '01';
+
+                            let currentDate = new Date(
+                                parseInt(startYmd.substring(0, 4)),
+                                parseInt(startYmd.substring(4, 6)) - 1,
+                                parseInt(startYmd.substring(6, 8))
+                            );
+                            const endDt = new Date(
+                                parseInt(endYmd.substring(0, 4)),
+                                parseInt(endYmd.substring(4, 6)) - 1,
+                                parseInt(endYmd.substring(6, 8))
+                            );
+
+                            let index = 0;
+                            while (currentDate <= endDt) {
+                                const ymd = currentDate.getFullYear() + this.zeroPad(currentDate.getMonth() + 1) + this.zeroPad(currentDate.getDate());
+
+                                const dayEvents = this.allEvents.filter(e => e.ymd === ymd);
+                                const holidays = dayEvents.filter(e => e.type === 'HOLIDAY');
+                                const normalEvents = dayEvents.filter(e => e.type !== 'HOLIDAY');
+
+                                const isHoliday = holidays.length > 0;
+                                const isSunday = index % 7 === 0;
+                                const isSaturday = index % 7 === 6;
+                                const isThisMonth = ymd.startsWith(thisYm);
+                                const isToday = ymd === today;
+                                const isFirstDay = ymd === monthStart;
+
+                                let dayNumberClass = '';
+                                if (!isThisMonth) {
+                                    if (isHoliday || isSunday) dayNumberClass = 'not-this-month-holiday';
+                                    else if (isSaturday) dayNumberClass = 'not-this-month-saterday';
+                                    else dayNumberClass = 'not-this-month';
+                                } else {
+                                    if (isHoliday || isSunday) dayNumberClass = 'text-holiday';
+                                    else if (isSaturday) dayNumberClass = 'text-saterday';
+                                    else dayNumberClass = 'text-normal';
+
+                                    if (isToday) dayNumberClass += ' text-today';
+                                }
+
+                                days.push({
+                                    ymd: ymd,
+                                    isToday: isToday,
+                                    isFirstDay: isFirstDay,
+                                    dayNumberClass: dayNumberClass,
+                                    holidays: holidays,
+                                    events: normalEvents
+                                });
+
+                                currentDate.setDate(currentDate.getDate() + 1);
+                                index++;
+                            }
+
+                            newCalendars.push({
+                                year: m.year,
+                                month: m.month,
+                                isCenter: m.isCenter,
+                                days: days
+                            });
+                        }
+
+                        this.calendars = newCalendars;
+
+                        setTimeout(() => this.scrollToCurrentMonth(), 100);
+                    },
+
+                    prevPeriod() {
+                        [this.centerYear, this.centerMonth] = this.getPrevMonth(this.centerYear, this.centerMonth);
+                        this.renderCalendars();
+                    },
+
+                    nextPeriod() {
+                        [this.centerYear, this.centerMonth] = this.getNextMonth(this.centerYear, this.centerMonth);
+                        this.renderCalendars();
+                    },
+
+                    goToday() {
+                        const today = new Date();
+                        this.centerYear = today.getFullYear();
+                        this.centerMonth = today.getMonth() + 1;
+                        this.renderCalendars();
+                    },
+
+                    scrollToCurrentMonth() {
+                        const el = document.getElementById(`calendar-${this.centerYear}-${this.centerMonth}`);
+                        if (el) {
+                            el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        }
+                    },
+
+                    getEventClassName(type) {
+                        if (type === 'HOLIDAY') return 'holiday';
+                        return 'gubun-event';
+                    }
+                };
+            }
+        </script>
+    </th:block>
+</body>
+
+</html>
