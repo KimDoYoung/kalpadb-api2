@@ -50,7 +50,7 @@ public class CalendarService {
         LocalDate start = LocalDate.parse(startYmd, DateTimeFormatter.BASIC_ISO_DATE);
         LocalDate end = LocalDate.parse(endYmd, DateTimeFormatter.BASIC_ISO_DATE);
 
-        KoreanLunarCalendar lunarCalendar = new KoreanLunarCalendar();
+        KoreanLunarCalendar lunarCalendar = KoreanLunarCalendar.getInstance();
 
         for (LocalDate date = start; !date.isAfter(end); date = date.plusDays(1)) {
             String currentDateYmd = date.format(DateTimeFormatter.BASIC_ISO_DATE);
