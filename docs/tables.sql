@@ -140,3 +140,27 @@ CREATE TABLE IF NOT EXISTS posts (
   -- 선택2) board_code 컬럼을 둘 경우:
   -- KEY idx_posts_board_code (board_code)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- calendar
+drop table if exists calendar;
+CREATE TABLE if not exists `calendar` (
+  `id` bigint NOT NULL AUTO_INCREMENT COMMENT 'id',
+  `ymd` varchar(8) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '일자',
+  `content` text COLLATE utf8mb4_unicode_ci COMMENT '내용',
+  `lvl` varchar(1) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '2' COMMENT '레벨',
+  `modify_dt` datetime NOT NULL DEFAULT current_timestamp() COMMENT '수정일시',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=247 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='일정';
+
+-- 공공데이터 전용 테이블
+drop table if exists calendar_public;
+CREATE TABLE if not exists `calendar_public` (
+  `id` INT NOT NULL AUTO_INCREMENT COMMENT 'id',
+  `data_type` VARCHAR(10) NOT NULL COMMENT 'HOLIDAY:공휴일, ANNIVERSARY:기념일, SOLAR_TERM:절기',
+  `ymd` VARCHAR(8) NOT NULL COMMENT '날짜(YYYYMMDD)',
+  `content` VARCHAR(200) NOT NULL COMMENT '내용',
+  `created_dt` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '생성일시',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY uk_ymd_type (ymd, data_type)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='공공데이터(공휴일,기념일,절기)';
+
