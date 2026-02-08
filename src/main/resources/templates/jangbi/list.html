@@ -10,39 +10,45 @@
     <div x-data="jangbiList()" x-init="init()">
         <!-- 페이지 헤더 -->
         <div class="flex justify-between items-center mb-8">
-            <h2 class="text-3xl font-bold text-gray-800">🔧 장비</h2>
-            <a th:href="@{/jangbi/new}" class="btn-primary">새 장비 추가</a>
+            <h2 class="text-3xl font-bold text-base-content">🔧 장비</h2>
+            <a th:href="@{/jangbi/new}" class="btn btn-primary">새 장비 추가</a>
         </div>
 
         <!-- 검색 필터 -->
-        <div class="bg-white rounded-lg shadow p-4 mb-6">
+        <div class="bg-base-100 rounded-lg shadow p-4 mb-6">
             <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">품목</label>
+                    <label class="label">
+                        <span class="label-text text-base-content">품목</span>
+                    </label>
                     <input
                         type="text"
                         x-model="filters.keyword"
                         @keyup.enter="search()"
                         placeholder="품목명 검색"
-                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        class="input input-bordered w-full focus:input-primary"
                     >
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">위치</label>
+                    <label class="label">
+                        <span class="label-text text-base-content">위치</span>
+                    </label>
                     <input
                         type="text"
                         x-model="filters.location"
                         @keyup.enter="search()"
                         placeholder="위치 검색"
-                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        class="input input-bordered w-full focus:input-primary"
                     >
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">레벨</label>
+                    <label class="label">
+                        <span class="label-text text-base-content">레벨</span>
+                    </label>
                     <select
                         x-model="filters.lvl"
                         @change="search()"
-                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        class="select select-bordered w-full focus:select-primary"
                     >
                         <option value="">전체</option>
                         <option value="1">1 (높음)</option>
@@ -51,19 +57,19 @@
                     </select>
                 </div>
                 <div class="flex items-end gap-2">
-                    <button @click="search()" class="btn-primary flex-1">검색</button>
-                    <button @click="resetFilters()" class="btn-secondary flex-1">초기화</button>
+                    <button type="button" @click="search()" class="btn btn-primary flex-1">검색</button>
+                    <button type="button" @click="resetFilters()" class="btn btn-secondary flex-1">초기화</button>
                 </div>
             </div>
         </div>
 
         <!-- 로딩 상태 -->
         <div x-show="loading" class="text-center py-8">
-            <p class="text-gray-600">로딩 중...</p>
+            <div class="loading loading-spinner loading-lg text-primary"></div>
         </div>
 
         <!-- 에러 메시지 -->
-        <div x-show="error" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
+        <div x-show="error" class="alert alert-error mb-6">
             <p x:text="error"></p>
         </div>
 
@@ -72,33 +78,33 @@
             <div class="overflow-x-auto">
                 <table class="w-full border-collapse">
                     <thead>
-                        <tr class="bg-gray-200">
-                            <th class="border border-gray-300 px-4 py-2 text-left">ID</th>
-                            <th class="border border-gray-300 px-4 py-2 text-left">품목</th>
-                            <th class="border border-gray-300 px-4 py-2 text-left">구입일</th>
-                            <th class="border border-gray-300 px-4 py-2 text-left">위치</th>
-                            <th class="border border-gray-300 px-4 py-2 text-right">가격</th>
-                            <th class="border border-gray-300 px-4 py-2 text-center">레벨</th>
-                            <th class="border border-gray-300 px-4 py-2 text-left">수정일</th>
-                            <th class="border border-gray-300 px-4 py-2 text-center">액션</th>
+                        <tr class="bg-base-200">
+                            <th class="border border-base-300 px-4 py-2 text-left">ID</th>
+                            <th class="border border-base-300 px-4 py-2 text-left">품목</th>
+                            <th class="border border-base-300 px-4 py-2 text-left">구입일</th>
+                            <th class="border border-base-300 px-4 py-2 text-left">위치</th>
+                            <th class="border border-base-300 px-4 py-2 text-right">가격</th>
+                            <th class="border border-base-300 px-4 py-2 text-center">레벨</th>
+                            <th class="border border-base-300 px-4 py-2 text-left">수정일</th>
+                            <th class="border border-base-300 px-4 py-2 text-center">액션</th>
                         </tr>
                     </thead>
                     <tbody>
                         <template x-for="(jangbi, idx) in jangbis" :key="idx">
-                            <tr class="hover:bg-gray-100 transition">
-                                <td class="border border-gray-300 px-4 py-2" x-text="jangbi.id"></td>
-                                <td class="border border-gray-300 px-4 py-2">
-                                    <a :href="'/jangbi/' + jangbi.id" class="text-blue-600 hover:underline font-medium" x-text="jangbi.item"></a>
+                            <tr class="hover:bg-base-200 transition">
+                                <td class="border border-base-300 px-4 py-2" x-text="jangbi.id"></td>
+                                <td class="border border-base-300 px-4 py-2">
+                                    <a :href="'/jangbi/' + jangbi.id" class="link link-primary font-medium" x-text="jangbi.item"></a>
                                 </td>
-                                <td class="border border-gray-300 px-4 py-2" x-text="formatDate(jangbi.ymd)"></td>
-                                <td class="border border-gray-300 px-4 py-2" x-text="jangbi.location || '-'"></td>
-                                <td class="border border-gray-300 px-4 py-2 text-right" x-text="formatCost(jangbi.cost)"></td>
-                                <td class="border border-gray-300 px-4 py-2 text-center">
+                                <td class="border border-base-300 px-4 py-2" x-text="formatDate(jangbi.ymd)"></td>
+                                <td class="border border-base-300 px-4 py-2" x-text="jangbi.location || '-'"></td>
+                                <td class="border border-base-300 px-4 py-2 text-right" x-text="formatCost(jangbi.cost)"></td>
+                                <td class="border border-base-300 px-4 py-2 text-center">
                                     <span :class="getLvlClass(jangbi.lvl)" x-text="jangbi.lvl"></span>
                                 </td>
-                                <td class="border border-gray-300 px-4 py-2 text-sm" x-text="formatDateTime(jangbi.modifyDt)"></td>
-                                <td class="border border-gray-300 px-4 py-2 text-center">
-                                    <a :href="'/jangbi/' + jangbi.id + '/edit'" class="btn-primary text-xs inline-block">수정</a>
+                                <td class="border border-base-300 px-4 py-2 text-sm" x-text="formatDateTime(jangbi.modifyDt)"></td>
+                                <td class="border border-base-300 px-4 py-2 text-center">
+                                    <a :href="'/jangbi/' + jangbi.id + '/edit'" class="btn btn-primary btn-xs inline-block">수정</a>
                                 </td>
                             </tr>
                         </template>
@@ -110,8 +116,8 @@
         <!-- 빈 상태 -->
         <template x-if="!loading && (!jangbis || jangbis.length === 0)">
             <div class="text-center py-12">
-                <p class="text-gray-600 text-lg mb-4">등록된 장비가 없습니다.</p>
-                <a th:href="@{/jangbi/new}" class="btn-primary">첫 번째 장비 등록하기</a>
+                <p class="text-base-content/60 text-lg mb-4">등록된 장비가 없습니다.</p>
+                <a th:href="@{/jangbi/new}" class="btn btn-primary">첫 번째 장비 등록하기</a>
             </div>
         </template>
     </div>

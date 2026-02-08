@@ -1,131 +1,133 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - KalpaDb</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">   
-    <link rel="stylesheet" th:href="@{/css/kalpadb.css}">
-    <style>
-        body { font-family: 'Inter', sans-serif; }
-    </style>
-</head>
-<body class="bg-gray-100 flex flex-col items-center justify-center min-h-screen py-6 px-4">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="~{layout/auth}">
 
-    <!-- Login Card -->
-    <div class="bg-white p-8 rounded-lg shadow-lg w-full max-w-md relative pb-10">
-        <!-- Title -->
-        <h1 class="text-3xl text-center font-normal text-gray-800 mb-8 tracking-tight">
-            KalpaDb 로그인
-        </h1>
+<th:block layout:fragment="content">
+    <div class="w-full max-w-md">
+        <!-- Login Card -->
+        <div class="card bg-base-100 shadow-xl">
+            <div class="card-body">
+                <!-- Title -->
+                <h1 class="text-3xl font-semibold text-center mb-6 text-base-content">
+                    🔐 KalpaDB 로그인
+                </h1>
 
-        <!-- Error Message -->
-        <div th:if="${param.error}" class="mb-4 p-3 bg-red-100 text-red-700 rounded text-sm text-center">
-            아이디 또는 비밀번호가 잘못되었습니다.
-        </div>
-        <div th:if="${param.logout}" class="mb-4 p-3 bg-blue-100 text-blue-700 rounded text-sm text-center">
-            로그아웃 되었습니다.
-        </div>
-
-        <form th:action="@{/login}" method="POST" class="space-y-6">
-            
-            <!-- User ID Field -->
-            <div>
-                <label class="flex items-center text-gray-600 mb-2 gap-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                <!-- Error Message -->
+                <div th:if="${param.error}" class="alert alert-error mb-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l4-4m0 0l4 4m-4-4l-4-4" />
                     </svg>
-                    <span class="text-base font-normal">사용자 아이디</span>
-                </label>
-                <input type="text" name="username" autofocus value="kdy987"
-                       class="w-full h-12 px-4 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-100 focus:border-blue-400 transition-colors">
-            </div>
-
-            <!-- Password Field -->
-            <div>
-                <label class="flex items-center text-gray-600 mb-2 gap-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                    </svg>
-                    <span class="text-base font-normal">비밀번호</span>
-                </label>
-                <div class="relative">
-                    <input type="password" id="password" name="password" value="1111"
-                           class="w-full h-12 px-4 pr-12 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-100 focus:border-blue-400 transition-colors tracking-widest text-lg" readonly>
-                    <button type="button" onclick="togglePassword()" class="absolute right-0 top-0 h-12 w-12 flex items-center justify-center border-l border-gray-200 text-gray-500 hover:text-gray-700">
-                        <svg id="eye-icon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                        </svg>
-                    </button>
+                    <span>아이디 또는 비밀번호가 잘못되었습니다.</span>
                 </div>
-            </div>
-
-            <!-- Keypad -->
-            <div class="grid grid-cols-[repeat(12,minmax(0,1fr))] gap-1.5 pt-2">
-                <!-- Numbers 1-9 -->
-                <button type="button" onclick="appendNumber('1')" class="aspect-[0.9] flex items-center justify-center border border-blue-400 rounded text-blue-500 font-medium text-lg hover:bg-blue-50 transition-colors">1</button>
-                <button type="button" onclick="appendNumber('2')" class="aspect-[0.9] flex items-center justify-center border border-blue-400 rounded text-blue-500 font-medium text-lg hover:bg-blue-50 transition-colors">2</button>
-                <button type="button" onclick="appendNumber('3')" class="aspect-[0.9] flex items-center justify-center border border-blue-400 rounded text-blue-500 font-medium text-lg hover:bg-blue-50 transition-colors">3</button>
-                <button type="button" onclick="appendNumber('4')" class="aspect-[0.9] flex items-center justify-center border border-blue-400 rounded text-blue-500 font-medium text-lg hover:bg-blue-50 transition-colors">4</button>
-                <button type="button" onclick="appendNumber('5')" class="aspect-[0.9] flex items-center justify-center border border-blue-400 rounded text-blue-500 font-medium text-lg hover:bg-blue-50 transition-colors">5</button>
-                <button type="button" onclick="appendNumber('6')" class="aspect-[0.9] flex items-center justify-center border border-blue-400 rounded text-blue-500 font-medium text-lg hover:bg-blue-50 transition-colors">6</button>
-                <button type="button" onclick="appendNumber('7')" class="aspect-[0.9] flex items-center justify-center border border-blue-400 rounded text-blue-500 font-medium text-lg hover:bg-blue-50 transition-colors">7</button>
-                <button type="button" onclick="appendNumber('8')" class="aspect-[0.9] flex items-center justify-center border border-blue-400 rounded text-blue-500 font-medium text-lg hover:bg-blue-50 transition-colors">8</button>
-                <button type="button" onclick="appendNumber('9')" class="aspect-[0.9] flex items-center justify-center border border-blue-400 rounded text-blue-500 font-medium text-lg hover:bg-blue-50 transition-colors">9</button>
-                <button type="button" onclick="appendNumber('0')" class="aspect-[0.9] flex items-center justify-center border border-blue-400 rounded text-blue-500 font-medium text-lg hover:bg-blue-50 transition-colors">0</button>
-                
-                <!-- Backspace (Yellow-ish) -->
-                <button type="button" onclick="backspace()" class="aspect-[0.9] flex items-center justify-center border border-yellow-300 rounded text-yellow-500 hover:bg-yellow-50 transition-colors">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2M3 12l6.414 6.414a2 2 0 001.414.586H19a2 2 0 002-2V7a2 2 0 00-2-2h-8.172a2 2 0 00-1.414.586L3 12z" />
+                <div th:if="${param.logout}" class="alert alert-info mb-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
-                </button>
+                    <span>로그아웃 되었습니다.</span>
+                </div>
 
-                <!-- Clear (Red-ish) -->
-                <button type="button" onclick="clearAll()" class="aspect-[0.9] flex items-center justify-center border border-red-300 rounded text-red-500 hover:bg-red-50 transition-colors">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                </button>
+                <form th:action="@{/login}" method="POST" class="space-y-5">
+                    <!-- User ID Field -->
+                    <div class="form-control w-full">
+                        <label class="label">
+                            <span class="label-text flex items-center gap-2">
+                                <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                </svg>
+                                사용자 아이디
+                            </span>
+                        </label>
+                        <input type="text" name="username" autofocus value="kdy987" required
+                            class="input input-bordered w-full focus:input-primary"
+                            placeholder="아이디를 입력하세요">
+                    </div>
+
+                    <!-- Password Field -->
+                    <div class="form-control w-full">
+                        <label class="label">
+                            <span class="label-text flex items-center gap-2">
+                                <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                                </svg>
+                                비밀번호
+                            </span>
+                            <button type="button" onclick="togglePassword()" class="label-text-alt text-primary cursor-pointer hover:underline">
+                                표시/숨기기
+                            </button>
+                        </label>
+                        <input type="password" id="password" name="password" value="1111" required
+                            class="input input-bordered w-full focus:input-primary"
+                            placeholder="비밀번호를 입력하세요">
+                    </div>
+
+                    <!-- Numeric Keypad -->
+                    <div class="divider my-3"></div>
+                    <p class="text-sm text-base-content/60 text-center">숫자 키패드</p>
+                    <div class="grid grid-cols-4 gap-2">
+                        <!-- Numbers 1-9 -->
+                        <button type="button" onclick="appendNumber('1')" class="btn btn-sm btn-outline">1</button>
+                        <button type="button" onclick="appendNumber('2')" class="btn btn-sm btn-outline">2</button>
+                        <button type="button" onclick="appendNumber('3')" class="btn btn-sm btn-outline">3</button>
+                        <button type="button" onclick="appendNumber('0')" class="btn btn-sm btn-outline">0</button>
+
+                        <button type="button" onclick="appendNumber('4')" class="btn btn-sm btn-outline">4</button>
+                        <button type="button" onclick="appendNumber('5')" class="btn btn-sm btn-outline">5</button>
+                        <button type="button" onclick="appendNumber('6')" class="btn btn-sm btn-outline">6</button>
+                        <button type="button" onclick="backspace()" class="btn btn-sm btn-warning" title="마지막 문자 삭제">
+                            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2M3 12l6.414 6.414a2 2 0 001.414.586H19a2 2 0 002-2V7a2 2 0 00-2-2h-8.172a2 2 0 00-1.414.586L3 12z" />
+                            </svg>
+                        </button>
+
+                        <button type="button" onclick="appendNumber('7')" class="btn btn-sm btn-outline">7</button>
+                        <button type="button" onclick="appendNumber('8')" class="btn btn-sm btn-outline">8</button>
+                        <button type="button" onclick="appendNumber('9')" class="btn btn-sm btn-outline">9</button>
+                        <button type="button" onclick="clearAll()" class="btn btn-sm btn-error" title="모두 삭제">
+                            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <div class="divider my-3"></div>
+                    <button type="submit" class="btn btn-primary w-full gap-2">
+                        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
+                        </svg>
+                        로그인
+                    </button>
+                </form>
             </div>
+        </div>
 
-            <!-- Submit Button -->
-            <button type="submit" class="w-full bg-[#4285F4] hover:bg-blue-600 text-white font-medium py-3.5 rounded-lg transition-colors flex items-center justify-center gap-2 shadow-sm">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
-                </svg>
-                로그인
-            </button>
-        </form>
+        <!-- Footer -->
+        <div class="mt-8 text-center text-sm text-base-content/60">
+            &copy; 2026 KalpaDB. All rights reserved.
+        </div>
     </div>
 
-    <!-- Footer -->
-    <div class="mt-8 text-gray-500 text-sm">
-        &copy; 2025 KimDoYoung 모든 권리 보유.
-    </div>
+    <th:block layout:fragment="script">
+        <script>
+            const passwordInput = document.getElementById('password');
 
-    <script>
-        const passwordInput = document.getElementById('password');
+            function appendNumber(num) {
+                passwordInput.value += num;
+            }
 
-        function appendNumber(num) {
-            passwordInput.value += num;
-        }
+            function backspace() {
+                passwordInput.value = passwordInput.value.slice(0, -1);
+            }
 
-        function backspace() {
-            passwordInput.value = passwordInput.value.slice(0, -1);
-        }
+            function clearAll() {
+                passwordInput.value = '';
+            }
 
-        function clearAll() {
-            passwordInput.value = '';
-        }
-
-        function togglePassword() {
-            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
-            passwordInput.setAttribute('type', type);
-            // Icon toggle logic could be added here if we want the icon to change slashes
-        }
-    </script>
-</body>
+            function togglePassword() {
+                const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                passwordInput.setAttribute('type', type);
+            }
+        </script>
+    </th:block>
+</th:block>
 </html>

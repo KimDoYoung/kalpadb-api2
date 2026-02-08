@@ -1,0 +1,26 @@
+<!-- DaisyUI 카드 컴포넌트 -->
+<th:block th:fragment="base(title, content)">
+  <div class="card bg-base-100 shadow-xl">
+    <div class="card-body">
+      <h2 class="card-title" th:if="${title}">[[${title}]]</h2>
+      <div th:utext="${content}"></div>
+    </div>
+  </div>
+</th:block>
+
+<th:block th:fragment="compact(content)">
+  <div class="card bg-base-100 shadow">
+    <div class="card-body p-4">
+      <div th:utext="${content}"></div>
+    </div>
+  </div>
+</th:block>
+
+<th:block th:fragment="bordered(title, content)">
+  <div class="card bg-base-100 border border-base-300 shadow">
+    <div class="card-body">
+      <h2 class="card-title" th:if="${title}">[[${title}]]</h2>
+      <div th:utext="${content}"></div>
+    </div>
+  </div>
+</th:block>

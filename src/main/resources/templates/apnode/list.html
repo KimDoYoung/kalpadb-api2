@@ -16,13 +16,13 @@
                 <nav class="flex items-center gap-1 mb-3 text-sm">
                     <template x-for="(item, idx) in breadcrumb" :key="item.id">
                         <div class="flex items-center gap-1">
-                            <button @click="navigateTo(item.id)"
-                                class="px-2 py-1 rounded hover:bg-blue-50 hover:text-blue-600 transition-colors"
-                                :class="idx === breadcrumb.length - 1 ? 'font-semibold text-gray-800' : 'text-gray-500'"
+                            <button type="button" @click="navigateTo(item.id)"
+                                class="px-2 py-1 rounded hover:bg-primary/10 hover:text-primary transition-colors"
+                                :class="idx === breadcrumb.length - 1 ? 'font-semibold text-base-content' : 'text-base-content/60'"
                                 x-text="item.name">
                             </button>
                             <span x-show="idx < breadcrumb.length - 1 && item.name !== '/'"
-                                class="text-gray-300 mx-1">/</span>
+                                class="text-base-300 mx-1">/</span>
                         </div>
                     </template>
                 </nav>
@@ -31,16 +31,16 @@
                 <!-- 액션 버튼 & 뷰 전환 -->
                 <div class="flex items-center justify-between">
                     <div class="flex gap-2">
-                        <button @click="showCreateFolderDialog()"
-                            class="px-4 py-2 bg-emerald-400 text-white rounded-xl hover:bg-emerald-500 transition-colors text-sm font-bold shadow-sm shadow-emerald-100 flex items-center gap-1.5 backdrop-blur-sm">
+                        <button type="button" @click="showCreateFolderDialog()"
+                            class="px-4 py-2 btn btn-success text-white rounded-xl text-sm font-bold flex items-center gap-1.5">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M12 4v16m8-8H4"></path>
                             </svg>
                             새 폴더
                         </button>
-                        <button @click="triggerUpload()"
-                            class="px-4 py-2 bg-sky-400 text-white rounded-xl hover:bg-sky-500 transition-colors text-sm font-bold shadow-sm shadow-sky-100 flex items-center gap-1.5 backdrop-blur-sm">
+                        <button type="button" @click="triggerUpload()"
+                            class="px-4 py-2 btn btn-info text-white rounded-xl text-sm font-bold flex items-center gap-1.5">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12">
@@ -55,8 +55,8 @@
                         <!-- 검색 -->
                         <div class="relative">
                             <input type="text" x-model="searchKeyword" @keydown.enter="doSearch()" placeholder="검색..."
-                                class="pl-9 pr-4 py-2 border border-gray-100 bg-gray-50/50 rounded-xl text-sm focus:ring-2 focus:ring-sky-200 focus:border-sky-300 w-48 transition-all">
-                            <svg class="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" fill="none"
+                                class="pl-9 pr-4 py-2 input input-bordered bg-base-200 rounded-xl text-sm focus:input-primary w-48 transition-all">
+                            <svg class="w-4 h-4 text-base-content/40 absolute left-3 top-1/2 -translate-y-1/2" fill="none"
                                 stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
@@ -64,9 +64,9 @@
                         </div>
 
                         <!-- 뷰 전환 -->
-                        <div class="flex border border-gray-100 bg-gray-50 rounded-xl overflow-hidden p-1 gap-1">
-                            <button @click="viewMode = 'grid'"
-                                :class="viewMode === 'grid' ? 'bg-white text-sky-500 shadow-sm' : 'text-gray-400 hover:text-gray-600'"
+                        <div class="flex border border-base-300 bg-base-200 rounded-xl overflow-hidden p-1 gap-1">
+                            <button type="button" @click="viewMode = 'grid'"
+                                :class="viewMode === 'grid' ? 'bg-base-100 text-primary shadow-sm' : 'text-base-content/40 hover:text-base-content'"
                                 class="px-2 py-1.5 rounded-lg text-sm transition-all">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -74,8 +74,8 @@
                                     </path>
                                 </svg>
                             </button>
-                            <button @click="viewMode = 'list'"
-                                :class="viewMode === 'list' ? 'bg-white text-sky-500 shadow-sm' : 'text-gray-400 hover:text-gray-600'"
+                            <button type="button" @click="viewMode = 'list'"
+                                :class="viewMode === 'list' ? 'bg-base-100 text-primary shadow-sm' : 'text-base-content/40 hover:text-base-content'"
                                 class="px-2 py-1.5 rounded-lg text-sm transition-all">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"

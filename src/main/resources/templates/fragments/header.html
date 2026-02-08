@@ -1,166 +1,109 @@
-<header th:fragment="header" class="bg-white border-b border-gray-100 sticky top-0 z-50 transition-all duration-300">
-    <nav class="bg-white" x-data="{ activeMenu: null }">
-        <div class="container mx-auto px-6 h-16 flex items-center justify-between">
-
-            <!-- Left Side: Logo + Desktop Menu -->
-            <div class="flex items-center gap-8">
-                <!-- Logo -->
-                <a th:href="@{/}" class="flex items-center gap-2.5 group">
-                    <div
-                        class="w-9 h-9 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold shadow-md group-hover:bg-blue-700 transition-colors">
-                        K
-                    </div>
-                    <span
-                        class="text-xl font-bold text-gray-800 tracking-tight group-hover:text-blue-600 transition-colors">
-                        KalpaDB
-                    </span>
-                </a>
-
-                <!-- Desktop Menu -->
-                <div th:if="${#authentication.name != 'anonymousUser'}" class="flex items-center gap-1">
-
-                    <!-- 1. Diary Menu -->
-                    <div class="relative">
-                        <button @click="activeMenu = (activeMenu === 'diary' ? null : 'diary')"
-                            @click.outside="if(activeMenu === 'diary') activeMenu = null"
-                            class="flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium text-gray-600 hover:text-blue-600 hover:bg-blue-50 transition-all duration-200"
-                            :class="activeMenu === 'diary' ? 'bg-blue-50 text-blue-600' : ''">
-                            <span>📖 일지</span>
-                            <svg xmlns="http://www.w3.org/2000/svg"
-                                class="w-3.5 h-3.5 transition-transform duration-200"
-                                :class="activeMenu === 'diary' ? 'rotate-180 opacity-100' : 'opacity-50'" fill="none"
-                                viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M19 9l-7 7-7-7" />
-                            </svg>
-                        </button>
-                        <!-- Dropdown -->
-                        <div x-show="activeMenu === 'diary'" x-transition:enter="transition ease-out duration-200"
-                            x-transition:enter-start="opacity-0 translate-y-1 scale-95"
-                            x-transition:enter-end="opacity-100 translate-y-0 scale-100"
-                            x-transition:leave="transition ease-in duration-150"
-                            x-transition:leave-start="opacity-100 translate-y-0 scale-100"
-                            x-transition:leave-end="opacity-0 translate-y-1 scale-95"
-                            class="absolute left-0 mt-2 w-48 bg-white rounded-xl shadow-[0_4px_20px_-4px_rgba(0,0,0,0.1)] border border-gray-100 overflow-hidden z-20"
-                            x-cloak>
-                            <div class="py-1.5">
-                                <a th:href="@{/diary/new}"
-                                    class="block px-4 py-2.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-600 font-medium transition-colors">✏️
-                                    일지기록</a>
-                                <a th:href="@{/diary}"
-                                    class="block px-4 py-2.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-600 font-medium transition-colors">🔍
-                                    일지찾기</a>
-                                <a th:href="@{/calendar}"
-                                    class="block px-4 py-2.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-600 font-medium transition-colors">📅
-                                    달력</a>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- 2. Board Menu -->
-                    <div class="relative">
-                        <button @click="activeMenu = (activeMenu === 'board' ? null : 'board')"
-                            @click.outside="if(activeMenu === 'board') activeMenu = null"
-                            class="flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium text-gray-600 hover:text-blue-600 hover:bg-blue-50 transition-all duration-200"
-                            :class="activeMenu === 'board' ? 'bg-blue-50 text-blue-600' : ''">
-                            <span>📝 게시판</span>
-                            <svg xmlns="http://www.w3.org/2000/svg"
-                                class="w-3.5 h-3.5 transition-transform duration-200"
-                                :class="activeMenu === 'board' ? 'rotate-180 opacity-100' : 'opacity-50'" fill="none"
-                                viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M19 9l-7 7-7-7" />
-                            </svg>
-                        </button>
-                        <!-- Dropdown -->
-                        <div x-show="activeMenu === 'board'" x-transition:enter="transition ease-out duration-200"
-                            x-transition:enter-start="opacity-0 translate-y-1 scale-95"
-                            x-transition:enter-end="opacity-100 translate-y-0 scale-100"
-                            x-transition:leave="transition ease-in duration-150"
-                            x-transition:leave-start="opacity-100 translate-y-0 scale-100"
-                            x-transition:leave-end="opacity-0 translate-y-1 scale-95"
-                            class="absolute left-0 mt-2 w-48 bg-white rounded-xl shadow-[0_4px_20px_-4px_rgba(0,0,0,0.1)] border border-gray-100 overflow-hidden z-20"
-                            x-cloak>
-                            <div class="py-1.5">
-                                <a th:href="@{/boards}"
-                                    class="block px-4 py-2.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-600 font-medium transition-colors">✍️
-                                    게시판관리</a>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- 3. Tech Menu -->
-                    <div class="relative">
-                        <button @click="activeMenu = (activeMenu === 'tech' ? null : 'tech')"
-                            @click.outside="if(activeMenu === 'tech') activeMenu = null"
-                            class="flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium text-gray-600 hover:text-blue-600 hover:bg-blue-50 transition-all duration-200"
-                            :class="activeMenu === 'tech' ? 'bg-blue-50 text-blue-600' : ''">
-                            <span>🔧 Tech</span>
-                            <svg xmlns="http://www.w3.org/2000/svg"
-                                class="w-3.5 h-3.5 transition-transform duration-200"
-                                :class="activeMenu === 'tech' ? 'rotate-180 opacity-100' : 'opacity-50'" fill="none"
-                                viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M19 9l-7 7-7-7" />
-                            </svg>
-                        </button>
-                        <!-- Dropdown -->
-                        <div x-show="activeMenu === 'tech'" x-transition:enter="transition ease-out duration-200"
-                            x-transition:enter-start="opacity-0 translate-y-1 scale-95"
-                            x-transition:enter-end="opacity-100 translate-y-0 scale-100"
-                            x-transition:leave="transition ease-in duration-150"
-                            x-transition:leave-start="opacity-100 translate-y-0 scale-100"
-                            x-transition:leave-end="opacity-0 translate-y-1 scale-95"
-                            class="absolute left-0 mt-2 w-48 bg-white rounded-xl shadow-[0_4px_20px_-4px_rgba(0,0,0,0.1)] border border-gray-100 overflow-hidden z-20"
-                            x-cloak>
-                            <div class="py-1.5">
-                                <a th:href="@{/jangbi}"
-                                    class="block px-4 py-2.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-600 font-medium transition-colors">🖥️
-                                    장비</a>
-                                <a th:href="@{/apnode}"
-                                    class="block px-4 py-2.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-600 font-medium transition-colors">📂
-                                    파일관리</a>
-                            </div>
-                        </div>
-                    </div>
-
-                </div>
+<header th:fragment="header" class="navbar bg-base-100 shadow-md sticky top-0 z-50">
+    <div class="navbar-start">
+        <!-- Logo -->
+        <a th:href="@{/}" class="flex items-center gap-2 btn btn-ghost normal-case text-xl">
+            <div class="w-8 h-8 bg-primary rounded flex items-center justify-center text-white font-bold">
+                K
             </div>
+            <span>KalpaDB</span>
+        </a>
+    </div>
 
-            <!-- Right Side: User & Hamburger -->
-            <div class="flex items-center gap-4">
+    <!-- Desktop Menu (Authenticated users) -->
+    <div th:if="${#authentication.name != 'anonymousUser'}" class="navbar-center hidden lg:flex">
+        <ul class="menu menu-horizontal px-1 gap-1">
+            <!-- Diary Menu -->
+            <li>
+                <details>
+                    <summary>📖 일지</summary>
+                    <ul class="bg-base-100 rounded-t-none">
+                        <li><a th:href="@{/diary/new}">✏️ 일지기록</a></li>
+                        <li><a th:href="@{/diary}">🔍 일지찾기</a></li>
+                        <li><a th:href="@{/calendar}">📅 달력</a></li>
+                    </ul>
+                </details>
+            </li>
 
-                <!-- Desktop User Profile -->
-                <div th:if="${#authentication.name != 'anonymousUser'}"
-                    class="flex items-center gap-3 pl-6 border-l border-gray-100">
-                    <span class="text-sm font-medium text-gray-600">
-                        <span th:text="${#authentication.name}">User</span>
-                    </span>
-                    <a th:href="@{/settings/edit}"
-                        class="text-gray-400 hover:text-blue-600 transition-colors p-1 rounded-full hover:bg-gray-100"
-                        title="설정">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24"
-                            stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                        </svg>
-                    </a>
-                    <form th:action="@{/logout}" method="post" class="inline">
-                        <button type="submit"
-                            class="text-xs px-3 py-1.5 rounded-full border border-gray-200 hover:bg-gray-50 hover:text-red-500 hover:border-red-200 transition-colors">
-                            로그아웃
-                        </button>
+            <!-- Board Menu -->
+            <li>
+                <details>
+                    <summary>📝 게시판</summary>
+                    <ul class="bg-base-100 rounded-t-none">
+                        <li><a th:href="@{/boards}">✍️ 게시판관리</a></li>
+                    </ul>
+                </details>
+            </li>
+
+            <!-- Tech Menu -->
+            <li>
+                <details>
+                    <summary>🔧 Tech</summary>
+                    <ul class="bg-base-100 rounded-t-none">
+                        <li><a th:href="@{/jangbi}">🖥️ 장비</a></li>
+                        <li><a th:href="@{/apnode}">📂 파일관리</a></li>
+                    </ul>
+                </details>
+            </li>
+        </ul>
+    </div>
+
+    <!-- Right Side -->
+    <div class="navbar-end gap-2">
+        <!-- Theme Toggle -->
+        <button type="button" @click="window.toggleTheme()" class="btn btn-sm btn-ghost" title="테마 변경">
+            🌙 / ☀️
+        </button>
+
+        <!-- User Menu (Authenticated users) -->
+        <div th:if="${#authentication.name != 'anonymousUser'}" class="dropdown dropdown-end">
+            <button type="button" class="btn btn-ghost btn-circle avatar placeholder" title="사용자 메뉴">
+                <div class="bg-primary text-white">
+                    <span th:text="${#authentication.name.substring(0, 1)}">U</span>
+                </div>
+            </button>
+            <ul class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52">
+                <li><a th:href="@{/settings/edit}">⚙️ 설정</a></li>
+                <li>
+                    <form th:action="@{/logout}" method="post">
+                        <button type="submit">🚪 로그아웃</button>
                     </form>
-                </div>
-
-                <!-- Login Button (Visible if not authenticated) -->
-                <div th:if="${#authentication.name == 'anonymousUser'}">
-                    <a th:href="@{/login}" class="text-sm font-medium text-blue-600 hover:text-blue-700">로그인</a>
-                </div>
-            </div>
+                </li>
+            </ul>
         </div>
 
-    </nav>
+        <!-- Login Button (Not authenticated) -->
+        <div th:if="${#authentication.name == 'anonymousUser'}">
+            <a th:href="@{/login}" class="btn btn-sm btn-primary">로그인</a>
+        </div>
+
+        <!-- Mobile Menu Toggle -->
+        <div class="dropdown dropdown-end lg:hidden">
+            <button type="button" class="btn btn-ghost btn-circle" title="메뉴">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h8m-8 6h16" />
+                </svg>
+            </button>
+            <ul class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52">
+                <li th:if="${#authentication.name != 'anonymousUser'}">
+                    <a th:href="@{/diary/new}">✏️ 일지기록</a>
+                </li>
+                <li th:if="${#authentication.name != 'anonymousUser'}">
+                    <a th:href="@{/diary}">🔍 일지찾기</a>
+                </li>
+                <li th:if="${#authentication.name != 'anonymousUser'}">
+                    <a th:href="@{/calendar}">📅 달력</a>
+                </li>
+                <li th:if="${#authentication.name != 'anonymousUser'}">
+                    <a th:href="@{/boards}">✍️ 게시판관리</a>
+                </li>
+                <li th:if="${#authentication.name != 'anonymousUser'}">
+                    <a th:href="@{/jangbi}">🖥️ 장비</a>
+                </li>
+                <li th:if="${#authentication.name != 'anonymousUser'}">
+                    <a th:href="@{/apnode}">📂 파일관리</a>
+                </li>
+            </ul>
+        </div>
+    </div>
 </header>

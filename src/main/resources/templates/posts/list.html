@@ -13,7 +13,7 @@
             <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
                 <div class="flex items-center gap-4">
                     <a href="/boards"
-                        class="p-2 rounded-full hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors"
+                        class="p-2 rounded-full hover:bg-base-200 text-base-content/40 hover:text-base-content transition-colors"
                         title="게시판 목록으로">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -22,10 +22,10 @@
                     </a>
 
                     <div class="relative">
-                        <h2 class="text-3xl font-bold text-gray-800 flex items-center gap-2 cursor-pointer group"
+                        <h2 class="text-3xl font-bold text-base-content flex items-center gap-2 cursor-pointer group"
                             @click="toggleBoardDropdown()">
                             <span x-text="getCurrentBoardName() || '게시판 선택'"></span>
-                            <svg class="w-6 h-6 text-gray-400 group-hover:text-blue-500 transition-colors" fill="none"
+                            <svg class="w-6 h-6 text-base-content/40 group-hover:text-primary transition-colors" fill="none"
                                 stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M19 9l-7 7-7-7"></path>
@@ -40,22 +40,22 @@
                             x-transition:leave="transition ease-in duration-75"
                             x-transition:leave-start="transform opacity-100 scale-100"
                             x-transition:leave-end="transform opacity-0 scale-95"
-                            class="absolute left-0 mt-2 w-64 bg-white rounded-xl shadow-2xl border border-gray-100 z-50 py-2"
+                            class="absolute left-0 mt-2 w-64 bg-base-100 rounded-xl shadow-2xl border border-base-300 z-50 py-2"
                             style="display: none;" x-cloak>
-                            <div class="px-4 py-2 border-b border-gray-50">
-                                <span class="text-xs font-semibold text-gray-400 uppercase tracking-wider">게시판 목록</span>
+                            <div class="px-4 py-2 border-b border-base-200">
+                                <span class="text-xs font-semibold text-base-content/40 uppercase tracking-wider">게시판 목록</span>
                             </div>
                             <div class="max-h-64 overflow-y-auto custom-scrollbar">
                                 <template x-for="board in boards" :key="board.id">
                                     <a :href="'/posts?boardId=' + board.id"
-                                        class="flex items-center justify-between px-4 py-3 hover:bg-blue-50 transition-colors group"
-                                        :class="{'bg-blue-50/50': board.id === selectedBoardId}">
+                                        class="flex items-center justify-between px-4 py-3 hover:bg-primary/10 transition-colors group"
+                                        :class="{'bg-primary/10': board.id === selectedBoardId}">
                                         <div>
-                                            <div class="font-medium text-gray-800 group-hover:text-blue-700"
+                                            <div class="font-medium text-base-content group-hover:text-primary"
                                                 x-text="board.boardNameKor"></div>
-                                            <div class="text-xs text-gray-500" x-text="board.boardCode"></div>
+                                            <div class="text-xs text-base-content/60" x-text="board.boardCode"></div>
                                         </div>
-                                        <span x-show="board.id === selectedBoardId" class="text-blue-600">
+                                        <span x-show="board.id === selectedBoardId" class="text-primary">
                                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                     d="M5 13l4 4L19 7"></path>
@@ -69,8 +69,8 @@
                 </div>
 
                 <div class="flex items-center gap-3">
-                    <button @click="goToCreate()"
-                        class="btn-primary flex items-center gap-2 shadow-lg shadow-blue-200 hover:shadow-blue-300 transition-all"
+                    <button type="button" @click="goToCreate()"
+                        class="btn btn-primary flex items-center gap-2 shadow-lg transition-all"
                         x-show="selectedBoardId">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -84,67 +84,67 @@
 
             <!-- 로딩 상태 -->
             <div x-show="loading" class="text-center py-8">
-                <p class="text-gray-600">로딩 중...</p>
+                <div class="loading loading-spinner loading-lg text-primary"></div>
             </div>
 
             <!-- 에러 메시지 -->
             <div x-show="error"
-                class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6 flex justify-between items-center"
+                class="alert alert-error mb-6 flex justify-between items-center"
                 x-cloak>
                 <p x-text="error"></p>
-                <button @click="error = ''" class="text-red-700 font-bold">&times;</button>
+                <button type="button" @click="error = ''" class="font-bold">&times;</button>
             </div>
 
             <!-- 게시글 목록 -->
             <template x-if="!loading && selectedBoardId && posts.length > 0">
-                <div class="overflow-x-auto bg-white rounded-xl shadow-sm border border-gray-100">
-                    <table class="min-w-full divide-y divide-gray-200">
-                        <thead class="bg-gray-50">
+                <div class="overflow-x-auto bg-base-100 rounded-xl shadow-sm border border-base-300">
+                    <table class="min-w-full divide-y divide-base-200">
+                        <thead class="bg-base-200">
                             <tr>
                                 <th scope="col"
-                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-16">
+                                    class="px-6 py-3 text-left text-xs font-medium text-base-content/60 uppercase tracking-wider w-16">
                                     No
                                 </th>
                                 <th scope="col"
-                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    class="px-6 py-3 text-left text-xs font-medium text-base-content/60 uppercase tracking-wider">
                                     제목
                                 </th>
                                 <th scope="col"
-                                    class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-32">
+                                    class="px-6 py-3 text-center text-xs font-medium text-base-content/60 uppercase tracking-wider w-32">
                                     작성자
                                 </th>
                                 <th scope="col"
-                                    class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-24">
+                                    class="px-6 py-3 text-center text-xs font-medium text-base-content/60 uppercase tracking-wider w-24">
                                     조회수
                                 </th>
                                 <th scope="col"
-                                    class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-32">
+                                    class="px-6 py-3 text-center text-xs font-medium text-base-content/60 uppercase tracking-wider w-32">
                                     작성일
                                 </th>
                                 <th scope="col"
-                                    class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-20">
+                                    class="px-6 py-3 text-center text-xs font-medium text-base-content/60 uppercase tracking-wider w-20">
                                     삭제
                                 </th>
                             </tr>
                         </thead>
-                        <tbody class="bg-white divide-y divide-gray-200">
+                        <tbody class="bg-base-100 divide-y divide-base-200">
                             <template x-for="(post, idx) in posts" :key="post.id || idx">
-                                <tr class="hover:bg-blue-50/50 transition-colors cursor-pointer group"
+                                <tr class="hover:bg-primary/10 transition-colors cursor-pointer group"
                                     @click="goToView(post.id)">
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500" x-text="totalElements - (currentPage * pageSize) - idx">
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-base-content/60" x-text="totalElements - (currentPage * pageSize) - idx">
                                     </td>
                                     <td class="px-6 py-4">
                                         <div class="flex items-center gap-2">
                                             <span x-show="post.new"
-                                                class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-red-100 text-red-800">
+                                                class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium badge badge-error">
                                                 NEW
                                             </span>
                                             <span
-                                                class="text-sm font-medium text-gray-900 group-hover:text-blue-600 transition-colors line-clamp-1"
+                                                class="text-sm font-medium text-base-content group-hover:text-primary transition-colors line-clamp-1"
                                                 x-text="post.title"></span>
 
                                             <!-- 첨부파일 아이콘 (Optional) -->
-                                            <span x-show="post.attachmentCount > 0" class="text-gray-400" title="첨부파일">
+                                            <span x-show="post.attachmentCount > 0" class="text-base-content/40" title="첨부파일">
                                                 <svg class="w-4 h-4" fill="none" stroke="currentColor"
                                                     viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round"
@@ -156,17 +156,17 @@
                                         </div>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-center">
-                                        <div class="text-sm text-gray-900" x-text="post.author || '관리자'"></div>
+                                        <div class="text-sm text-base-content" x-text="post.author || '관리자'"></div>
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-500"
+                                    <td class="px-6 py-4 whitespace-nowrap text-center text-sm text-base-content/60"
                                         x-text="post.viewCount">
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-500"
+                                    <td class="px-6 py-4 whitespace-nowrap text-center text-sm text-base-content/60"
                                         x-text="formatDate(post.createdAt)">
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-center">
-                                        <button @click.stop="deletePost(post.id)"
-                                            class="text-red-500 hover:text-red-700 text-sm font-medium">
+                                        <button type="button" @click.stop="deletePost(post.id)"
+                                            class="text-error hover:text-error/80 text-sm font-medium">
                                             삭제
                                         </button>
                                     </td>
@@ -180,18 +180,18 @@
             <!-- 페이지네이션 -->
             <template x-if="!loading && selectedBoardId && totalPages > 1">
                 <div class="flex justify-center items-center gap-2 mt-8">
-                    <button @click="previousPage()" :disabled="currentPage === 0"
-                        class="px-4 py-2 border border-gray-300 rounded hover:bg-gray-50 disabled:opacity-50">
+                    <button type="button" @click="previousPage()" :disabled="currentPage === 0"
+                        class="px-4 py-2 btn btn-outline btn-sm">
                         이전
                     </button>
                     <template x-for="page in Array.from({length: totalPages}, (_, i) => i)">
-                        <button @click="goToPage(page)"
-                            :class="page === currentPage ? 'bg-blue-600 text-white' : 'border border-gray-300 hover:bg-gray-50'"
-                            class="px-3 py-2 rounded" x-text="page + 1">
+                        <button type="button" @click="goToPage(page)"
+                            :class="page === currentPage ? 'btn btn-primary btn-sm' : 'btn btn-outline btn-sm'"
+                            x-text="page + 1">
                         </button>
                     </template>
-                    <button @click="nextPage()" :disabled="currentPage >= totalPages - 1"
-                        class="px-4 py-2 border border-gray-300 rounded hover:bg-gray-50 disabled:opacity-50">
+                    <button type="button" @click="nextPage()" :disabled="currentPage >= totalPages - 1"
+                        class="px-4 py-2 btn btn-outline btn-sm">
                         다음
                     </button>
                 </div>
@@ -200,18 +200,18 @@
             <!-- 빈 상태 -->
             <template x-if="!loading && selectedBoardId && posts.length === 0">
                 <div
-                    class="flex flex-col items-center justify-center py-24 bg-white rounded-3xl border border-dashed border-gray-200 text-center">
+                    class="flex flex-col items-center justify-center py-24 bg-base-100 rounded-3xl border border-dashed border-base-300 text-center">
                     <div
-                        class="w-20 h-20 bg-blue-50 text-blue-500 rounded-full flex items-center justify-center text-4xl mb-6 shadow-inner">
+                        class="w-20 h-20 bg-primary/20 text-primary rounded-full flex items-center justify-center text-4xl mb-6 shadow-inner">
                         📝
                     </div>
-                    <h3 class="text-2xl font-bold text-gray-800 mb-3">게시글이 존재하지 않습니다</h3>
-                    <p class="text-gray-500 mb-8 max-w-md mx-auto leading-relaxed">
+                    <h3 class="text-2xl font-bold text-base-content mb-3">게시글이 존재하지 않습니다</h3>
+                    <p class="text-base-content/60 mb-8 max-w-md mx-auto leading-relaxed">
                         아직 작성된 글이 없습니다.<br>
                         여러분의 이야기로 이 게시판을 첫 번째로 채워보세요!
                     </p>
-                    <button @click="goToCreate()"
-                        class="btn-primary px-8 py-3 text-lg shadow-xl shadow-blue-100 hover:shadow-blue-200 hover:-translate-y-1 transition-all duration-300 flex items-center gap-2">
+                    <button type="button" @click="goToCreate()"
+                        class="btn btn-primary px-8 py-3 text-lg shadow-xl transition-all duration-300 flex items-center gap-2">
                         <span>✨</span> 첫 게시글 작성하기
                     </button>
                 </div>
@@ -219,8 +219,8 @@
 
             <!-- 선택하지 않은 상태 -->
             <template x-if="!selectedBoardId && !loading">
-                <div class="text-center py-12 bg-gray-50 rounded-lg">
-                    <p class="text-gray-600 text-lg">게시판을 선택해주세요.</p>
+                <div class="text-center py-12 bg-base-200 rounded-lg">
+                    <p class="text-base-content/60 text-lg">게시판을 선택해주세요.</p>
                 </div>
             </template>
         </div>

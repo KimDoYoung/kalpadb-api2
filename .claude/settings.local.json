@@ -21,7 +21,8 @@
       "Bash(chmod:*)",
       "Bash(npm run build:bundle:*)",
       "Bash(npm run build:js:*)",
-      "Bash(tree:*)"
+      "Bash(tree:*)",
+      "Bash(npm run build:css:*)"
     ]
   },
   "language": "korean",

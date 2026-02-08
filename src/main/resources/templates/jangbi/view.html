@@ -12,91 +12,99 @@
     <div x-data="jangbiDetail()" x-init="init()">
         <!-- 로딩 상태 -->
         <div x-show="loading" class="text-center py-8">
-            <p class="text-gray-600">로딩 중...</p>
+            <div class="loading loading-spinner loading-lg text-primary"></div>
         </div>
 
         <!-- 에러 메시지 -->
-        <div x-show="error" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
+        <div x-show="error" class="alert alert-error mb-6">
             <p x:text="error"></p>
         </div>
 
         <!-- 장비 상세 -->
         <div x-show="!loading && jangbi" class="space-y-6">
             <!-- 헤더 -->
-            <div class="flex justify-between items-start border-b pb-4">
+            <div class="flex justify-between items-start border-b border-base-300 pb-4">
                 <div>
-                    <h2 class="text-3xl font-bold text-gray-800" x-text="jangbi.item"></h2>
-                    <p class="text-gray-600 mt-2">
+                    <h2 class="text-3xl font-bold text-base-content" x-text="jangbi.item"></h2>
+                    <p class="text-base-content/60 mt-2">
                         <span class="font-medium">구입일:</span> <span x-text="formatDate(jangbi.ymd)"></span>
                     </p>
                 </div>
                 <div class="flex gap-2">
-                    <a :href="'/jangbi/' + jangbi.id + '/edit'" class="btn-primary">수정</a>
-                    <button @click="deleteJangbi()" class="btn-danger">삭제</button>
+                    <a :href="'/jangbi/' + jangbi.id + '/edit'" class="btn btn-primary">수정</a>
+                    <button type="button" @click="deleteJangbi()" class="btn btn-error">삭제</button>
                 </div>
             </div>
 
             <!-- 기본 정보 -->
-            <div class="bg-white rounded-lg p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="bg-base-100 rounded-lg p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
                 <!-- 왼쪽 컬럼 -->
                 <div class="space-y-4">
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">위치</label>
-                        <p class="text-gray-800" x-text="jangbi.location || '-'"></p>
+                        <label class="label">
+                            <span class="label-text text-base-content">위치</span>
+                        </label>
+                        <p class="text-base-content" x-text="jangbi.location || '-'"></p>
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">가격</label>
-                        <p class="text-gray-800" x-text="formatCost(jangbi.cost)"></p>
+                        <label class="label">
+                            <span class="label-text text-base-content">가격</span>
+                        </label>
+                        <p class="text-base-content" x-text="formatCost(jangbi.cost)"></p>
                     </div>
                 </div>
 
                 <!-- 오른쪽 컬럼 -->
                 <div class="space-y-4">
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">중요도</label>
+                        <label class="label">
+                            <span class="label-text text-base-content">중요도</span>
+                        </label>
                         <p x-text="getLvlText(jangbi.lvl)" :class="getLvlClass(jangbi.lvl)"></p>
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">수정일</label>
-                        <p class="text-gray-600 text-sm" x-text="formatDateTime(jangbi.modifyDt)"></p>
+                        <label class="label">
+                            <span class="label-text text-base-content">수정일</span>
+                        </label>
+                        <p class="text-base-content/60 text-sm" x-text="formatDateTime(jangbi.modifyDt)"></p>
                     </div>
                 </div>
             </div>
 
             <!-- 스펙/특징 -->
             <template x-if="jangbi.spec">
-                <div class="bg-white rounded-lg p-6">
-                    <h3 class="text-lg font-bold text-gray-800 mb-4">📋 스펙/특징</h3>
+                <div class="bg-base-100 rounded-lg p-6">
+                    <h3 class="text-lg font-bold text-base-content mb-4">📋 스펙/특징</h3>
                     <div class="ql-editor prose prose-sm max-w-none" x-html="jangbi.spec"></div>
                 </div>
             </template>
 
             <!-- 첨부파일 -->
             <div class="border-t pt-6">
-                <h3 class="text-lg font-bold text-gray-800 mb-4">📎 첨부파일</h3>
+                <h3 class="text-lg font-bold text-base-content mb-4">📎 첨부파일</h3>
                 <template x-if="attachedFiles.length > 0">
                     <div class="space-y-2">
                         <template x-for="file in attachedFiles" :key="file.fileId">
-                            <div class="flex items-center justify-between bg-gray-50 p-3 rounded border border-gray-200">
+                            <div class="flex items-center justify-between bg-base-200 p-3 rounded border border-base-300">
                                 <div class="flex-1">
                                     <a :href="'/api/file/download/' + file.fileId"
-                                       class="text-blue-500 hover:text-blue-700 font-medium"
+                                       class="link link-primary font-medium"
                                        x-text="file.orgFileName">
                                     </a>
-                                    <p class="text-xs text-gray-500" x-text="'(' + formatFileSize(file.fileSize) + ')'"></p>
+                                    <p class="text-xs text-base-content/60" x-text="'(' + formatFileSize(file.fileSize) + ')'"></p>
                                 </div>
                             </div>
                         </template>
                     </div>
                 </template>
                 <template x-if="attachedFiles.length === 0">
-                    <p class="text-gray-600">첨부파일이 없습니다.</p>
+                    <p class="text-base-content/60">첨부파일이 없습니다.</p>
                 </template>
             </div>
 
             <!-- 뒤로가기 -->
             <div class="flex justify-between items-center">
-                <a th:href="@{/jangbi}" class="text-blue-500 hover:text-blue-600">← 목록으로</a>
+                <a th:href="@{/jangbi}" class="link link-primary">← 목록으로</a>
             </div>
         </div>
     </div>

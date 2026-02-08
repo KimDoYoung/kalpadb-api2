@@ -1,0 +1,52 @@
+<!-- DaisyUI 폼 입력 그룹 -->
+<th:block th:fragment="input(label, name, type, placeholder, required)">
+  <div class="form-control w-full">
+    <label class="label" th:if="${label}">
+      <span class="label-text" th:text="${label}"></span>
+      <span class="label-text-alt text-error" th:if="${required}">*</span>
+    </label>
+    <input th:type="${type ?: 'text'}" th:name="${name}"
+           th:placeholder="${placeholder}"
+           th:required="${required}"
+           class="input input-bordered w-full focus:input-primary" />
+  </div>
+</th:block>
+
+<th:block th:fragment="textarea(label, name, placeholder, required, rows)">
+  <div class="form-control w-full">
+    <label class="label">
+      <span class="label-text" th:text="${label}"></span>
+      <span class="label-text-alt text-error" th:if="${required}">*</span>
+    </label>
+    <textarea th:name="${name}"
+              th:placeholder="${placeholder}"
+              th:required="${required}"
+              th:rows="${rows ?: 4}"
+              class="textarea textarea-bordered focus:textarea-primary w-full"></textarea>
+  </div>
+</th:block>
+
+<th:block th:fragment="select(label, name, options, required)">
+  <div class="form-control w-full">
+    <label class="label" th:if="${label}">
+      <span class="label-text" th:text="${label}"></span>
+      <span class="label-text-alt text-error" th:if="${required}">*</span>
+    </label>
+    <select th:name="${name}"
+            th:required="${required}"
+            class="select select-bordered w-full focus:select-primary">
+      <option value="">선택하세요</option>
+      <option th:each="opt : ${options}" th:value="${opt}">[[${opt}]]</option>
+    </select>
+  </div>
+</th:block>
+
+<th:block th:fragment="checkbox(label, name, value, checked)">
+  <div class="form-control">
+    <label class="label cursor-pointer">
+      <input type="checkbox" th:name="${name}" th:value="${value}"
+             th:checked="${checked}" class="checkbox" />
+      <span class="label-text" th:text="${label}"></span>
+    </label>
+  </div>
+</th:block>

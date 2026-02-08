@@ -12,25 +12,25 @@
     <main layout:fragment="content">
         <div x-data="postCreate()" x-init="init()">
             <!-- 에러 메시지 -->
-            <div x-show="error" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
+            <div x-show="error" class="alert alert-error mb-6">
                 <p x-text="error"></p>
             </div>
 
             <!-- 폼 -->
             <div class="space-y-6">
                 <!-- 페이지 헤더 -->
-                <h2 class="text-3xl font-bold text-gray-800">✏️ <span class="font-bold text-gray-800" x-text="getBoardName()"></span>새 게시글 작성</h2>
+                <h2 class="text-3xl font-bold text-base-content">✏️ <span class="font-bold text-base-content" x-text="getBoardName()"></span>새 게시글 작성</h2>
 
                 <!-- 게시판 선택 -->
                 <div>
                     <div><input type="hidden" :value="form.boardId"></div>
                     <!-- 게시판 선택 (직접 선택해야 하는 경우) -->
                     <div x-show="!isFixedBoard">
-                        <label for="boardId" class="block text-sm font-medium text-gray-700 mb-2">
-                            게시판 <span class="text-red-600">*</span>
+                        <label for="boardId" class="label">
+                            <span class="label-text text-base-content">게시판 <span class="text-error">*</span></span>
                         </label>
                         <select id="boardId" x-model="form.boardId"
-                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            class="select select-bordered w-full focus:select-primary"
                             :required="!isFixedBoard">
                             <option value="">-- 게시판을 선택하세요 --</option>
                             <template x-for="board in boards" :key="board.id">
@@ -42,54 +42,54 @@
 
                 <!-- 제목 -->
                 <div>
-                    <label for="title" class="block text-sm font-medium text-gray-700 mb-2">
-                        제목 <span class="text-red-600">*</span>
+                    <label for="title" class="label">
+                        <span class="label-text text-base-content">제목 <span class="text-error">*</span></span>
                     </label>
                     <input type="text" id="title" x-model="form.title"
-                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        class="input input-bordered w-full focus:input-primary"
                         placeholder="게시글 제목" maxlength="500" required>
                 </div>
 
                 <!-- 작성자 + 기준일 -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                        <label for="author" class="block text-sm font-medium text-gray-700 mb-2">
-                            작성자 (선택사항)
+                        <label for="author" class="label">
+                            <span class="label-text text-base-content">작성자 (선택사항)</span>
                         </label>
                         <input type="text" id="author" x-model="form.author"
-                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            class="input input-bordered w-full focus:input-primary"
                             placeholder="작성자명 (미지정시 로그인 사용자)">
                     </div>
                     <div>
-                        <label for="baseYmd" class="block text-sm font-medium text-gray-700 mb-2">
-                            기준일 <span class="text-red-600">*</span>
+                        <label for="baseYmd" class="label">
+                            <span class="label-text text-base-content">기준일 <span class="text-error">*</span></span>
                         </label>
                         <input type="date" id="baseYmd" x-model="form.baseYmd"
-                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            class="input input-bordered w-full focus:input-primary"
                             required>
                     </div>
                 </div>
 
                 <!-- 내용 (contentType에 따라 다른 에디터 표시) -->
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">
-                        내용 <span class="text-red-600">*</span>
+                    <label class="label">
+                        <span class="label-text text-base-content">내용 <span class="text-error">*</span></span>
                     </label>
 
                     <!-- HTML 에디터 (QuillJS) -->
                     <div x-show="contentType === 'html'">
-                        <div id="quill-editor" class="bg-white border border-gray-300 rounded-lg w-full"></div>
+                        <div id="quill-editor" class="bg-base-100 border border-base-300 rounded-lg w-full"></div>
                     </div>
 
                     <!-- Markdown 에디터 (TUI Editor) -->
                     <div x-show="contentType === 'markdown'">
-                        <div id="tui-editor" class="bg-white border border-gray-300 rounded-lg w-full"></div>
+                        <div id="tui-editor" class="bg-base-100 border border-base-300 rounded-lg w-full"></div>
                     </div>
 
                     <!-- Plain Text 에디터 -->
                     <div x-show="contentType === 'text'">
                         <textarea id="text-editor" x-model="form.content"
-                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            class="textarea textarea-bordered w-full focus:textarea-primary"
                             placeholder="내용을 입력하세요"
                             style="min-height: 350px; max-height: 400px; resize: vertical;"></textarea>
                     </div>
@@ -99,32 +99,32 @@
 
                 <!-- 첨부파일 -->
                 <div class="border-t pt-6">
-                    <h3 class="text-lg font-bold text-gray-800 mb-4">📎 첨부파일 (선택사항)</h3>
+                    <h3 class="text-lg font-bold text-base-content mb-4">📎 첨부파일 (선택사항)</h3>
 
                     <!-- 새 파일 업로드 -->
                     <div class="mb-4">
-                        <label for="file-input" class="block text-sm font-medium text-gray-700 mb-2">
-                            파일 추가
+                        <label for="file-input" class="label">
+                            <span class="label-text text-base-content">파일 추가</span>
                         </label>
                         <div class="flex items-center gap-2">
                             <input type="file" id="file-input" @change="addNewFiles($event)" multiple
-                                class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                class="input input-bordered w-full flex-1 focus:input-primary">
                         </div>
-                        <p class="text-xs text-gray-500 mt-1">여러 파일을 선택할 수 있습니다</p>
+                        <p class="text-xs text-base-content/60 mt-1">여러 파일을 선택할 수 있습니다</p>
                     </div>
 
                     <!-- 추가된 파일 목록 -->
                     <div x-show="newFiles.length > 0" class="space-y-2">
-                        <h4 class="text-sm font-medium text-gray-700">추가된 파일</h4>
+                        <h4 class="text-sm font-medium text-base-content">추가된 파일</h4>
                         <template x-for="(file, index) in newFiles" :key="index">
                             <div
-                                class="flex items-center justify-between bg-blue-50 p-3 rounded border border-blue-200">
+                                class="flex items-center justify-between bg-info/10 p-3 rounded border border-info/30">
                                 <div class="flex-1">
-                                    <p class="text-sm text-gray-700" x-text="file.name"></p>
-                                    <p class="text-xs text-gray-500" x-text="'(' + formatFileSize(file.size) + ')'"></p>
+                                    <p class="text-sm text-base-content" x-text="file.name"></p>
+                                    <p class="text-xs text-base-content/60" x-text="'(' + formatFileSize(file.size) + ')'"></p>
                                 </div>
                                 <button type="button" @click="removeNewFile(index)"
-                                    class="text-red-500 hover:text-red-700 text-sm font-medium">
+                                    class="text-error hover:text-error/80 text-sm font-medium">
                                     삭제
                                 </button>
                             </div>
@@ -135,11 +135,11 @@
                 <!-- 버튼 -->
                 <div class="flex gap-3">
                     <button type="button" @click="save()" :disabled="saving"
-                        class="inline-flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 rounded-lg text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition shadow-sm disabled:opacity-50">
+                        class="inline-flex items-center gap-2 btn btn-primary">
                         <span>💾</span> <span x-text="saving ? '저장 중...' : '저장'"></span>
                     </button>
                     <button type="button" @click="goBack()" :disabled="saving"
-                        class="inline-flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 rounded-lg text-gray-700 hover:bg-gray-50 hover:text-gray-600 transition shadow-sm disabled:opacity-50">
+                        class="inline-flex items-center gap-2 btn btn-secondary">
                         <span>↩️</span> 취소
                     </button>
                 </div>

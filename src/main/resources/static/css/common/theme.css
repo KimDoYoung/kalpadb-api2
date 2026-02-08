@@ -1,0 +1,64 @@
+/* DaisyUI 커스텀 테마 정의 */
+
+/* 라이트 테마 (기본) */
+@plugin "daisyui/theme" {
+  /* 라이트 테마 (기본) */
+  name: "kalpa-light";
+  default: true;
+  color-scheme: light;
+
+  /* DaisyUI 색상 변수 (okLCH 색상 공간) */
+  --color-base-100: oklch(98% 0.02 240);      /* 배경 */
+  --color-base-200: oklch(93% 0.02 240);      /* 보조 배경 */
+  --color-base-300: oklch(88% 0.02 240);      /* 테두리 */
+  --color-base-content: oklch(20% 0.02 240);  /* 텍스트 */
+
+  --color-primary: oklch(55% 0.3 240);        /* Google Blue */
+  --color-primary-content: oklch(100% 0 0);
+  --color-secondary: oklch(60% 0.15 142);     /* Google Green */
+  --color-secondary-content: oklch(100% 0 0);
+  --color-accent: oklch(70% 0.2 60);          /* Google Yellow */
+  --color-accent-content: oklch(20% 0 0);
+
+  --color-neutral: oklch(50% 0.1 240);
+  --color-neutral-content: oklch(98% 0 0);
+
+  --color-info: oklch(60% 0.2 240);           /* 파란색 */
+  --color-success: oklch(65% 0.2 142);        /* 초록색 */
+  --color-warning: oklch(65% 0.25 60);        /* 주황색 */
+  --color-error: oklch(60% 0.25 10);          /* 빨간색 */
+}
+
+/* 다크 테마 */
+@plugin "daisyui/theme" {
+  name: "kalpa-dark";
+  color-scheme: dark;
+
+  --color-base-100: oklch(20% 0.02 240);      /* 배경 */
+  --color-base-200: oklch(25% 0.02 240);      /* 보조 배경 */
+  --color-base-300: oklch(30% 0.02 240);      /* 테두리 */
+  --color-base-content: oklch(95% 0.02 240);  /* 텍스트 */
+
+  --color-primary: oklch(70% 0.25 240);       /* 밝은 파란색 */
+  --color-primary-content: oklch(20% 0 0);
+  --color-secondary: oklch(75% 0.15 142);     /* 밝은 초록색 */
+  --color-secondary-content: oklch(20% 0 0);
+  --color-accent: oklch(80% 0.2 60);          /* 밝은 노란색 */
+  --color-accent-content: oklch(20% 0 0);
+
+  --color-info: oklch(70% 0.2 240);
+  --color-success: oklch(75% 0.2 142);
+  --color-warning: oklch(75% 0.25 60);
+  --color-error: oklch(70% 0.25 10);
+}
+
+/* 추가 커스텀 스타일 */
+@layer components {
+  .btn-kalpa-primary {
+    @apply btn btn-primary rounded-lg;
+  }
+
+  .card-kalpa {
+    @apply card bg-base-100 shadow-lg;
+  }
+}

@@ -11,47 +11,47 @@
         <div x-data="postDetail()" x-init="init()">
             <!-- 로딩 상태 -->
             <div x-show="loading" class="text-center py-8">
-                <p class="text-gray-600">로딩 중...</p>
+                <div class="loading loading-spinner loading-lg text-primary"></div>
             </div>
 
             <!-- 에러 메시지 -->
-            <div x-show="error" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
+            <div x-show="error" class="alert alert-error mb-6">
                 <p x-text="error"></p>
             </div>
 
             <!-- 게시글 상세 -->
             <div x-show="!loading && post" class="space-y-3">
                 <!-- 헤더 -->
-                <div class="border-b border-gray-100 pb-3">
+                <div class="border-b border-base-300 pb-3">
                     <!-- Title -->
-                    <h2 class="text-2xl font-extrabold text-gray-900 mb-2 leading-tight" x-text="post.title"></h2>
+                    <h2 class="text-2xl font-extrabold text-base-content mb-2 leading-tight" x-text="post.title"></h2>
 
                     <!-- Metadata Row -->
-                    <div class="flex flex-wrap items-center gap-4 text-sm text-gray-500">
-                        <div class="flex items-center gap-2 bg-gray-50 px-3 py-1.5 rounded-full">
+                    <div class="flex flex-wrap items-center gap-4 text-sm text-base-content/60">
+                        <div class="flex items-center gap-2 bg-base-200 px-3 py-1.5 rounded-full">
                             <span class="text-lg">👤</span>
-                            <span class="font-medium text-gray-700" x-text="post.author || '관리자'"></span>
+                            <span class="font-medium text-base-content" x-text="post.author || '관리자'"></span>
                         </div>
-                        <div class="flex items-center gap-2 bg-gray-50 px-3 py-1.5 rounded-full">
+                        <div class="flex items-center gap-2 bg-base-200 px-3 py-1.5 rounded-full">
                             <span>📌</span>
                             <span x-text="formatYmd(post.baseYmd)"></span>
                         </div>
-                        <div class="flex items-center gap-2 bg-gray-50 px-3 py-1.5 rounded-full">
+                        <div class="flex items-center gap-2 bg-base-200 px-3 py-1.5 rounded-full">
                             <span>👁️</span>
                             <span x-text="post.viewCount"></span>
                         </div>
                         <div class="flex-1"></div>
                         <div class="flex items-center gap-3">
                             <a :href="'/posts/' + post.id + '/edit'"
-                                class="inline-flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 rounded-lg text-gray-700 hover:bg-gray-50 hover:text-blue-600 transition shadow-sm">
+                                class="inline-flex items-center gap-2 px-4 py-2 btn btn-outline btn-sm">
                                 <span>✏️</span> 수정
                             </a>
-                            <button @click="deletePost()"
-                                class="inline-flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 rounded-lg text-gray-700 hover:bg-red-50 hover:text-red-600 transition shadow-sm">
+                            <button type="button" @click="deletePost()"
+                                class="inline-flex items-center gap-2 px-4 py-2 btn btn-error btn-sm">
                                 <span>🗑️</span> 삭제
                             </button>
-                            <button @click="goBack()"
-                                class="inline-flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 rounded-lg text-gray-700 hover:bg-gray-50 hover:text-gray-600 transition shadow-sm">
+                            <button type="button" @click="goBack()"
+                                class="inline-flex items-center gap-2 px-4 py-2 btn btn-outline btn-sm">
                                 <span>📋</span> 목록으로
                             </button>
                         </div>
@@ -59,7 +59,7 @@
                 </div>
 
                 <!-- 게시글 내용 -->
-                <div class="bg-white rounded-lg p-4 border border-gray-200">
+                <div class="bg-base-100 rounded-lg p-4 border border-base-300">
                     <!-- HTML 컨텐츠 -->
                     <div x-show="contentType === 'html'" class="prose max-w-none" x-html="post.content || '(내용 없음)'"></div>
 
@@ -72,18 +72,18 @@
 
                 <!-- 첨부파일 -->
                 <div class="border-t pt-3">
-                    <h3 class="text-base font-bold text-gray-800 mb-2">📎 첨부파일</h3>
+                    <h3 class="text-base font-bold text-base-content mb-2">📎 첨부파일</h3>
                     <template x-if="attachedFiles && attachedFiles.length > 0">
                         <div class="space-y-2">
                             <template x-for="file in attachedFiles" :key="file.fileId">
                                 <div
-                                    class="flex items-center justify-between bg-gray-50 p-3 rounded border border-gray-200">
+                                    class="flex items-center justify-between bg-base-200 p-3 rounded border border-base-300">
                                     <div class="flex-1">
                                         <a :href="'/api/file/download/' + file.fileId"
-                                            class="text-blue-500 hover:text-blue-700 font-medium"
+                                            class="link link-primary font-medium"
                                             x-text="file.orgFileName">
                                         </a>
-                                        <p class="text-xs text-gray-500"
+                                        <p class="text-xs text-base-content/60"
                                             x-text="'(' + formatFileSize(file.fileSize) + ')'"></p>
                                     </div>
                                 </div>
@@ -91,7 +91,7 @@
                         </div>
                     </template>
                     <template x-if="!attachedFiles || attachedFiles.length === 0">
-                        <p class="text-gray-600">첨부파일이 없습니다.</p>
+                        <p class="text-base-content/60">첨부파일이 없습니다.</p>
                     </template>
                 </div>
 

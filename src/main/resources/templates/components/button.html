@@ -1,0 +1,33 @@
+<!-- DaisyUI 버튼 컴포넌트 -->
+<th:block th:fragment="primary(text, url, type)">
+  <a th:href="${url}" class="btn btn-primary" th:if="${type != 'submit'}">
+    [[${text}]]
+  </a>
+  <button type="submit" class="btn btn-primary" th:if="${type == 'submit'}">
+    [[${text}]]
+  </button>
+</th:block>
+
+<th:block th:fragment="secondary(text, url, type)">
+  <a th:href="${url}" class="btn btn-secondary" th:if="${type != 'submit'}">
+    [[${text}]]
+  </a>
+  <button type="submit" class="btn btn-secondary" th:if="${type == 'submit'}">
+    [[${text}]]
+  </button>
+</th:block>
+
+<th:block th:fragment="ghost(text, url)">
+  <a th:href="${url}" class="btn btn-ghost">
+    [[${text}]]
+  </a>
+</th:block>
+
+<th:block th:fragment="outline(text, url, type)">
+  <a th:href="${url}" class="btn btn-outline" th:if="${type != 'submit'}">
+    [[${text}]]
+  </a>
+  <button type="submit" class="btn btn-outline" th:if="${type == 'submit'}">
+    [[${text}]]
+  </button>
+</th:block>

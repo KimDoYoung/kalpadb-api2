@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="_csrf" th:content="${_csrf?.token}">
+  <meta name="_csrf_header" th:content="${_csrf?.headerName}">
+  <title layout:title-pattern="$CONTENT_TITLE">KalpaDB</title>
+  <!-- Favicon -->
+  <link rel="icon" type="image/x-icon" th:href="@{/favicon.ico}">
+  <!-- KalpaDB 번들 스타일 (Tailwind + DaisyUI) -->
+  <link rel="stylesheet" th:href="@{/css/kalpadb.css}">
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  <script th:src="@{/js/common/theme.js}"></script>
+  <!-- 페이지별 스타일 -->
+  <th:block layout:fragment="css"></th:block>
+</head>
+
+<body class="bg-base-200 min-h-screen flex flex-col items-center justify-center py-6 px-4">
+  <!-- 최소한의 헤더 (선택) -->
+  <div class="mb-8 text-center">
+    <!-- 로고 또는 브랜드 이름 -->
+  </div>
+
+  <!-- 메인 콘텐츠 -->
+  <main layout:fragment="content">
+    <!-- 페이지별 콘텐츠가 여기에 들어옴 -->
+  </main>
+
+  <!-- 푸터 (선택) -->
+  <div class="mt-8 text-center text-sm text-base-content/60">
+    <!-- 푸터 내용 -->
+  </div>
+
+  <!-- KalpaDB 번들 JavaScript -->
+  <script th:src="@{/js/kalpadb.js(v=${#dates.createNow().time})}"></script>
+
+  <!-- 페이지별 스크립트 -->
+  <th:block layout:fragment="script"></th:block>
+</body>
+
+</html>

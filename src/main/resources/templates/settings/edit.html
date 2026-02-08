@@ -9,185 +9,207 @@
 <body layout:fragment="content">
     <div class="max-w-4xl mx-auto space-y-6" x-data="settingsApp()">
 
-        <!-- Header -->
-        <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100/50">
-            <h1 class="text-2xl font-bold text-gray-800">사용자 설정</h1>
-            <p class="text-gray-500 mt-1">계정 정보 및 화면 설정을 관리합니다.</p>
+        <!-- Header Card -->
+        <div class="card bg-base-100 shadow-md">
+            <div class="card-body">
+                <h1 class="text-3xl font-bold text-base-content">⚙️ 사용자 설정</h1>
+                <p class="text-base-content/60 mt-2">계정 정보 및 화면 설정을 관리합니다.</p>
+            </div>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <!-- Theme Settings -->
-            <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100/50 h-fit">
-                <div class="flex items-center gap-2 mb-4">
-                    <div class="p-2 bg-blue-50 text-blue-600 rounded-lg">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24"
-                            stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" />
-                        </svg>
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <!-- Theme Settings Card -->
+            <div class="card bg-base-100 shadow-md">
+                <div class="card-body">
+                    <div class="flex items-center gap-3 mb-6">
+                        <div class="badge badge-primary badge-lg">
+                            🎨
+                        </div>
+                        <h2 class="text-xl font-semibold text-base-content">UI 테마 설정</h2>
                     </div>
-                    <h2 class="text-lg font-bold text-gray-800">UI 테마 설정</h2>
-                </div>
 
-                <div class="space-y-4">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">테마 선택</label>
-                        <select x-model="theme" @change="updateTheme()"
-                            class="w-full px-4 py-2 bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-100 focus:border-blue-400 outline-none transition-all">
-                            <option value="light">Light Mode (기본)</option>
-                            <option value="dark">Dark Mode</option>
-                        </select>
+                    <div class="space-y-4">
+                        <!-- Theme Select -->
+                        <div class="form-control w-full">
+                            <label class="label">
+                                <span class="label-text font-medium">테마 선택</span>
+                            </label>
+                            <select x-model="theme" @change="updateTheme()"
+                                class="select select-bordered w-full focus:select-primary"
+                                title="테마 선택">
+                                <option value="light">☀️ Light Mode (밝은 테마)</option>
+                                <option value="dark">🌙 Dark Mode (어두운 테마)</option>
+                            </select>
+                        </div>
+
+                        <!-- Info Alert -->
+                        <div class="alert alert-info">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <span class="text-sm">테마 설정은 계정에 저장되며, 모든 기기에서 동기화됩니다.</span>
+                        </div>
                     </div>
-                    <p class="text-xs text-gray-500 bg-gray-50 p-3 rounded-lg border border-gray-100">
-                        * 테마 설정은 현재 계정에 저장되며, 모든 기기에서 동기화됩니다.
-                    </p>
                 </div>
             </div>
 
-            <!-- Password Change -->
-            <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100/50">
-                <div class="flex items-center gap-2 mb-4">
-                    <div class="p-2 bg-red-50 text-red-600 rounded-lg">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24"
-                            stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                        </svg>
+            <!-- Password Change Card -->
+            <div class="card bg-base-100 shadow-md">
+                <div class="card-body">
+                    <div class="flex items-center gap-3 mb-6">
+                        <div class="badge badge-secondary badge-lg">
+                            🔑
+                        </div>
+                        <h2 class="text-xl font-semibold text-base-content">비밀번호 변경</h2>
                     </div>
-                    <h2 class="text-lg font-bold text-gray-800">비밀번호 변경</h2>
+
+                    <form @submit.prevent="changePassword" class="space-y-4">
+                        <!-- Current Password -->
+                        <div class="form-control w-full">
+                            <label class="label">
+                                <span class="label-text font-medium">현재 비밀번호</span>
+                            </label>
+                            <input type="password" x-model="passwordForm.currentPassword" required
+                                class="input input-bordered w-full focus:input-primary"
+                                placeholder="현재 비밀번호를 입력하세요">
+                        </div>
+
+                        <!-- New Password -->
+                        <div class="form-control w-full">
+                            <label class="label">
+                                <span class="label-text font-medium">새 비밀번호</span>
+                            </label>
+                            <input type="password" x-model="passwordForm.newPassword" required
+                                class="input input-bordered w-full focus:input-primary"
+                                placeholder="새로운 비밀번호를 입력하세요">
+                        </div>
+
+                        <!-- Confirm Password -->
+                        <div class="form-control w-full">
+                            <label class="label">
+                                <span class="label-text font-medium">비밀번호 확인</span>
+                            </label>
+                            <input type="password" x-model="passwordForm.confirmPassword" required
+                                class="input input-bordered w-full focus:input-primary"
+                                placeholder="새로운 비밀번호를 다시 입력하세요">
+                        </div>
+
+                        <!-- Submit Button -->
+                        <div class="pt-2">
+                            <button type="submit"
+                                class="btn btn-primary w-full"
+                                :disabled="isLoading"
+                                :class="{'loading': isLoading}">
+                                <span x-show="!isLoading">비밀번호 변경</span>
+                                <span x-show="isLoading">처리 중...</span>
+                            </button>
+                        </div>
+                    </form>
                 </div>
-
-                <form @submit.prevent="changePassword" class="space-y-4">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">현재 비밀번호</label>
-                        <input type="password" x-model="passwordForm.currentPassword" required
-                            class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-100 focus:border-blue-400 outline-none transition-all"
-                            placeholder="현재 비밀번호를 입력하세요">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">새 비밀번호</label>
-                        <input type="password" x-model="passwordForm.newPassword" required
-                            class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-100 focus:border-blue-400 outline-none transition-all"
-                            placeholder="새로운 비밀번호를 입력하세요">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">새 비밀번호 확인</label>
-                        <input type="password" x-model="passwordForm.confirmPassword" required
-                            class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-100 focus:border-blue-400 outline-none transition-all"
-                            placeholder="새로운 비밀번호를 다시 입력하세요">
-                    </div>
-
-                    <div class="pt-2">
-                        <button type="submit"
-                            class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 rounded-lg transition-colors flex items-center justify-center gap-2"
-                            :disabled="isLoading" :class="{'opacity-75 cursor-not-allowed': isLoading}">
-                            <span x-show="!isLoading">비밀번호 변경</span>
-                            <span x-show="isLoading">처리 중...</span>
-                        </button>
-                    </div>
-                </form>
             </div>
         </div>
     </div>
 
-    <script th:inline="javascript">
-        function settingsApp() {
-            return {
-                theme: 'light',
-                passwordForm: {
-                    currentPassword: '',
-                    newPassword: '',
-                    confirmPassword: ''
-                },
-                isLoading: false,
-                csrfToken: document.querySelector("meta[name='_csrf']").getAttribute("content"),
-                csrfHeader: document.querySelector("meta[name='_csrf_header']").getAttribute("content"),
+    <th:block layout:fragment="script">
+        <script th:inline="javascript">
+            function settingsApp() {
+                return {
+                    theme: 'light',
+                    passwordForm: {
+                        currentPassword: '',
+                        newPassword: '',
+                        confirmPassword: ''
+                    },
+                    isLoading: false,
+                    csrfToken: document.querySelector("meta[name='_csrf']").getAttribute("content"),
+                    csrfHeader: document.querySelector("meta[name='_csrf_header']").getAttribute("content"),
 
-                async init() {
-                    this.loadSettings();
-                },
+                    async init() {
+                        this.loadSettings();
+                    },
 
-                async loadSettings() {
-                    try {
-                        const response = await fetch('/api/settings', {
-                            method: 'GET',
-                            headers: {
-                                'Content-Type': 'application/json'
+                    async loadSettings() {
+                        try {
+                            const response = await fetch('/api/settings', {
+                                method: 'GET',
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                }
+                            });
+                            if (response.ok) {
+                                const data = await response.json();
+                                this.theme = data.settings['ui-theme'] || 'light';
                             }
-                        });
-                        if (response.ok) {
-                            const data = await response.json();
-                            this.theme = data.settings['ui-theme'] || 'light';
+                        } catch (error) {
+                            console.error('Failed to load settings:', error);
                         }
-                    } catch (error) {
-                        console.error('Failed to load settings:', error);
-                    }
-                },
+                    },
 
-                async updateTheme() {
-                    try {
-                        const response = await fetch('/api/settings/theme', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                [this.csrfHeader]: this.csrfToken
-                            },
-                            body: JSON.stringify({ theme: this.theme })
-                        });
+                    async updateTheme() {
+                        try {
+                            const response = await fetch('/api/settings/theme', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    [this.csrfHeader]: this.csrfToken
+                                },
+                                body: JSON.stringify({ theme: this.theme })
+                            });
 
-                        if (response.ok) {
-                            alert('테마가 변경되었습니다.');
-                            // Optional: Apply theme immediately if you have logic for that
-                        } else {
-                            alert('테마 변경에 실패했습니다.');
+                            if (response.ok) {
+                                // 성공 알림 표시
+                                this.$nextTick(() => {
+                                    const modal = document.createElement('div');
+                                    modal.className = 'alert alert-success';
+                                    modal.innerHTML = '<span>테마가 변경되었습니다.</span>';
+                                });
+                            }
+                        } catch (error) {
+                            console.error('Failed to update theme:', error);
                         }
-                    } catch (error) {
-                        console.error('Failed to update theme:', error);
-                        alert('오류가 발생했습니다.');
-                    }
-                },
+                    },
 
-                async changePassword() {
-                    if (this.passwordForm.newPassword !== this.passwordForm.confirmPassword) {
-                        alert('새 비밀번호가 일치하지 않습니다.');
-                        return;
-                    }
-
-                    this.isLoading = true;
-                    try {
-                        const response = await fetch('/api/settings/password', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                [this.csrfHeader]: this.csrfToken
-                            },
-                            body: JSON.stringify({
-                                currentPassword: this.passwordForm.currentPassword,
-                                newPassword: this.passwordForm.newPassword
-                            })
-                        });
-
-                        if (response.ok) {
-                            alert('비밀번호가 변경되었습니다. 다시 로그인해주세요.');
-                            window.location.href = '/logout'; // Force logout logic if standard
-                        } else {
-                            // Try to get error message
-                            const errorText = await response.text();
-                            alert('비밀번호 변경 실패: ' + (errorText || '현재 비밀번호를 확인해주세요.'));
+                    async changePassword() {
+                        if (this.passwordForm.newPassword !== this.passwordForm.confirmPassword) {
+                            alert('새 비밀번호가 일치하지 않습니다.');
+                            return;
                         }
-                    } catch (error) {
-                        console.error('Failed to change password:', error);
-                        alert('오류가 발생했습니다.');
-                    } finally {
-                        this.isLoading = false;
-                        this.passwordForm.currentPassword = '';
-                        this.passwordForm.newPassword = '';
-                        this.passwordForm.confirmPassword = '';
+
+                        this.isLoading = true;
+                        try {
+                            const response = await fetch('/api/settings/password', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    [this.csrfHeader]: this.csrfToken
+                                },
+                                body: JSON.stringify({
+                                    currentPassword: this.passwordForm.currentPassword,
+                                    newPassword: this.passwordForm.newPassword
+                                })
+                            });
+
+                            if (response.ok) {
+                                alert('비밀번호가 변경되었습니다. 다시 로그인해주세요.');
+                                window.location.href = '/logout';
+                            } else {
+                                const errorText = await response.text();
+                                alert('비밀번호 변경 실패: ' + (errorText || '현재 비밀번호를 확인해주세요.'));
+                            }
+                        } catch (error) {
+                            console.error('Failed to change password:', error);
+                            alert('오류가 발생했습니다.');
+                        } finally {
+                            this.isLoading = false;
+                            this.passwordForm.currentPassword = '';
+                            this.passwordForm.newPassword = '';
+                            this.passwordForm.confirmPassword = '';
+                        }
                     }
                 }
             }
-        }
-    </script>
+        </script>
+    </th:block>
 </body>
 
 </html>

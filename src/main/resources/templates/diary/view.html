@@ -9,62 +9,77 @@
 </head>
 <body>
 <main layout:fragment="content">
-    <div x-data="diaryDetail()" x-init="init()">
+    <div x-data="diaryDetail()" x-init="init()" class="space-y-6">
         <!-- 로딩 상태 -->
-        <div x-show="loading" class="text-center py-8">
-            <p class="text-gray-600">로딩 중...</p>
+        <div x-show="loading" class="text-center py-12">
+            <span class="loading loading-spinner loading-lg text-primary"></span>
+            <p class="text-base-content/60 mt-4">로딩 중...</p>
         </div>
 
         <!-- 에러 메시지 -->
-        <div x-show="error" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
-            <p x:text="error"></p>
+        <div x-show="error" class="alert alert-error" x-cloak>
+            <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l4-4m0 0l4 4m-4-4l-4-4" />
+            </svg>
+            <p x-text="error"></p>
         </div>
 
         <!-- 일기 상세 -->
-        <div x-show="!loading && diary" class="space-y-6">
-            <!-- 헤더 -->
-            <div class="flex justify-between items-start border-b pb-4">
-                <div>
-                    <h2 class="text-3xl font-bold text-gray-800" x-text="formatDateWithDay(diary.ymd)"></h2>
-                    <p class="text-gray-600 mt-2" x-text="diary.summary || '(요약 없음)'"></p>
-                </div>
-                <div class="flex gap-2">
-                    <a :href="'/diary/' + diary.ymd + '/edit'" class="btn-primary">수정</a>
-                    <button @click="deleteDiary()" class="btn-danger">삭제</button>
-                </div>
-            </div>
-
-            <!-- 내용 -->
-            <div class="bg-white rounded-lg p-6">
-                <div class="ql-editor" x-html="diary.content || '(내용 없음)'"></div>
-            </div>
-
-            <!-- 첨부파일 -->
-            <div class="border-t pt-6">
-                <h3 class="text-lg font-bold text-gray-800 mb-4">📎 첨부파일</h3>
-                <template x-if="attachedFiles.length > 0">
-                    <div class="space-y-2">
-                        <template x-for="file in attachedFiles" :key="file.fileId">
-                            <div class="flex items-center justify-between bg-gray-50 p-3 rounded border border-gray-200">
-                                <div class="flex-1">
-                                    <a :href="'/api/file/download/' + file.fileId"
-                                       class="text-blue-500 hover:text-blue-700 font-medium"
-                                       x-text="file.orgFileName">
-                                    </a>
-                                    <p class="text-xs text-gray-500" x-text="'(' + formatFileSize(file.fileSize) + ')'"></p>
-                                </div>
-                            </div>
-                        </template>
+        <div x-show="!loading && diary" class="space-y-6" x-cloak>
+            <!-- 헤더 카드 -->
+            <div class="card bg-base-100 shadow-md">
+                <div class="card-body">
+                    <div class="flex justify-between items-start">
+                        <div class="flex-1">
+                            <h1 class="text-3xl font-bold text-base-content" x-text="formatDateWithDay(diary.ymd)"></h1>
+                            <p class="text-base-content/60 mt-2" x-text="diary.summary || '(요약 없음)'"></p>
+                        </div>
+                        <div class="flex gap-2 flex-shrink-0">
+                            <a :href="'/diary/' + diary.ymd + '/edit'" class="btn btn-sm btn-primary">수정</a>
+                            <button @click="deleteDiary()" class="btn btn-sm btn-error" type="button">삭제</button>
+                        </div>
                     </div>
-                </template>
-                <template x-if="attachedFiles.length === 0">
-                    <p class="text-gray-600">첨부파일이 없습니다.</p>
-                </template>
+                </div>
             </div>
 
-            <!-- 뒤로가기 -->
-            <div class="flex justify-between items-center">
-                <a th:href="@{/diary}" class="text-blue-500 hover:text-blue-600">← 목록으로</a>
+            <!-- 내용 카드 -->
+            <div class="card bg-base-100 shadow">
+                <div class="card-body p-6">
+                    <div class="ql-editor prose prose-sm max-w-none" x-html="diary.content || '<p>(내용 없음)</p>'"></div>
+                </div>
+            </div>
+
+            <!-- 첨부파일 섹션 -->
+            <div class="card bg-base-100 shadow">
+                <div class="card-body">
+                    <h3 class="card-title text-lg">📎 첨부파일</h3>
+
+                    <template x-if="attachedFiles.length > 0">
+                        <div class="space-y-2">
+                            <template x-for="file in attachedFiles" :key="file.fileId">
+                                <div class="flex items-center justify-between bg-base-200 p-3 rounded border border-base-300">
+                                    <div class="flex-1 min-w-0">
+                                        <a :href="'/api/file/download/' + file.fileId"
+                                           class="link link-primary font-medium truncate"
+                                           x-text="file.orgFileName">
+                                        </a>
+                                        <p class="text-xs text-base-content/60" x-text="'(' + formatFileSize(file.fileSize) + ')'"></p>
+                                    </div>
+                                </div>
+                            </template>
+                        </div>
+                    </template>
+                    <template x-if="attachedFiles.length === 0">
+                        <p class="text-base-content/60">첨부파일이 없습니다.</p>
+                    </template>
+                </div>
+            </div>
+
+            <!-- 뒤로가기 버튼 -->
+            <div class="flex justify-start">
+                <a th:href="@{/diary}" class="link link-primary">
+                    ← 목록으로
+                </a>
             </div>
         </div>
     </div>

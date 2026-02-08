@@ -5,7 +5,23 @@ module.exports = {
     "./src/main/resources/static/js/**/*.js"
   ],
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+        primary: '#4285F4',
+        secondary: '#34A853',
+        accent: '#FBBC04',
+      },
+    },
   },
-  plugins: [],
+  plugins: [require("daisyui")],
+  daisyui: {
+    themes: [
+      "light",
+      "dark",
+      "corporate",
+      "dracula",
+    ],
+    darkMode: "class",
+    logs: false,
+  },
 }

@@ -9,11 +9,10 @@
     <title layout:title-pattern="$CONTENT_TITLE">KalpaDB</title>
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" th:href="@{/favicon.ico}">
-    <!-- Tailwind CSS (Applied per user reference) -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- KalpaDB 번들 스타일 (모든 페이지별 CSS) -->
+    <!-- KalpaDB 번들 스타일 (Tailwind + DaisyUI) -->
     <link rel="stylesheet" th:href="@{/css/kalpadb.css}">
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script th:src="@{/js/common/theme.js}"></script>
     <!-- 페이지별 스타일 -->
     <th:block layout:fragment="css"></th:block>
 </head>
