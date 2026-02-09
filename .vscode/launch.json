@@ -7,7 +7,8 @@
             "request": "launch",
             "mainClass": "kr.co.kalpa.api.KalpaApplication",
             "args": "--spring.profiles.active=fedora",
-            "console": "integratedTerminal"
+            "console": "integratedTerminal",
+            "preLaunchTask": "npm: build frontend"
         },
         {
             "type": "java",
@@ -15,7 +16,8 @@
             "request": "launch",
             "mainClass": "kr.co.kalpa.api.KalpaApplication",
             "args": "--spring.profiles.active=home",
-            "console": "integratedTerminal"
+            "console": "integratedTerminal",
+            "preLaunchTask": "npm: build frontend"
         },
         {
             "type": "java",
@@ -23,7 +25,8 @@
             "request": "launch",
             "mainClass": "kr.co.kalpa.api.KalpaApplication",
             "args": "--spring.profiles.active=test",
-            "console": "integratedTerminal"
+            "console": "integratedTerminal",
+            "preLaunchTask": "npm: build frontend"
         },
         {
             "type": "java",

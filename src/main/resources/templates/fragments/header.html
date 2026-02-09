@@ -10,41 +10,33 @@
     </div>
 
     <!-- Desktop Menu (Authenticated users) -->
-    <div th:if="${#authentication.name != 'anonymousUser'}" class="navbar-center hidden lg:flex">
-        <ul class="menu menu-horizontal px-1 gap-1">
-            <!-- Diary Menu -->
-            <li>
-                <details>
-                    <summary>📖 일지</summary>
-                    <ul class="bg-base-100 rounded-t-none">
-                        <li><a th:href="@{/diary/new}">✏️ 일지기록</a></li>
-                        <li><a th:href="@{/diary}">🔍 일지찾기</a></li>
-                        <li><a th:href="@{/calendar}">📅 달력</a></li>
-                    </ul>
-                </details>
-            </li>
+    <div th:if="${#authentication.name != 'anonymousUser'}" class="navbar-center hidden lg:flex gap-2">
+        <!-- Diary Menu -->
+        <div class="dropdown dropdown-hover">
+            <button type="button" class="btn btn-ghost">📖 일지</button>
+            <ul class="dropdown-content menu bg-base-100 rounded-box z-[1] w-64 p-2 shadow">
+                <li><a th:href="@{/diary/new}">✏️ 일지기록</a></li>
+                <li><a th:href="@{/diary}">🔍 일지찾기</a></li>
+                <li><a th:href="@{/calendar}">📅 달력</a></li>
+            </ul>
+        </div>
 
-            <!-- Board Menu -->
-            <li>
-                <details>
-                    <summary>📝 게시판</summary>
-                    <ul class="bg-base-100 rounded-t-none">
-                        <li><a th:href="@{/boards}">✍️ 게시판관리</a></li>
-                    </ul>
-                </details>
-            </li>
+        <!-- Board Menu -->
+        <div class="dropdown dropdown-hover">
+            <button type="button" class="btn btn-ghost">📝 게시판</button>
+            <ul class="dropdown-content menu bg-base-100 rounded-box z-[1] w-64 p-2 shadow">
+                <li><a th:href="@{/boards}">✍️ 게시판관리</a></li>
+            </ul>
+        </div>
 
-            <!-- Tech Menu -->
-            <li>
-                <details>
-                    <summary>🔧 Tech</summary>
-                    <ul class="bg-base-100 rounded-t-none">
-                        <li><a th:href="@{/jangbi}">🖥️ 장비</a></li>
-                        <li><a th:href="@{/apnode}">📂 파일관리</a></li>
-                    </ul>
-                </details>
-            </li>
-        </ul>
+        <!-- Tech Menu -->
+        <div class="dropdown dropdown-hover">
+            <button type="button" class="btn btn-ghost">🔧 Tech</button>
+            <ul class="dropdown-content menu bg-base-100 rounded-box z-[1] w-64 p-2 shadow">
+                <li><a th:href="@{/jangbi}">🖥️ 장비</a></li>
+                <li><a th:href="@{/apnode}">📂 파일관리</a></li>
+            </ul>
+        </div>
     </div>
 
     <!-- Right Side -->

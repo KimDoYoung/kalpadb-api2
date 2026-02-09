@@ -28,6 +28,9 @@
       "Bash(npm install:*)",
       "Bash(git add:*)",
       "Bash(git commit:*)"
+    ],
+    "additionalDirectories": [
+      "c:\\Users\\USER\\work\\kalpadb-api2\\node_modules\\heroicons\\24\\outline"
     ]
   },
   "language": "korean",
