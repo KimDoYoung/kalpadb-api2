@@ -3,16 +3,17 @@
   "version": "0.0.1",
   "description": "KalpaDB Web Application",
   "scripts": {
-    "build:css": "tailwindcss -i ./src/main/resources/static/css/common/common.css -o ./src/main/resources/static/css/common/common.css --minify && node ./src/main/resources/static/css/bundle.js",
-    "watch:css": "tailwindcss -i ./src/main/resources/static/css/common/common.css -o ./src/main/resources/static/css/common/common.css --watch",
+    "build:css": "tailwindcss -i ./src/main/resources/static/css/input.css -o ./src/main/resources/static/css/kalpadb.css --minify",
+    "watch:css": "tailwindcss -i ./src/main/resources/static/css/input.css -o ./src/main/resources/static/css/kalpadb.css --watch",
     "build:js": "node ./src/main/resources/static/js/bundle.js && terser ./src/main/resources/static/js/kalpadb.js -o ./src/main/resources/static/js/kalpadb.js",
     "build:bundle": "npm run build:css && npm run build:js"
   },
   "devDependencies": {
     "autoprefixer": "^10.4.16",
     "csso-cli": "^4.0.2",
-    "daisyui": "^5.5.18",
+    "daisyui": "^4.12.24",
     "postcss": "^8.4.31",
+    "postcss-import": "^16.1.1",
     "tailwindcss": "^3.3.6",
     "terser": "^5.44.1"
   }

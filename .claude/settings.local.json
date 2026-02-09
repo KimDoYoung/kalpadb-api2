@@ -22,7 +22,10 @@
       "Bash(npm run build:bundle:*)",
       "Bash(npm run build:js:*)",
       "Bash(tree:*)",
-      "Bash(npm run build:css:*)"
+      "Bash(npm run build:css:*)",
+      "Read(//tmp/**)",
+      "Bash(npm view:*)",
+      "Bash(npm install:*)"
     ]
   },
   "language": "korean",

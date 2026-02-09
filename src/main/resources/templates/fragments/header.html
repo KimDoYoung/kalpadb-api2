@@ -57,7 +57,7 @@
         <!-- User Menu (Authenticated users) -->
         <div th:if="${#authentication.name != 'anonymousUser'}" class="dropdown dropdown-end">
             <button type="button" class="btn btn-ghost btn-circle avatar placeholder" title="사용자 메뉴">
-                <div class="bg-primary text-white">
+                <div class="bg-primary text-white rounded-full w-10">
                     <span th:text="${#authentication.name.substring(0, 1)}">U</span>
                 </div>
             </button>
@@ -77,7 +77,7 @@
         </div>
 
         <!-- Mobile Menu Toggle -->
-        <div class="dropdown dropdown-end lg:hidden">
+        <div th:if="${#authentication.name != 'anonymousUser'}" class="dropdown dropdown-end lg:hidden">
             <button type="button" class="btn btn-ghost btn-circle" title="메뉴">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
                     stroke="currentColor">

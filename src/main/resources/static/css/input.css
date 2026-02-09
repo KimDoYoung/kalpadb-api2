@@ -1,0 +1,11 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Theme definitions managed in tailwind.config.js */
+@import "./common/components.css";
+
+/* Page styles */
+@import "./pages/diary.css";
+@import "./pages/index.css";
+@import "./pages/login.css";
