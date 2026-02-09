@@ -37,8 +37,18 @@
                             <select x-model="theme" @change="updateTheme()"
                                 class="select select-bordered w-full focus:select-primary"
                                 title="테마 선택">
-                                <option value="light">☀️ Light Mode (밝은 테마)</option>
-                                <option value="dark">🌙 Dark Mode (어두운 테마)</option>
+                                <optgroup label="Kalpa 테마">
+                                    <option value="kalpa-light">☀️ Kalpa Light (밝은 테마)</option>
+                                    <option value="kalpa-dark">🌙 Kalpa Dark (어두운 테마)</option>
+                                </optgroup>
+                                <optgroup label="기본 테마">
+                                    <option value="light">☀️ Light (밝음)</option>
+                                    <option value="dark">🌙 Dark (어두움)</option>
+                                </optgroup>
+                                <optgroup label="특수 테마">
+                                    <option value="corporate">💼 Corporate (기업)</option>
+                                    <option value="dracula">🧛 Dracula (드라큘라)</option>
+                                </optgroup>
                             </select>
                         </div>
 
@@ -114,7 +124,7 @@
         <script th:inline="javascript">
             function settingsApp() {
                 return {
-                    theme: 'light',
+                    theme: localStorage.getItem('theme') || 'kalpa-light',
                     passwordForm: {
                         currentPassword: '',
                         newPassword: '',
@@ -138,7 +148,8 @@
                             });
                             if (response.ok) {
                                 const data = await response.json();
-                                this.theme = data.settings['ui-theme'] || 'light';
+                                this.theme = data.settings['ui-theme'] || localStorage.getItem('theme') || 'kalpa-light';
+                                document.documentElement.setAttribute('data-theme', this.theme);
                             }
                         } catch (error) {
                             console.error('Failed to load settings:', error);
@@ -147,6 +158,11 @@
 
                     async updateTheme() {
                         try {
+                            // localStorage에 저장
+                            localStorage.setItem('theme', this.theme);
+                            // HTML에 data-theme 속성 설정
+                            document.documentElement.setAttribute('data-theme', this.theme);
+
                             const response = await fetch('/api/settings/theme', {
                                 method: 'POST',
                                 headers: {

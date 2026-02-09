@@ -1,10 +1,10 @@
 // DaisyUI Theme Manager
 document.addEventListener('DOMContentLoaded', () => {
   const htmlElement = document.documentElement;
-  const themes = ['light', 'dark', 'corporate', 'dracula']; // tailwind.config에 정의된 테마
+  const themes = ['kalpa-light', 'kalpa-dark', 'light', 'dark', 'corporate', 'dracula']; // tailwind.config에 정의된 테마
 
-  // 저장된 theme 로드 (기본값: light)
-  const savedTheme = localStorage.getItem('theme') || 'light';
+  // 저장된 theme 로드 (기본값: kalpa-light)
+  const savedTheme = localStorage.getItem('theme') || 'kalpa-light';
   htmlElement.setAttribute('data-theme', savedTheme);
 
   // Theme 토글 함수 (public)

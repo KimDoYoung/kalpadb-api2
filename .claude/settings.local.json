@@ -25,7 +25,9 @@
       "Bash(npm run build:css:*)",
       "Read(//tmp/**)",
       "Bash(npm view:*)",
-      "Bash(npm install:*)"
+      "Bash(npm install:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)"
     ]
   },
   "language": "korean",
