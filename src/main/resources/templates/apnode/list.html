@@ -91,7 +91,7 @@
             <div class="flex flex-1 min-h-0 border-x border-b border-gray-100 rounded-b-xl overflow-hidden bg-white">
                 <!-- 트리 사이드바 -->
                 <aside :style="`width: ${sidebarWidth}px`"
-                    class="border-r border-gray-100 bg-gray-50/50 overflow-y-auto flex-shrink-0 hidden md:block select-none">
+                    class="border-r border-gray-100 bg-gray-50/50 overflow-y-auto flex-shrink-0 block select-none">
                     <div class="p-3">
                         <h3 class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2 px-2">폴더</h3>
                         <div x-html="renderTree(treeData)"></div>
@@ -100,7 +100,7 @@
 
                 <!-- 리사이즈 핸들 -->
                 <div @mousedown="startResize($event)"
-                    class="w-1 flex-shrink-0 bg-gray-50 hover:bg-sky-300 cursor-col-resize transition-colors hidden md:block">
+                    class="w-1 flex-shrink-0 bg-gray-50 hover:bg-sky-300 cursor-col-resize transition-colors">
                 </div>
 
                 <!-- 파일 영역 -->
@@ -130,7 +130,7 @@
 
                         <!-- Grid View -->
                         <div x-show="!loading && viewMode === 'grid' && currentFiles.length > 0"
-                            class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
+                            class="grid grid-cols-6 gap-4">
                             <template x-for="item in currentFiles" :key="item.id">
                                 <div @click="selectItem(item, $event)" @dblclick="openItem(item)"
                                     @contextmenu.prevent="showContextMenu($event, item)"

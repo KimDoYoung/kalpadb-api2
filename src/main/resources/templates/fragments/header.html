@@ -10,7 +10,7 @@
     </div>
 
     <!-- Desktop Menu (Authenticated users) -->
-    <div th:if="${#authentication.name != 'anonymousUser'}" class="navbar-center hidden lg:flex gap-2">
+    <div th:if="${#authentication.name != 'anonymousUser'}" class="navbar-center flex gap-2">
         <!-- Diary Menu -->
         <div class="dropdown dropdown-hover">
             <button type="button" class="btn btn-ghost">📖 일지</button>
@@ -41,11 +41,6 @@
 
     <!-- Right Side -->
     <div class="navbar-end gap-2">
-        <!-- Theme Toggle -->
-        <button type="button" @click="window.toggleTheme()" class="btn btn-sm btn-ghost" title="테마 변경">
-            🌙 / ☀️
-        </button>
-
         <!-- User Menu (Authenticated users) -->
         <div th:if="${#authentication.name != 'anonymousUser'}" class="dropdown dropdown-end">
             <button type="button" class="btn btn-ghost btn-circle avatar placeholder" title="사용자 메뉴">
@@ -68,34 +63,5 @@
             <a th:href="@{/login}" class="btn btn-sm btn-primary">로그인</a>
         </div>
 
-        <!-- Mobile Menu Toggle -->
-        <div th:if="${#authentication.name != 'anonymousUser'}" class="dropdown dropdown-end lg:hidden">
-            <button type="button" class="btn btn-ghost btn-circle" title="메뉴">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
-                    stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h8m-8 6h16" />
-                </svg>
-            </button>
-            <ul class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52">
-                <li th:if="${#authentication.name != 'anonymousUser'}">
-                    <a th:href="@{/diary/new}">✏️ 일지기록</a>
-                </li>
-                <li th:if="${#authentication.name != 'anonymousUser'}">
-                    <a th:href="@{/diary}">🔍 일지찾기</a>
-                </li>
-                <li th:if="${#authentication.name != 'anonymousUser'}">
-                    <a th:href="@{/calendar}">📅 달력</a>
-                </li>
-                <li th:if="${#authentication.name != 'anonymousUser'}">
-                    <a th:href="@{/boards}">✍️ 게시판관리</a>
-                </li>
-                <li th:if="${#authentication.name != 'anonymousUser'}">
-                    <a th:href="@{/jangbi}">🖥️ 장비</a>
-                </li>
-                <li th:if="${#authentication.name != 'anonymousUser'}">
-                    <a th:href="@{/apnode}">📂 파일관리</a>
-                </li>
-            </ul>
-        </div>
     </div>
 </header>

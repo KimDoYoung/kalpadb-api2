@@ -5,6 +5,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Project Overview
 
 This is a RESTful API for the MySQL `kalpadb` database, built with Spring Boot. The API is consumed by a client application called PCMS2.
+** 모바일은 생각하지 말 것!** 완전히 desktop only!
 
 ## Technology Stack
 
@@ -56,7 +57,9 @@ This is a RESTful API for the MySQL `kalpadb` database, built with Spring Boot. 
   - alpine.js
   - 타임리프
   - tailwindcss(npm사용)
-  - UI는 responsive를 지원한다.
+  - UI는 **desktop only** (모바일 반응형 불필요, 모바일은 Flutter로 별도 개발 예정)
+  - sm:, md:, lg:, xl: 등 반응형 breakpoint 클래스 사용 금지
+  - 모바일 전용 메뉴, hamburger 메뉴 등 불필요
 
 ## table desc
 

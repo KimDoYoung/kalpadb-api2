@@ -41,7 +41,7 @@
 
             <!-- 게시판 목록 -->
             <template x-if="!loading && boards && boards.length > 0">
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div class="grid grid-cols-3 gap-6">
                     <template x-for="(board, idx) in boards" :key="board.id || idx">
                         <div class="group relative card bg-base-100 rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 overflow-hidden border border-base-300 cursor-pointer"
                              @click="window.location.href = '/posts?boardId=' + board.id">
@@ -97,20 +97,18 @@
 
             <!-- CRUD Modal -->
             <div x-show="showModal" class="fixed inset-0 z-50 overflow-y-auto" style="display: none;" x-cloak>
-                <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+                <div class="flex items-center justify-center min-h-screen text-center">
                     <!-- Background overlay -->
                     <div class="fixed inset-0 transition-opacity" aria-hidden="true" @click="closeModal()">
                         <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
                     </div>
 
-                    <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
-
                     <!-- Modal panel -->
                     <div
-                        class="inline-block align-bottom bg-base-100 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
-                        <div class="bg-base-100 px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-                            <div class="sm:flex sm:items-start">
-                                <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
+                        class="inline-block bg-base-100 rounded-lg text-left overflow-hidden shadow-xl transform transition-all my-8 align-middle max-w-lg w-full">
+                        <div class="bg-base-100 p-6 pb-4">
+                            <div class="flex items-start">
+                                <div class="ml-4 text-left w-full">
                                     <h3 class="text-lg leading-6 font-medium text-base-content"
                                         x-text="isEdit ? '게시판 수정' : '새 게시판 생성'"></h3>
                                     <div class="mt-4 space-y-4">
@@ -163,13 +161,13 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="bg-base-200 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                        <div class="bg-base-200 px-6 py-3 flex flex-row-reverse">
                             <button type="button" @click="saveBoard()"
-                                class="w-full inline-flex justify-center rounded-md btn btn-primary sm:ml-3 sm:w-auto sm:text-sm">
+                                class="inline-flex justify-center rounded-md btn btn-primary ml-3 w-auto text-sm">
                                 저장
                             </button>
                             <button type="button" @click="closeModal()"
-                                class="mt-3 w-full inline-flex justify-center rounded-md btn btn-secondary sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
+                                class="inline-flex justify-center rounded-md btn btn-secondary ml-3 w-auto text-sm">
                                 취소
                             </button>
                         </div>
