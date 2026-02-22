@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
-    <!-- 로그 경로 및 파일명 정의 -->
-    <property name="LOG_PATH" value="logs"/>
+    <!-- 로그 파일명 및 패턴 정의 -->
     <property name="LOG_FILE_NAME" value="kalpadb-api2"/>
     <property name="LOG_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"/>
 
@@ -29,8 +28,9 @@
         </rollingPolicy>
     </appender>
 
-    <!-- Development Profile: Console + File -->
-    <springProfile name="dev">
+    <!-- Home Profile: Console + File -->
+    <springProfile name="home">
+        <property name="LOG_PATH" value="${kalpa.base-dir}/logs/home"/>
         <root level="DEBUG">
             <appender-ref ref="CONSOLE"/>
             <appender-ref ref="FILE"/>
@@ -42,7 +42,8 @@
     </springProfile>
 
     <!-- Production Profile: File Only -->
-    <springProfile name="prod">
+    <springProfile name="jskn">
+        <property name="LOG_PATH" value="${kalpa.base-dir}/logs/prod"/>
         <root level="INFO">
             <appender-ref ref="FILE"/>
         </root>
@@ -52,7 +53,8 @@
     </springProfile>
 
     <!-- Default Profile (when no profile is active) -->
-    <springProfile name="!dev &amp; !prod">
+    <springProfile name="!dev &amp; !prod &amp; !home">
+        <property name="LOG_PATH" value="logs"/>
         <root level="INFO">
             <appender-ref ref="CONSOLE"/>
             <appender-ref ref="FILE"/>
