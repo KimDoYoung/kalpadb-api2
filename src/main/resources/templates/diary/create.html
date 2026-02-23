@@ -246,7 +246,7 @@
                             formData.append('files', file);
                         }
 
-                        const response = await fetch('/api/diary', {
+                        const response = await fetch(APP_CTX + '/api/diary', {
                             method: 'POST',
                             body: formData,
                             credentials: 'include'
@@ -258,7 +258,7 @@
                         }
 
                         alert('저장되었습니다.');
-                        window.location.href = `/diary/${ymdFormatted}`;
+                        window.location.href = `${APP_CTX}/diary/${ymdFormatted}`;
                     } catch (err) {
                         this.error = err.message;
                         alert(err.message);

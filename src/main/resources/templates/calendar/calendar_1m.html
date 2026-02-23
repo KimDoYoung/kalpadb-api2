@@ -271,7 +271,7 @@
 
                     async fetchEvents(startYmd, endYmd) {
                         try {
-                            const response = await fetch(`/api/calendar?start=${startYmd}&end=${endYmd}`);
+                            const response = await fetch(`${APP_CTX}/api/calendar?start=${startYmd}&end=${endYmd}`);
                             if (response.ok) {
                                 this.events = await response.json();
                             } else {

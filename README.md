@@ -198,6 +198,15 @@ export DB_PASSWORD=prod_password
 export JWT_SECRET=your-production-secret-key
 ```
 
+## jskn에 배포
+
+### 2026-02-23 처음배포
+- Spring Boot 4.0 → 3.4.3 다운그레이드 (Tomcat 11 호환)
+- Tomcat 이미지 11-jdk21-temurin-noble로 변경
+- conf 볼륨 마운트 제거
+- DB CHAR 컬럼들 VARCHAR로 수정 (ap_file, ap_node, calendar, todo)
+
+
 ## 라이센스
 
 MIT License

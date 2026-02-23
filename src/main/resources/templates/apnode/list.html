@@ -438,7 +438,7 @@
 
                     async loadTree() {
                         try {
-                            const res = await fetch('/api/nodes/tree');
+                            const res = await fetch(APP_CTX + '/api/nodes/tree');
                             const data = await res.json();
                             this.treeData = data.data || [];
                         } catch (e) {
@@ -454,8 +454,8 @@
 
                         try {
                             const [filesRes, breadcrumbRes] = await Promise.all([
-                                fetch(`/api/nodes/${folderId}/children`),
-                                fetch(`/api/nodes/${folderId}/breadcrumb`)
+                                fetch(`${APP_CTX}/api/nodes/${folderId}/children`),
+                                fetch(`${APP_CTX}/api/nodes/${folderId}/breadcrumb`)
                             ]);
 
                             const filesData = await filesRes.json();
@@ -579,7 +579,7 @@
                         if (!this.newFolderName.trim()) return;
 
                         try {
-                            const res = await fetch('/api/nodes', {
+                            const res = await fetch(APP_CTX + '/api/nodes', {
                                 method: 'POST',
                                 headers: { 'Content-Type': 'application/json' },
                                 body: JSON.stringify({
@@ -620,7 +620,7 @@
                         formData.append('folderId', uploadFolderId);
 
                         try {
-                            const res = await fetch('/api/nodes/upload', {
+                            const res = await fetch(APP_CTX + '/api/nodes/upload', {
                                 method: 'POST',
                                 body: formData
                             });
@@ -669,7 +669,7 @@
                         if (!newName || newName === item.name) return;
 
                         try {
-                            const res = await fetch(`/api/nodes/${item.id}`, {
+                            const res = await fetch(`${APP_CTX}/api/nodes/${item.id}`, {
                                 method: 'PUT',
                                 headers: { 'Content-Type': 'application/json' },
                                 body: JSON.stringify({ name: newName })
@@ -697,7 +697,7 @@
                         if (!this.moveTargetId || !this.moveItem) return;
 
                         try {
-                            const res = await fetch(`/api/nodes/${this.moveItem.id}/move`, {
+                            const res = await fetch(`${APP_CTX}/api/nodes/${this.moveItem.id}/move`, {
                                 method: 'POST',
                                 headers: { 'Content-Type': 'application/json' },
                                 body: JSON.stringify({ targetParentId: this.moveTargetId })
@@ -721,7 +721,7 @@
                         if (!confirm(`"${item.name}" ${type}을(를) 삭제하시겠습니까?`)) return;
 
                         try {
-                            const res = await fetch(`/api/nodes/${item.id}`, { method: 'DELETE' });
+                            const res = await fetch(`${APP_CTX}/api/nodes/${item.id}`, { method: 'DELETE' });
                             const data = await res.json();
                             if (!data.success) {
                                 alert(data.message || '삭제에 실패했습니다');
@@ -752,7 +752,7 @@
                         this.isSearchMode = true;
 
                         try {
-                            const res = await fetch(`/api/nodes/search?keyword=${encodeURIComponent(kw)}`);
+                            const res = await fetch(`${APP_CTX}/api/nodes/search?keyword=${encodeURIComponent(kw)}`);
                             const data = await res.json();
                             this.currentFiles = data.data || [];
                         } catch (e) {

@@ -300,7 +300,7 @@
                             formData.append('files', file);
                         }
 
-                        const response = await fetch('/api/jangbi', {
+                        const response = await fetch(APP_CTX + '/api/jangbi', {
                             method: 'POST',
                             body: formData,
                             credentials: 'include'

@@ -12,7 +12,7 @@
             <!-- 페이지 헤더 & 게시판 변경 -->
             <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
                 <div class="flex items-center gap-4">
-                    <a href="/boards"
+                    <a th:href="@{/boards}"
                         class="p-2 rounded-full hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors"
                         title="게시판 목록으로">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -47,7 +47,7 @@
                             </div>
                             <div class="max-h-64 overflow-y-auto custom-scrollbar">
                                 <template x-for="board in boards" :key="board.id">
-                                    <a :href="'/posts?boardId=' + board.id"
+                                    <a :href="APP_CTX + '/posts?boardId=' + board.id"
                                         class="flex items-center justify-between px-4 py-3 hover:bg-blue-50 transition-colors group"
                                         :class="{'bg-blue-50/50': board.id === selectedBoardId}">
                                         <div>
@@ -267,7 +267,7 @@
                     },
 
                     loadBoards() {
-                        fetch('/api/boards')
+                        fetch(APP_CTX + '/api/boards')
                             .then(res => {
                                 if (!res.ok) throw new Error('게시판 로드 실패');
                                 return res.json();
@@ -307,7 +307,7 @@
                         // Dropdown 방식이므로 이 메서드는 더 이상 직접 호출되지 않을 수 있지만, 
                         // 혹시 모를 호환성을 위해 유지하거나 로직을 url 이동으로 변경
                         if (this.selectedBoardId) {
-                            window.location.href = '/posts?boardId=' + this.selectedBoardId;
+                            window.location.href = APP_CTX + '/posts?boardId=' + this.selectedBoardId;
                         }
                     },
 
@@ -316,7 +316,7 @@
                     },
 
                     goToView(postId) {
-                        window.location.href = `/posts/${postId}`;
+                        window.location.href = `${APP_CTX}/posts/${postId}`;
                     },
 
                     async deletePost(postId) {
@@ -325,7 +325,7 @@
                         }
 
                         try {
-                            const response = await fetch(`/api/posts/${postId}`, {
+                            const response = await fetch(`${APP_CTX}/api/posts/${postId}`, {
                                 method: 'DELETE',
                                 credentials: 'include'
                             });

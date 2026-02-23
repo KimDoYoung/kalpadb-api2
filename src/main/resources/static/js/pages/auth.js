@@ -77,7 +77,7 @@ async function handleLoginSubmit(e) {
     if (response.ok) {
       showMessage('로그인되었습니다.', 'success');
       setTimeout(() => {
-        window.location.href = '/';
+        window.location.href = (typeof APP_CTX !== 'undefined' ? APP_CTX : '') + '/';
       }, 1000);
     } else {
       const error = await response.text();

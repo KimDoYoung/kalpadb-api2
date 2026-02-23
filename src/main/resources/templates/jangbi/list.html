@@ -88,7 +88,7 @@
                             <tr class="hover:bg-gray-100 transition">
                                 <td class="border border-gray-300 px-4 py-2" x-text="jangbi.id"></td>
                                 <td class="border border-gray-300 px-4 py-2">
-                                    <a :href="'/jangbi/' + jangbi.id" class="text-blue-600 hover:underline font-medium" x-text="jangbi.item"></a>
+                                    <a :href="APP_CTX + '/jangbi/' + jangbi.id" class="text-blue-600 hover:underline font-medium" x-text="jangbi.item"></a>
                                 </td>
                                 <td class="border border-gray-300 px-4 py-2" x-text="formatDate(jangbi.ymd)"></td>
                                 <td class="border border-gray-300 px-4 py-2" x-text="jangbi.location || '-'"></td>
@@ -98,7 +98,7 @@
                                 </td>
                                 <td class="border border-gray-300 px-4 py-2 text-sm" x-text="formatDateTime(jangbi.modifyDt)"></td>
                                 <td class="border border-gray-300 px-4 py-2 text-center">
-                                    <a :href="'/jangbi/' + jangbi.id + '/edit'" class="btn-primary text-xs inline-block">수정</a>
+                                    <a :href="APP_CTX + '/jangbi/' + jangbi.id + '/edit'" class="btn-primary text-xs inline-block">수정</a>
                                 </td>
                             </tr>
                         </template>
@@ -144,7 +144,7 @@
                     if (this.filters.lvl) params.append('lvl', this.filters.lvl);
 
                     const queryString = params.toString();
-                    const url = '/api/jangbi' + (queryString ? '?' + queryString : '');
+                    const url = APP_CTX + '/api/jangbi' + (queryString ? '?' + queryString : '');
 
                     fetch(url)
                         .then(response => {

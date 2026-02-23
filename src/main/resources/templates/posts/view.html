@@ -42,7 +42,7 @@
                         </div>
                         <div class="flex-1"></div>
                         <div class="flex items-center gap-3">
-                            <a :href="'/posts/' + post.id + '/edit'"
+                            <a :href="APP_CTX + '/posts/' + post.id + '/edit'"
                                 class="inline-flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 rounded-lg text-gray-700 hover:bg-gray-50 hover:text-blue-600 transition shadow-sm">
                                 <span>✏️</span> 수정
                             </a>
@@ -79,7 +79,7 @@
                                 <div
                                     class="flex items-center justify-between bg-gray-50 p-3 rounded border border-gray-200">
                                     <div class="flex-1">
-                                        <a :href="'/api/file/download/' + file.fileId"
+                                        <a :href="APP_CTX + '/api/file/download/' + file.fileId"
                                             class="text-blue-500 hover:text-blue-700 font-medium"
                                             x-text="file.orgFileName">
                                         </a>
@@ -116,7 +116,7 @@
 
                     async init() {
                         try {
-                            const response = await fetch(`/api/posts/${this.postId}`);
+                            const response = await fetch(`${APP_CTX}/api/posts/${this.postId}`);
                             if (!response.ok) {
                                 throw new Error('게시글을 불러올 수 없습니다.');
                             }
@@ -146,7 +146,7 @@
 
                     async loadBoardInfo() {
                         try {
-                            const response = await fetch(`/api/boards/${this.post.boardId}`);
+                            const response = await fetch(`${APP_CTX}/api/boards/${this.post.boardId}`);
                             if (response.ok) {
                                 const data = await response.json();
                                 const board = data.data || data;
@@ -171,7 +171,7 @@
 
                     async incrementViewCount() {
                         try {
-                            const response = await fetch(`/api/posts/${this.postId}/view-count`, {
+                            const response = await fetch(`${APP_CTX}/api/posts/${this.postId}/view-count`, {
                                 method: 'PATCH'
                             });
                             if (response.ok) {
@@ -185,7 +185,7 @@
 
                     async loadAttachedFiles() {
                         try {
-                            const response = await fetch(`/api/posts/${this.postId}/files`);
+                            const response = await fetch(`${APP_CTX}/api/posts/${this.postId}/files`);
                             if (response.ok) {
                                 const data = await response.json();
                                 this.attachedFiles = data.data || [];
@@ -198,7 +198,7 @@
                     async deletePost() {
                         if (confirm('정말 삭제하시겠습니까? (첨부파일은 보존됩니다)')) {
                             try {
-                                const response = await fetch(`/api/posts/${this.postId}`, {
+                                const response = await fetch(`${APP_CTX}/api/posts/${this.postId}`, {
                                     method: 'DELETE',
                                     credentials: 'include'
                                 });

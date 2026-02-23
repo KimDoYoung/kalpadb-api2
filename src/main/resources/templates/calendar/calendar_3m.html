@@ -457,7 +457,7 @@
 
                     async fetchAllEvents(minYmd, maxYmd) {
                         try {
-                            const response = await fetch(`/api/calendar?start=${minYmd}&end=${maxYmd}`);
+                            const response = await fetch(`${APP_CTX}/api/calendar?start=${minYmd}&end=${maxYmd}`);
                             if (response.ok) {
                                 this.allEvents = await response.json();
                             } else {
