@@ -31,7 +31,7 @@
 
     <!-- context-path 전역 변수 (모든 JS에서 APP_CTX 사용) -->
     <script th:inline="javascript">
-        const APP_CTX = /*[[${#request.contextPath}]]*/ '';
+        const APP_CTX = (/*[[@{/}]]*/ '/').replace(/\/$/, '');
     </script>
     <!-- KalpaDB 번들 JavaScript (모든 페이지별 JS) -->
     <script th:src="@{/js/kalpadb.js(v=${#dates.createNow().time})}"></script>
