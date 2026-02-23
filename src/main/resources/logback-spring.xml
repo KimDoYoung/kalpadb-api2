@@ -23,22 +23,22 @@
         <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
             <fileNamePattern>${LOG_PATH}/${LOG_FILE_NAME}.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
             <maxFileSize>10MB</maxFileSize>
-            <maxHistory>30</maxHistory>
-            <totalSizeCap>1GB</totalSizeCap>
+            <maxHistory>7</maxHistory>
+            <totalSizeCap>200MB</totalSizeCap>
         </rollingPolicy>
     </appender>
 
     <!-- Home Profile: Console + File -->
     <springProfile name="home">
-        <property name="LOG_PATH" value="${kalpa.base-dir}/logs"/>
-        <root level="DEBUG">
+        <property name="LOG_PATH" value="./kalpa_data/logs"/>
+        <root level="INFO">
             <appender-ref ref="CONSOLE"/>
             <appender-ref ref="FILE"/>
         </root>
         <logger name="kr.co.kalpa.api" level="DEBUG"/>
         <logger name="org.springframework.web" level="INFO"/>
-        <logger name="org.hibernate.SQL" level="DEBUG"/>
-        <logger name="org.hibernate.orm.jdbc.bind" level="TRACE"/>
+        <logger name="org.hibernate.SQL" level="INFO"/>
+        <logger name="org.hibernate.orm.jdbc.bind" level="WARN"/>
     </springProfile>
 
     <!-- Production Profile: File Only -->

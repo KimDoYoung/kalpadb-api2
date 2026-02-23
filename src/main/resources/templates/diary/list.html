@@ -11,7 +11,7 @@
         <!-- 페이지 헤더 -->
         <div class="flex justify-between items-center mb-8">
             <h2 class="text-3xl font-bold text-gray-800">📖 일기</h2>
-            <a th:href="@{/diary/new}" class="btn-primary">새 일기 작성</a>
+            <a th:href="@{/diary/new}" class="px-6 py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 active:bg-blue-800 transition-colors">새 일기 작성</a>
         </div>
 
         <!-- 로딩 상태 -->
@@ -36,7 +36,7 @@
                                     <p class="text-gray-600 line-clamp-1" x-text="diary.summary || diary.content || '내용 없음'"></p>
                                 </a>
                             </div>
-                            <a :href="APP_CTX + '/diary/' + diary.ymd + '/edit'" class="btn-primary flex-shrink-0">수정</a>
+                            <a :href="APP_CTX + '/diary/' + diary.ymd + '/edit'" class="px-4 py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 active:bg-blue-800 transition-colors flex-shrink-0">수정</a>
                         </div>
                     </div>
                 </template>
@@ -47,7 +47,7 @@
         <template x-if="!loading && (!diaries || diaries.length === 0)">
             <div class="text-center py-12">
                 <p class="text-gray-600 text-lg mb-4">아직 작성한 일기가 없습니다.</p>
-                <a th:href="@{/diary/new}" class="btn-primary">첫 번째 일기 작성하기</a>
+                <a th:href="@{/diary/new}" class="px-6 py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 active:bg-blue-800 transition-colors inline-block">첫 번째 일기 작성하기</a>
             </div>
         </template>
     </div>

@@ -15,7 +15,13 @@
             "request": "launch",
             "mainClass": "kr.co.kalpa.api.KalpaApplication",
             "args": "--spring.profiles.active=home",
-            "console": "integratedTerminal"
+            "console": "integratedTerminal",
+            "env": {
+                "DB_URL":"jdbc:mariadb://jskn.iptime.org:3306/jskndb?useSSL=false&serverTimezone=Asia/Seoul&characterEncoding=UTF-8",
+                "DB_USERNAME":"kdy987",
+                "DB_PASSWORD":"kalpa987!",
+                "JWT_SECRET":"MyVeryLongAndSecureJWTSecretKeyFor2026WithMinimum32Chars!@#$%"
+            }
         },
         {
             "type": "java",

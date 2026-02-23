@@ -20,33 +20,36 @@
             <!-- 페이지 헤더 -->
             <h2 class="text-3xl font-bold text-gray-800">✏️ 새 일기 작성</h2>
 
-            <!-- 날짜 -->
-            <div>
-                <label for="ymd" class="block text-sm font-medium text-gray-700 mb-2">
-                    날짜
-                </label>
-                <input
-                    type="date"
-                    id="ymd"
-                    x-model="form.ymd"
-                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    required
-                >
-            </div>
+            <!-- 날짜 & 요약 (한 줄) -->
+            <div class="grid grid-cols-5 gap-4">
+                <!-- 날짜 (20%) -->
+                <div class="col-span-1">
+                    <label for="ymd" class="block text-sm font-medium text-gray-700 mb-2">
+                        날짜
+                    </label>
+                    <input
+                        type="date"
+                        id="ymd"
+                        x-model="form.ymd"
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        required
+                    >
+                </div>
 
-            <!-- 요약 -->
-            <div>
-                <label for="summary" class="block text-sm font-medium text-gray-700 mb-2">
-                    요약 (선택사항)
-                </label>
-                <input
-                    type="text"
-                    id="summary"
-                    x-model="form.summary"
-                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    placeholder="한 줄 요약"
-                    maxlength="300"
-                >
+                <!-- 요약 (80%) -->
+                <div class="col-span-4">
+                    <label for="summary" class="block text-sm font-medium text-gray-700 mb-2">
+                        요약 (선택사항)
+                    </label>
+                    <input
+                        type="text"
+                        id="summary"
+                        x-model="form.summary"
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        placeholder="한 줄 요약"
+                        maxlength="300"
+                    >
+                </div>
             </div>
 
             <!-- 내용 (QuillJS 에디터) -->
@@ -101,11 +104,11 @@
             </div>
 
             <!-- 버튼 -->
-            <div class="flex gap-3">
-                <button @click="save()" class="btn-primary" :disabled="saving">
+            <div class="flex gap-3 pt-4">
+                <button @click="save()" :disabled="saving" class="px-6 py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 active:bg-blue-800 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors">
                     <span x:text="saving ? '저장 중...' : '저장'">저장</span>
                 </button>
-                <a th:href="@{/diary}" class="btn-secondary">취소</a>
+                <a th:href="@{/diary}" class="px-6 py-2 bg-gray-500 text-white font-semibold rounded-lg hover:bg-gray-600 active:bg-gray-700 transition-colors inline-flex items-center">취소</a>
             </div>
         </div>
     </div>
@@ -164,9 +167,21 @@
         let quillEditor;
 
         function diaryCreate() {
+            // URL param에서 ymd 추출 (YYYYMMDD 형식)
+            const urlParams = new URLSearchParams(window.location.search);
+            const ymdParam = urlParams.get('ymd');
+
+            // YYYYMMDD를 YYYY-MM-DD로 변환
+            function formatYmdForInput(ymd) {
+                if (!ymd || ymd.length !== 8) {
+                    return new Date().toISOString().split('T')[0];
+                }
+                return `${ymd.substring(0, 4)}-${ymd.substring(4, 6)}-${ymd.substring(6, 8)}`;
+            }
+
             return {
                 form: {
-                    ymd: new Date().toISOString().split('T')[0], // YYYY-MM-DD 형식
+                    ymd: formatYmdForInput(ymdParam), // param의 ymd 또는 오늘 날짜
                     summary: '',
                     content: ''
                 },
