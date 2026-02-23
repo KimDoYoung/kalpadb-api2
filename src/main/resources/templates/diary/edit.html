@@ -132,7 +132,7 @@
                 <button @click="save()" class="btn-primary" :disabled="saving">
                     <span x:text="saving ? '저장 중...' : '수정'">수정</span>
                 </button>
-                <a :href="'/diary/' + form.ymd" class="btn-secondary">취소</a>
+                <a :href="APP_CTX + '/diary/' + form.ymd" class="btn-secondary">취소</a>
             </div>
         </div>
     </div>
@@ -233,7 +233,7 @@
                     });
 
                     try {
-                        const response = await fetch(`/api/diary/${this.ymd}`);
+                        const response = await fetch(`${APP_CTX}/api/diary/${this.ymd}`);
                         if (!response.ok) {
                             throw new Error('일기를 불러올 수 없습니다.');
                         }
@@ -270,7 +270,7 @@
                 async loadAttachedFiles() {
                     try {
                         console.log('파일 로드 URL:', `/api/diary/${this.ymd}/files`);
-                        const response = await fetch(`/api/diary/${this.ymd}/files`);
+                        const response = await fetch(`${APP_CTX}/api/diary/${this.ymd}/files`);
                         if (response.ok) {
                             const data = await response.json();
                             this.existingFiles = data.data || [];
@@ -339,7 +339,7 @@
                             formData.append('deletedFileIds', JSON.stringify(this.deletedFileIds));
                         }
 
-                        const response = await fetch(`/api/diary/${ymdFormatted}`, {
+                        const response = await fetch(`${APP_CTX}/api/diary/${ymdFormatted}`, {
                             method: 'PUT',
                             body: formData,
                             credentials: 'include'
@@ -351,7 +351,7 @@
                         }
 
                         alert('저장되었습니다.');
-                        window.location.href = `/diary/${ymdFormatted}`;
+                        window.location.href = `${APP_CTX}/diary/${ymdFormatted}`;
                     } catch (err) {
                         this.error = err.message;
                         alert(err.message);

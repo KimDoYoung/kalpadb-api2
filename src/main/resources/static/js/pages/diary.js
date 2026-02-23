@@ -53,7 +53,7 @@ async function handleDiaryFormSubmit(e) {
     if (response.ok) {
       showMessage('일기가 저장되었습니다.', 'success');
       setTimeout(() => {
-        window.location.href = '/diary/list';
+        window.location.href = APP_CTX + '/diary/list';
       }, 1000);
     } else {
       showMessage('저장에 실패했습니다.', 'error');

@@ -83,13 +83,13 @@ public class SecurityConfig {
                             log.info("✅ 로그인 성공: {} (권한: {})",
                                     authentication.getName(),
                                     authentication.getAuthorities());
-                            response.sendRedirect("/");
+                            response.sendRedirect(request.getContextPath() + "/");
                         })
                         .failureHandler((request, response, exception) -> {
                             log.warn("❌ 로그인 실패: {} - {}",
                                     request.getParameter("username"),
                                     exception.getMessage());
-                            response.sendRedirect("/login?error");
+                            response.sendRedirect(request.getContextPath() + "/login?error");
                         }))
 
                 // 로그아웃 설정
@@ -97,7 +97,7 @@ public class SecurityConfig {
                         .logoutUrl("/logout")
                         .logoutSuccessHandler((request, response, authentication) -> {
                             log.info("🔐 로그아웃 성공: {}", authentication != null ? authentication.getName() : "anonymous");
-                            response.sendRedirect("/login");
+                            response.sendRedirect(request.getContextPath() + "/login");
                         })
                         .invalidateHttpSession(true)
                         .deleteCookies("JSESSIONID")
@@ -106,8 +106,8 @@ public class SecurityConfig {
                 // 예외 처리
                 .exceptionHandling(exception -> exception
                         .authenticationEntryPoint((request, response, authException) -> {
-                            // API 요청이면 JSON 응답
-                            if (request.getRequestURI().startsWith("/api/")) {
+                            // API 요청이면 JSON 응답 (getServletPath()는 context-path 제외)
+                            if (request.getServletPath().startsWith("/api/")) {
                                 log.error("Unauthorized error: {}", authException.getMessage());
                                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                                 response.setContentType("application/json;charset=UTF-8");
@@ -118,13 +118,13 @@ public class SecurityConfig {
                                 response.getWriter().write(jsonResponse);
                             } else {
                                 // UI 요청이면 로그인 페이지로 리다이렉트
-                                response.sendRedirect("/login");
+                                response.sendRedirect(request.getContextPath() + "/login");
                             }
                         })
                         .accessDeniedHandler((request, response, accessDeniedException) -> {
                             log.error("Access denied error: {}", accessDeniedException.getMessage());
-                            // API 요청이면 JSON 응답
-                            if (request.getRequestURI().startsWith("/api/")) {
+                            // API 요청이면 JSON 응답 (getServletPath()는 context-path 제외)
+                            if (request.getServletPath().startsWith("/api/")) {
                                 response.setStatus(HttpServletResponse.SC_FORBIDDEN);
                                 response.setContentType("application/json;charset=UTF-8");
                                 String jsonResponse = String.format(
@@ -135,7 +135,7 @@ public class SecurityConfig {
                             } else {
                                 // UI 요청이면 403 에러 페이지
                                 response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-                                response.sendRedirect("/error");
+                                response.sendRedirect(request.getContextPath() + "/error");
                             }
                         }));
 

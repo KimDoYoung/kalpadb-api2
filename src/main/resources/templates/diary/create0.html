@@ -244,7 +244,7 @@
                             formData.append('files', file);
                         }
 
-                        const response = await fetch('/api/diary', {
+                        const response = await fetch(APP_CTX + '/api/diary', {
                             method: 'POST',
                             body: formData,
                             credentials: 'include'
