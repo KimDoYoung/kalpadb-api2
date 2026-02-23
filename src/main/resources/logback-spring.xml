@@ -30,7 +30,7 @@
 
     <!-- Home Profile: Console + File -->
     <springProfile name="home">
-        <property name="LOG_PATH" value="${kalpa.base-dir}/logs/home"/>
+        <property name="LOG_PATH" value="${kalpa.base-dir}/logs"/>
         <root level="DEBUG">
             <appender-ref ref="CONSOLE"/>
             <appender-ref ref="FILE"/>
@@ -43,7 +43,7 @@
 
     <!-- Production Profile: File Only -->
     <springProfile name="jskn">
-        <property name="LOG_PATH" value="${kalpa.base-dir}/logs/prod"/>
+        <property name="LOG_PATH" value="${kalpa.base-dir}/logs"/>
         <root level="INFO">
             <appender-ref ref="FILE"/>
         </root>
