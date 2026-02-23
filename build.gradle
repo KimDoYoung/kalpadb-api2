@@ -1,5 +1,6 @@
 plugins {
     id 'java'
+    id 'war'
     id 'org.springframework.boot' version '4.0.1'
     id 'io.spring.dependency-management' version '1.1.7'
     id 'jacoco'
@@ -62,6 +63,9 @@ dependencies {
     // Environment Variables (.env)
     implementation 'me.paulschwarz:spring-dotenv:2.5.4'
 
+    // 외부 Tomcat에 WAR 배포 시 내장 Tomcat 제외
+    providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'
+
     // Spring Boot DevTools (개발 중 자동 재시작)
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
 
@@ -91,6 +95,14 @@ jacocoTestReport {
         xml.required = true
         csv.required = false
     }
+}
+
+bootWar {
+    archiveFileName = 'kalpadb-api.war'
+}
+
+tasks.named('war') {
+    enabled = false
 }
 
 tasks.named('bootRun') {
