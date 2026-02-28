@@ -59,6 +59,7 @@ spring.datasource.password=your_password
 ✅ 최종 폴더 구조 변경 완료!
 📁 새로운 구조
 
+```text
 static/
 ├── css/
 │   ├── common/                    # 공통 CSS 폴더
@@ -77,6 +78,8 @@ static/
     │       ├── diary.js
     │       └── auth.js
     └── kalpadb.js                # 최종 번들 파일 ✨
+```
+
 📦 최종 산출물
 CSS:
 
@@ -201,16 +204,56 @@ export JWT_SECRET=your-production-secret-key
 ## jskn에 배포
 
 ### 2026-02-23 처음배포
+
 - Spring Boot 4.0 → 3.4.3 다운그레이드 (Tomcat 11 호환)
 - Tomcat 이미지 11-jdk21-temurin-noble로 변경
 - conf 볼륨 마운트 제거
 - DB CHAR 컬럼들 VARCHAR로 수정 (ap_file, ap_node, calendar, todo)
 
-
 ## 라이센스
 
 MIT License
 
+## API 문서 (Swagger & Markdown)
+
+### 1. Swagger UI 접속
+
+애플리케이션 실행 후 아래 경로에서 대화형 API 문서를 확인할 수 있습니다.
+
+- **주소**: `http://localhost:8282/kalpadb-api/swagger-ui.html`
+- **기능**: API 테스트, Request/Response JSON 구조 확인, JWT Bearer 인증 테스트
+
+### 2. API 명세 (JSON) 추출
+
+자동 생성된 OpenAPI 3.0 명세 파일(JSON)은 아래 경로에서 내려받을 수 있습니다.
+
+- **주소**: `http://localhost:8282/kalpadb-api/v3/api-docs`
+
+### 3. Markdown 추출 방법
+
+프로젝트의 모든 API를 Markdown 문서로 변환하려면 다음 도구들을 사용할 수 있습니다.
+
+#### 방법 A: VS Code 확장 프로그램 (추천)
+
+1. VS Code에서 **"OpenAPI (Swagger) Editor"** 또는 **"Swagger Viewer"** 확장을 설치합니다.
+2. 위에서 내려받은 `openapi.json` 파일을 엽니다.
+3. 확장의 내보내기(Export) 기능을 이용해 Markdown으로 저장합니다.
+
+#### 방법 B: CLI 도구 사용 (Node.js 기반)
+
+터미널에서 아래 명령어를 실행하여 즉시 Markdown 파일을 생성할 수 있습니다.
+
+```bash
+# JSON 파일을 Markdown으로 변환
+npx snippet-swagger-to-markdown openapi.json > API_DOCUMENTATION.md
+```
+
+#### 방법 C: 온라인 변환기
+
+1. [Swagger Editor](https://editor.swagger.io/)에 접속합니다.
+2. `File` -> `Import File`을 통해 `openapi.json`을 업로드합니다.
+3. `Generate Document` 메뉴에서 원하는 포맷을 선택합니다.
+
 ## 작성자
 
-KalpaCorp
+KimDoYoung

@@ -54,6 +54,9 @@ public class SecurityConfig {
                         // 홈페이지와 로그인 페이지는 허용
                         .requestMatchers("/", "/login").permitAll()
 
+                        // Swagger UI 및 API Docs 허용
+                        .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
+
                         // REST API 경로
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/**").authenticated()
