@@ -50,6 +50,7 @@
                         type="text"
                         id="summary"
                         x-model="form.summary"
+                        @keydown.tab="focusQuillEditor($event)"
                         class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                         placeholder="한 줄 요약"
                         maxlength="300"
@@ -178,7 +179,7 @@
             border-bottom-left-radius: 0.5rem !important;
             border-bottom-right-radius: 0.5rem !important;
             border: none !important;
-            font-size: 14px !important;
+            font-size: 12px !important;
         }
 
         .ql-editor {
@@ -186,10 +187,17 @@
             min-height: 350px !important;
             max-height: 400px !important;
             overflow-y: auto !important;
+            font-size: 12px !important;
         }
 
         .ql-editor.ql-blank::before {
             color: #9ca3af !important;
+        }
+
+        /* 이미지 스타일 */
+        .ql-editor img {
+            max-width: 100%;
+            height: auto;
         }
     </style>
     <script>
@@ -213,7 +221,7 @@
                 saving: false,
                 error: '',
 
-                async init() {
+        async init() {
                     if (quillEditor) return;
 
                     // QuillJS 에디터 초기화
@@ -227,6 +235,7 @@
                                 { 'header': [2, 3, false] },
                                 { 'color': [] },
                                 { 'align': [] },
+                                'image',
                                 'clean'
                             ]
                         }
@@ -286,6 +295,13 @@
                         }
                     } catch (err) {
                         console.error('파일 로드 실패:', err);
+                    }
+                },
+
+                focusQuillEditor(e) {
+                    e.preventDefault();
+                    if (quillEditor) {
+                        quillEditor.focus();
                     }
                 },
 

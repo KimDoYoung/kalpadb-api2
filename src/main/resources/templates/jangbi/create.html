@@ -313,7 +313,7 @@
 
                         const result = await response.json();
                         alert('저장되었습니다.');
-                        window.location.href = `/jangbi/${result.data.id}`;
+                        window.location.href = `${APP_CTX}/jangbi/${result.data.id}`;
                     } catch (err) {
                         this.error = err.message;
                         alert(err.message);

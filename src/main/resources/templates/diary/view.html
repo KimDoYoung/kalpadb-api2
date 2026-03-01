@@ -26,7 +26,7 @@
         </div>
 
         <!-- 일기 상세 -->
-        <div x-show="!loading && diary" class="space-y-6">
+        <div x-show="!loading && diary.ymd" class="space-y-6">
             <!-- 헤더 -->
             <div class="flex justify-between items-start border-b pb-4">
                 <div>
@@ -81,7 +81,11 @@
 
             return {
                 ymd: ymd,
-                diary: null,
+                diary: {
+                    ymd: '',
+                    summary: '',
+                    content: ''
+                },
                 attachedFiles: [],
                 loading: true,
                 error: '',

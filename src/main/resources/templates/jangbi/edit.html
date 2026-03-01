@@ -402,7 +402,7 @@
                         }
 
                         alert('저장되었습니다.');
-                        window.location.href = `/jangbi/${this.id}`;
+                        window.location.href = `${APP_CTX}/jangbi/${this.id}`;
                     } catch (err) {
                         this.error = err.message;
                         alert(err.message);

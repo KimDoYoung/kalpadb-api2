@@ -508,7 +508,7 @@
 
                     goBack() {
                         if (this.boardId) {
-                            window.location.href = `/posts?boardId=${this.boardId}`;
+                            window.location.href = `${APP_CTX}/posts?boardId=${this.boardId}`;
                         } else {
                             window.history.back();
                         }
@@ -598,7 +598,7 @@
                             }
 
                             alert('수정되었습니다.');
-                            window.location.href = `/posts/${this.postId}`;
+                            window.location.href = `${APP_CTX}/posts/${this.postId}`;
                         } catch (err) {
                             this.error = err.message;
                             alert(err.message);

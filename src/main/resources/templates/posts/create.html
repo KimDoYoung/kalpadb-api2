@@ -527,7 +527,7 @@
 
                             const result = await response.json();
                             alert('게시글이 작성되었습니다.');
-                            window.location.href = `/posts/${result.data.id}`;
+                            window.location.href = `${APP_CTX}/posts/${result.data.id}`;
                         } catch (err) {
                             this.error = err.message;
                             alert(err.message);
