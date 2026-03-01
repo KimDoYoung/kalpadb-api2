@@ -23,7 +23,7 @@ configurations {
 
 repositories {
     mavenCentral()
-    maven { url 'https://jitpack.io' }
+    maven { url = 'https://jitpack.io' }
 }
 
 dependencies {
@@ -113,3 +113,5 @@ task generateBcryptHash(type: JavaExec) {
     mainClass = 'kr.co.kalpa.api.GenerateBcryptHash'
     classpath = sourceSets.test.runtimeClasspath
 }
+
+// Triggering VSCode Java language server synchronization

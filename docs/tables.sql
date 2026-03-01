@@ -93,9 +93,7 @@ DROP TABLE IF EXISTS `todo`;
 CREATE TABLE IF NOT EXISTS `todo` (
   `id` BIGINT NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `content` varchar(300) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '내용',
-  `input_dt` datetime NOT NULL DEFAULT current_timestamp() COMMENT '입력일시',
-  `done_yn` char(1) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'N' COMMENT '완료YN',
-  `done_dt` datetime DEFAULT NULL COMMENT '완료일시',
+  `created_at` TIMESTAMP NOT NULL DEFAULT current_timestamp() COMMENT '입력일시',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=763 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='해야할 일';
 

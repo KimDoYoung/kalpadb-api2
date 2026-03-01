@@ -59,6 +59,7 @@ public class SecurityConfig {
 
                         // REST API 경로
                         .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/api/todo/**").permitAll()
                         .requestMatchers("/api/**").authenticated()
 
                         // UI 페이지는 로그인 필요
