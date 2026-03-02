@@ -6,6 +6,8 @@
     <title>장비 등록 - KalpaDB</title>
     <!-- QuillJS CSS -->
     <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+    <!-- Quill Resize Image -->
+    <script src="https://cdn.jsdelivr.net/npm/quill-resize-image@1.0.11/dist/quill-resize-image.min.js"></script>
 </head>
 <body>
 <main layout:fragment="content">
@@ -228,6 +230,9 @@
                 async init() {
                     if (quillEditor) return;
 
+                    // Quill Resize Image 모듈 등록
+                    Quill.register('modules/resize', window.QuillResizeImage);
+
                     // QuillJS 에디터 초기화
                     quillEditor = new Quill('#quill-editor', {
                         theme: 'snow',
@@ -240,7 +245,10 @@
                                 { 'color': [] },
                                 { 'align': [] },
                                 'clean'
-                            ]
+                            ],
+                            resize: {
+                                locale: {}
+                            }
                         }
                     });
 

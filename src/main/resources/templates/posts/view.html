@@ -118,12 +118,20 @@
 
                     async init() {
                         try {
+                            if (!this.postId) {
+                                throw new Error('게시글 ID가 없습니다.');
+                            }
+
                             const response = await fetch(`${APP_CTX}/api/posts/${this.postId}`);
                             if (!response.ok) {
                                 throw new Error('게시글을 불러올 수 없습니다.');
                             }
                             const data = await response.json();
                             this.post = data.data || data;
+
+                            if (!this.post) {
+                                throw new Error('게시글 데이터가 비어있습니다.');
+                            }
 
                             // board 정보로부터 contentType 결정
                             await this.loadBoardInfo();
@@ -140,7 +148,7 @@
                             await this.loadAttachedFiles();
                         } catch (err) {
                             this.error = err.message;
-                            console.error(err);
+                            console.error('게시글 로드 에러:', err);
                         } finally {
                             this.loading = false;
                         }
@@ -174,7 +182,8 @@
                     async incrementViewCount() {
                         try {
                             const response = await fetch(`${APP_CTX}/api/posts/${this.postId}/view-count`, {
-                                method: 'PATCH'
+                                method: 'PATCH',
+                                credentials: 'include'
                             });
                             if (response.ok) {
                                 const data = await response.json();
@@ -202,13 +211,17 @@
                             try {
                                 const response = await fetch(`${APP_CTX}/api/posts/${this.postId}`, {
                                     method: 'DELETE',
-                                    credentials: 'include'
+                                    credentials: 'include',
+                                    headers: {
+                                        'Content-Type': 'application/json'
+                                    }
                                 });
                                 if (response.ok) {
                                     alert('삭제되었습니다.');
                                     window.history.back();
                                 } else {
-                                    throw new Error('삭제에 실패했습니다.');
+                                    const errorData = await response.json();
+                                    throw new Error(errorData.message || '삭제에 실패했습니다.');
                                 }
                             } catch (err) {
                                 alert(err.message);
