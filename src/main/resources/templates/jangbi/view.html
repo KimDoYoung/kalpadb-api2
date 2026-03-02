@@ -16,8 +16,8 @@
         </div>
 
         <!-- 에러 메시지 -->
-        <div x-show="error" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
-            <p x:text="error"></p>
+        <div x-show="error" x-cloak class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
+            <p x-text="error"></p>
         </div>
 
         <!-- 장비 상세 -->
@@ -31,8 +31,14 @@
                     </p>
                 </div>
                 <div class="flex gap-2">
-                    <a :href="APP_CTX + '/jangbi/' + jangbi.id + '/edit'" class="btn-primary">수정</a>
-                    <button @click="deleteJangbi()" class="btn-danger">삭제</button>
+                    <a :href="APP_CTX + '/jangbi/' + jangbi.id + '/edit'"
+                        class="inline-flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 rounded-lg text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition shadow-sm">
+                        <span>✏️</span> 수정
+                    </a>
+                    <button @click="deleteJangbi()"
+                        class="inline-flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 rounded-lg text-gray-700 hover:bg-red-50 hover:text-red-600 transition shadow-sm">
+                        <span>🗑️</span> 삭제
+                    </button>
                 </div>
             </div>
 
@@ -96,7 +102,10 @@
 
             <!-- 뒤로가기 -->
             <div class="flex justify-between items-center">
-                <a th:href="@{/jangbi}" class="text-blue-500 hover:text-blue-600">← 목록으로</a>
+                <a th:href="@{/jangbi}"
+                    class="inline-flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 rounded-lg text-gray-700 hover:bg-gray-50 hover:text-gray-600 transition shadow-sm">
+                    <span>←</span> 목록으로
+                </a>
             </div>
         </div>
     </div>

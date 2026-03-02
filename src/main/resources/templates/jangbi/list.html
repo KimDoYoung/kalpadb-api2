@@ -11,7 +11,10 @@
         <!-- 페이지 헤더 -->
         <div class="flex justify-between items-center mb-8">
             <h2 class="text-3xl font-bold text-gray-800">🔧 장비</h2>
-            <a th:href="@{/jangbi/new}" class="btn-primary">새 장비 추가</a>
+            <a th:href="@{/jangbi/new}"
+                class="inline-flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 rounded-lg text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition shadow-sm">
+                <span>➕</span> 새 장비 추가
+            </a>
         </div>
 
         <!-- 검색 필터 -->
@@ -51,8 +54,14 @@
                     </select>
                 </div>
                 <div class="flex items-end gap-2">
-                    <button @click="search()" class="btn-primary flex-1">검색</button>
-                    <button @click="resetFilters()" class="btn-secondary flex-1">초기화</button>
+                    <button @click="search()"
+                        class="inline-flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 rounded-lg text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition shadow-sm flex-1">
+                        <span>🔍</span> 검색
+                    </button>
+                    <button @click="resetFilters()"
+                        class="inline-flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 rounded-lg text-gray-700 hover:bg-gray-50 hover:text-gray-600 transition shadow-sm flex-1">
+                        <span>🔄</span> 초기화
+                    </button>
                 </div>
             </div>
         </div>
@@ -63,8 +72,8 @@
         </div>
 
         <!-- 에러 메시지 -->
-        <div x-show="error" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
-            <p x:text="error"></p>
+        <div x-show="error" x-cloak class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
+            <p x-text="error"></p>
         </div>
 
         <!-- 장비 목록 (테이블) -->
@@ -98,7 +107,10 @@
                                 </td>
                                 <td class="border border-gray-300 px-4 py-2 text-sm" x-text="formatDateTime(jangbi.modifyDt)"></td>
                                 <td class="border border-gray-300 px-4 py-2 text-center">
-                                    <a :href="APP_CTX + '/jangbi/' + jangbi.id + '/edit'" class="btn-primary text-xs inline-block">수정</a>
+                                    <a :href="APP_CTX + '/jangbi/' + jangbi.id + '/edit'"
+                                        class="inline-flex items-center gap-1 px-3 py-1 bg-white border border-gray-200 rounded-lg text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition shadow-sm text-xs">
+                                        <span>✏️</span> 수정
+                                    </a>
                                 </td>
                             </tr>
                         </template>
@@ -111,7 +123,10 @@
         <template x-if="!loading && (!jangbis || jangbis.length === 0)">
             <div class="text-center py-12">
                 <p class="text-gray-600 text-lg mb-4">등록된 장비가 없습니다.</p>
-                <a th:href="@{/jangbi/new}" class="btn-primary">첫 번째 장비 등록하기</a>
+                <a th:href="@{/jangbi/new}"
+                    class="inline-flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 rounded-lg text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition shadow-sm">
+                    <span>➕</span> 첨 번째 장비 등록하기
+                </a>
             </div>
         </template>
     </div>

@@ -13,8 +13,8 @@
 <main layout:fragment="content">
     <div x-data="jangbiCreate()" x-init="init()">
         <!-- 에러 메시지 -->
-        <div x-show="error" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
-            <p x:text="error"></p>
+        <div x-show="error" x-cloak class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
+            <p x-text="error"></p>
         </div>
 
         <!-- 폼 -->
@@ -152,10 +152,14 @@
 
             <!-- 버튼 -->
             <div class="flex gap-3">
-                <button @click="save()" class="btn-primary" :disabled="saving">
-                    <span x:text="saving ? '저장 중...' : '저장'">저장</span>
+                <button type="button" @click="save()" :disabled="saving"
+                    class="inline-flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 rounded-lg text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition shadow-sm disabled:opacity-50">
+                    <span>💾</span> <span x-text="saving ? '저장 중...' : '저장'"></span>
                 </button>
-                <a th:href="@{/jangbi}" class="btn-secondary">취소</a>
+                <a th:href="@{/jangbi}"
+                    class="inline-flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 rounded-lg text-gray-700 hover:bg-gray-50 hover:text-gray-600 transition shadow-sm">
+                    <span>↩️</span> 취소
+                </a>
             </div>
         </div>
     </div>
@@ -233,19 +237,28 @@
                     // Quill Resize Image 모듈 등록
                     Quill.register('modules/resize', window.QuillResizeImage);
 
+                    // Toolbar 설정
+                    const toolbarConfig = [
+                        ['bold', 'italic', 'underline', 'strike'],
+                        [{'header': [2, 3, false]}],
+                        [{'list': 'ordered'}, {'list': 'bullet'}],
+                        [{'color': []}, {'background': []}],
+                        [{'align': []}],
+                        ['link', 'image'],
+                        ['clean']
+                    ];
+
                     // QuillJS 에디터 초기화
                     quillEditor = new Quill('#quill-editor', {
                         theme: 'snow',
-                        placeholder: '장비 스펙/특징을 입력하세요',
+                        placeholder: '장비 스펙/특징을 입력하세요 (Ctrl+V로 이미지 붙여넣기 가능)',
                         modules: {
-                            toolbar: [
-                                'bold', 'italic', 'underline', 'strike',
-                                { 'list': 'ordered'}, { 'list': 'bullet' },
-                                { 'header': [2, 3, false] },
-                                { 'color': [] },
-                                { 'align': [] },
-                                'clean'
-                            ],
+                            toolbar: {
+                                container: toolbarConfig,
+                                handlers: {
+                                    image: () => this.customImageHandler()
+                                }
+                            },
                             resize: {
                                 locale: {}
                             }
@@ -256,6 +269,92 @@
                     quillEditor.on('text-change', () => {
                         this.form.spec = quillEditor.root.innerHTML;
                         document.getElementById('spec').value = this.form.spec;
+                    });
+
+                    // 클립보드 및 드래그앤드롭 핸들러 설정
+                    this.setupQuillHandlers(quillEditor);
+                },
+
+                customImageHandler() {
+                    const input = document.createElement('input');
+                    input.setAttribute('type', 'file');
+                    input.setAttribute('accept', 'image/*');
+                    input.click();
+
+                    input.onchange = async () => {
+                        const file = input.files[0];
+                        if (file) {
+                            try {
+                                const dataUrl = await this.fileToBase64(file);
+                                this.insertImageUrl(dataUrl);
+                            } catch (error) {
+                                console.error('이미지 삽입 실패:', error);
+                                alert('이미지 삽입에 실패했습니다.');
+                            }
+                        }
+                    };
+                },
+
+                fileToBase64(file) {
+                    return new Promise((resolve, reject) => {
+                        const reader = new FileReader();
+                        reader.onload = () => resolve(reader.result);
+                        reader.onerror = reject;
+                        reader.readAsDataURL(file);
+                    });
+                },
+
+                insertImageUrl(dataUrl) {
+                    const selection = quillEditor.getSelection();
+                    if (selection) {
+                        quillEditor.insertEmbed(selection.index, 'image', dataUrl);
+                        quillEditor.setSelection(selection.index + 1);
+                    } else {
+                        quillEditor.insertEmbed(quillEditor.getLength(), 'image', dataUrl);
+                    }
+                },
+
+                setupQuillHandlers(quillInstance) {
+                    quillInstance.root.addEventListener('paste', async (e) => {
+                        const imageItems = [...(e.clipboardData?.items || [])].filter(item =>
+                            item.type.startsWith('image/')
+                        );
+                        if (imageItems.length === 0) return;
+                        for (const item of imageItems) {
+                            const file = item.getAsFile();
+                            if (file) {
+                                try {
+                                    const dataUrl = await this.fileToBase64(file);
+                                    this.insertImageUrl(dataUrl);
+                                } catch (error) {
+                                    console.error('이미지 삽입 실패:', error);
+                                }
+                            }
+                        }
+                        return false;
+                    }, true);
+
+                    quillInstance.root.addEventListener('drop', async (e) => {
+                        e.preventDefault();
+                        const files = [...(e.dataTransfer?.files || [])].filter(file =>
+                            file.type.startsWith('image/')
+                        );
+                        if (files.length === 0) return;
+                        const selection = quillInstance.getSelection();
+                        const dropPos = selection ? selection.index : quillInstance.getLength();
+                        quillInstance.setSelection(dropPos, 0);
+                        for (const file of files) {
+                            try {
+                                const dataUrl = await this.fileToBase64(file);
+                                this.insertImageUrl(dataUrl);
+                            } catch (error) {
+                                console.error('이미지 삽입 실패:', error);
+                            }
+                        }
+                    });
+
+                    quillInstance.root.addEventListener('dragover', (e) => {
+                        e.preventDefault();
                     });
                 },
 
