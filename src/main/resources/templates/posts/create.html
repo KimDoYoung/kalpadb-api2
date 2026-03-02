@@ -19,7 +19,7 @@
     <!-- Quill Table Better JS -->
     <script src="https://cdn.jsdelivr.net/npm/quill-table-better@1.2.5/dist/quill-table-better.js" defer></script>
     <!-- Quill 이미지 리사이즈 -->
-    <script src="https://cdn.jsdelivr.net/npm/quill-resize-image@3.0.0/image-resize.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/quill-resize-image@1.0.11/dist/quill-resize-image.min.js" defer></script>
 </head>
 
 <body>
@@ -292,7 +292,7 @@
                             // Image Resize 로드
                             if (!window.QuillResizeImage) {
                                 const script = document.createElement('script');
-                                script.src = 'https://cdn.jsdelivr.net/npm/quill-resize-image@3.0.0/image-resize.min.js';
+                                script.src = 'https://cdn.jsdelivr.net/npm/quill-resize-image@1.0.11/dist/quill-resize-image.min.js';
                                 script.onload = () => {
                                     console.log('QuillResizeImage loaded');
                                 };
@@ -425,8 +425,10 @@
                     initQuillEditor() {
                         if (quillEditor) return;
 
-                        // Quill Resize Image 모듈 등록
-                        Quill.register('modules/resize', window.QuillResizeImage);
+                        // Quill Resize Image 모듈 등록 (존재하는 경우만)
+                        if (typeof window.QuillResizeImage !== 'undefined') {
+                            Quill.register('modules/resize', window.QuillResizeImage);
+                        }
 
                         // 기본 toolbar 설정
                         const toolbarConfig = [
