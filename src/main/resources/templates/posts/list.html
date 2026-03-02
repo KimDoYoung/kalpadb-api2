@@ -282,7 +282,7 @@
                         this.loading = true;
                         this.error = '';
 
-                        const url = new URL('/api/posts', window.location.origin);
+                        const url = new URL(APP_CTX + '/api/posts', window.location.origin);
                         url.searchParams.set('boardId', this.selectedBoardId);
                         url.searchParams.set('page', this.currentPage);
                         url.searchParams.set('size', this.pageSize);

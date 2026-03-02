@@ -238,7 +238,9 @@
             let loadedEditorType = null;
 
             function postEdit() {
-                const postId = window.location.pathname.split('/')[2];
+                const pathParts = window.location.pathname.split('/').filter(p => p);
+                const postsIndex = pathParts.indexOf('posts');
+                const postId = postsIndex >= 0 ? pathParts[postsIndex + 1] : null;
 
                 return {
                     postId: postId,

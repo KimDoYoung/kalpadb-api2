@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{admin/layouts/fragments/board-header :: head('보도사항 작성', true, false)}">
+</head>
+<body class="bg-gray-50">
+    <div th:attr="x-data=${alpineApp}">
+        <!-- 헤더 -->
+        <header th:replace="~{admin/layouts/fragments/board-header :: header(${pageTitle}, ${pageType}, 'bodo', ${boardId})}">
+        </header>
+
+        <!-- 메인 콘텐츠 -->
+        <main class="max-w-4xl mx-auto py-6 sm:px-6 lg:px-8">
+            <div class="bg-white shadow rounded-lg">
+                <div class="px-6 py-4 border-b border-gray-200">
+                    <h2 class="text-lg font-medium text-gray-900">새 보도사항 작성</h2>
+                </div>
+
+                <!-- 폼 -->
+                <form @submit.prevent="submitForm()" class="p-6 space-y-6">
+                    <!-- 제목 (한글) -->
+                    <div>
+                        <label for="titleKor" class="block text-sm font-medium text-gray-700 mb-2">제목 (한글) *</label>
+                        <input type="text" id="titleKor" x-model="form.titleKor" required
+                               class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                               placeholder="보도사항 제목을 입력하세요">
+                    </div>
+
+                    <!-- 제목 (영어) -->
+                    <div>
+                        <label for="titleEng" class="block text-sm font-medium text-gray-700 mb-2">제목 (English) *</label>
+                        <input type="text" id="titleEng" x-model="form.titleEng" required
+                               class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                               placeholder="Enter title in English">
+                    </div>
+
+                    <!-- 작성자 -->
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label for="authorKor" class="block text-sm font-medium text-gray-700 mb-2">작성자 (한글) *</label>
+                            <input type="text" id="authorKor" x-model="form.authorKor" required
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                                   placeholder="관리자">
+                        </div>
+                        <div>
+                            <label for="authorEng" class="block text-sm font-medium text-gray-700 mb-2">작성자 (English) *</label>
+                            <input type="text" id="authorEng" x-model="form.authorEng" required
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                                   placeholder="Admin">
+                        </div>
+                    </div>
+
+                    <!-- 기준일 (base_ymd) -->
+                    <div>
+                        <label for="baseYmd" class="block text-sm font-medium text-gray-700 mb-2">기준일 *</label>
+                        <input type="date" id="baseYmd" x-model="form.baseYmd" required
+                               class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+
+                    <!-- 내용 (탭 방식) -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">내용</label>
+
+                        <!-- 탭 버튼 -->
+                        <div class="flex border-b border-gray-300 mb-4">
+                            <button type="button"
+                                    @click="contentTab = 'kor'"
+                                    :class="contentTab === 'kor' ? 'border-b-2 border-blue-600 text-blue-600 font-medium' : 'text-gray-600 hover:text-gray-800'"
+                                    class="px-4 py-2 focus:outline-none transition-colors">
+                                한글 (Korean)
+                            </button>
+                            <button type="button"
+                                    @click="contentTab = 'eng'"
+                                    :class="contentTab === 'eng' ? 'border-b-2 border-blue-600 text-blue-600 font-medium' : 'text-gray-600 hover:text-gray-800'"
+                                    class="px-4 py-2 focus:outline-none transition-colors">
+                                영어 (English)
+                            </button>
+                        </div>
+
+                        <!-- 한글 탭 (Quill 에디터) -->
+                        <div x-show="contentTab === 'kor'">
+                            <div x-ref="editorKor" id="editorKor" class="min-h-64"></div>
+                            <textarea aria-label="한글 내용" id="contentKor" x-model="form.contentKor" class="hidden"></textarea>
+                        </div>
+
+                        <!-- 영어 탭 (Quill 에디터) -->
+                        <div x-show="contentTab === 'eng'">
+                            <div x-ref="editorEng" id="editorEng" class="min-h-64"></div>
+                            <textarea aria-label="영어 내용" id="contentEng" x-model="form.contentEng" class="hidden"></textarea>
+                        </div>
+                    </div>
+
+                    <!-- 첨부파일 -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">첨부파일</label>
+                        <div class="flex items-center space-x-4">
+                            <button type="button" @click="$refs.fileInput.click()"
+                                    class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                                <svg class="w-5 h-5 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                                </svg>
+                                파일추가
+                            </button>
+                            <input aria-label="파일 선택" x-ref="fileInput" type="file" multiple class="hidden"
+                                   accept=".pdf,.doc,.docx,.xls,.xlsx,.xlsm,.ppt,.pptx,.hwp,.hwpx,.png,.jpg,.jpeg,.gif,.zip,.rar,.7z"
+                                   @change="handleFileSelect($event)">
+                            <span class="text-xs text-gray-500">PDF, Office(DOC/XLS/PPT), HWP, 이미지, 압축파일 등 (최대 10MB)</span>
+                        </div>
+
+                        <!-- 선택된 파일 목록 -->
+                        <div x-show="attachedFiles.length > 0" class="mt-4">
+                            <h4 class="text-sm font-medium text-gray-700 mb-2">첨부된 파일 (<span x-text="attachedFiles.length"></span>개)</h4>
+                            <div class="space-y-2">
+                                <template x-for="(file, index) in attachedFiles" :key="index">
+                                    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                                        <div class="flex items-center space-x-3">
+                                            <span x-html="getFileIcon(file.name)" class="mr-2"></span>
+                                            <div>
+                                                <p class="text-sm font-medium text-gray-900" x-text="file.name"></p>
+                                                <p class="text-xs text-gray-500" x-text="formatFileSize(file.size)"></p>
+                                            </div>
+                                        </div>
+                                        <button type="button" @click="removeFile(index)"
+                                                class="text-red-600 hover:text-red-800">
+                                            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </template>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 에러 메시지 -->
+                    <div x-show="error" class="p-4 bg-red-50 border border-red-200 rounded-md">
+                        <p class="text-red-600" x-text="error"></p>
+                    </div>
+
+                    <!-- 버튼 그룹 -->
+                    <div class="flex justify-between">
+                        <a href="/admin/posts/bodo/list" class="px-6 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50">
+                            취소
+                        </a>
+                        <button type="submit" :disabled="submitting"
+                                class="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed">
+                            <span x-show="!submitting">저장</span>
+                            <span x-show="submitting">저장 중...</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </main>
+
+        <!-- 상태 메시지 -->
+        <div th:replace="~{admin/layouts/fragments/board-header :: status-message}">
+        </div>
+    </div>
+
+    <!-- 페이지별 스크립트 -->
+    <script>
+        function postsCreateApp() {
+            return {
+                form: {
+                    titleKor: '',
+                    titleEng: '',
+                    authorKor: '관리자',
+                    authorEng: 'Admin',
+                    baseYmd: '',
+                    contentKor: '',
+                    contentEng: ''
+                },
+                contentTab: 'kor',
+                attachedFiles: [],
+                message: {
+                    text: '',
+                    type: 'success',
+                    show: false
+                },
+                submitting: false,
+                error: '',
+                boardCode: 'bodo',
+                quillKor: null,
+                quillEng: null,
+
+                init() {
+                    this.setupMessageListener();
+                    this.setDefaultDate();
+
+                    // Alpine refs가 완전히 바인드될 때까지 대기 후 에디터 초기화
+                    setTimeout(() => {
+                        this.initQuill();
+                    }, 100);
+                },
+
+                // 메시지 이벤트 리스너 설정
+                setupMessageListener() {
+                    document.addEventListener('show-board-message', (event) => {
+                        const { text, type } = event.detail;
+                        this.showMessage(text, type);
+                    });
+                },
+
+                // 기본 날짜 설정
+                setDefaultDate() {
+                    const today = new Date();
+                    const year = today.getFullYear();
+                    const month = String(today.getMonth() + 1).padStart(2, '0');
+                    const day = String(today.getDate()).padStart(2, '0');
+                    this.form.baseYmd = `${year}-${month}-${day}`;
+                },
+
+                // 에디터 초기화 (한글, 영어 모두 Quill 사용)
+                initQuill() {
+                    // boardCode 설정 (이미지 업로드에 필요)
+                    setBoardCode(this.boardCode);
+
+                    // 한글 에디터 초기화 - 반환값을 직접 저장
+                    this.quillKor = initQuillEditor(
+                        this.$refs.editorKor,
+                        { editorId: 'editorKor' },
+                        (content) => {
+                            this.form.contentKor = content;
+                        }
+                    );
+                    // 영어 에디터 초기화
+                    // 새 Quill 인스턴스이므로 직접 생성
+                    const editorEng = new Quill(this.$refs.editorEng, {
+                        theme: 'snow',
+                        placeholder: 'Enter English content here... (paste images with Ctrl+V)',
+                        modules: {
+                            toolbar: {
+                                container: [
+                                    ['bold', 'italic', 'underline','strike'],
+                                    [{'header':[1,2,false]}],
+                                    [{ 'header': 1 }, { 'header': 2 }],
+                                    [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+                                    [{ 'indent': '-1' }, { 'indent': '+1' }],
+                                    [{ 'align': [] }],
+                                    [{ 'color': [] }, { 'background': [] }],
+                                    ['link', 'image'],
+                                    ['table-better'],
+                                    ['clean']
+                                ],
+                                handlers: {
+                                    image: () => customImageHandler()
+                                }
+                            },
+                            table: false,
+                            'table-better': typeof QuillTableBetter !== 'undefined' ? {
+                                language: 'ko_KR',
+                                menus: ['column', 'row', 'merge', 'table', 'cell', 'wrap', 'copy', 'delete'],
+                                toolbarTable: true
+                            } : undefined,
+                            imageResize: typeof QuillResizeImage !== 'undefined' ? {
+                                displaySize: true,
+                                modules: ['Resize', 'DisplaySize', 'Toolbar']
+                            } : undefined,
+                            keyboard: typeof QuillTableBetter !== 'undefined' ? {
+                                bindings: QuillTableBetter.keyboardBindings
+                            } : undefined
+                        }
+                    });
+
+                    // 영어 에디터 콘텐츠 변경 감지
+                    editorEng.on('text-change', () => {
+                        this.form.contentEng = editorEng.root.innerHTML;
+                    });
+
+                    // 클립보드, 드래그앤드롭 핸들러 설정
+                    setupQuillHandlers(editorEng);
+
+                    // 영어 에디터의 focus 이벤트 감지 - HTML 버튼 동작을 위해 globalQuillInstance 업데이트
+                    editorEng.root.addEventListener('focus', () => {
+                        globalQuillInstance = editorEng;
+                    });
+
+                    // 한글 에디터의 focus 이벤트도 감지
+                    const quillKor = getQuillInstance();
+                    if (quillKor && quillKor.root) {
+                        quillKor.root.addEventListener('focus', () => {
+                            globalQuillInstance = quillKor;
+                        });
+                    }
+
+                    // 영어 에디터 인스턴스 저장 (나중에 접근하기 위해)
+                    this.quillEng = editorEng;
+                    console.log('After English editor init:');
+                    console.log('this.quillEng.container:', this.quillEng.container);
+                    console.log('this.quillEng.root.id:', this.quillEng.root ? this.quillEng.root.id : 'no root');
+                    console.log('this.quillKor === this.quillEng:', this.quillKor === this.quillEng);
+                    console.log('this.quillKor.root === this.quillEng.root:', this.quillKor.root === this.quillEng.root);
+                },
+
+                // 상태 메시지 표시
+                showMessage(text, type = 'success') {
+                    this.message.text = text;
+                    this.message.type = type;
+                    this.message.show = true;
+
+                    // 자동 숨김 (로딩 메시지가 아닌 경우)
+                    if (type !== 'loading') {
+                        setTimeout(() => {
+                            this.message.show = false;
+                        }, 3000);
+                    }
+                },
+
+                // 파일 선택 처리
+                handleFileSelect(event) {
+                    this.error = '';
+                    const files = Array.from(event.target.files);
+                    const maxSize = 10 * 1024 * 1024; // 10MB
+
+                    for (const file of files) {
+                        if (file.size > maxSize) {
+                            this.error = `파일 "${file.name}"이 너무 큽니다. (최대 ${FileUtils.formatFileSize(maxSize)})`;
+                            event.target.value = '';
+                            return;
+                        }
+                        this.attachedFiles.push(file);
+                    }
+
+                    event.target.value = '';
+                },
+
+                // 파일 제거
+                removeFile(index) {
+                    return FileUtils.removeFile(this.attachedFiles, index);
+                },
+
+                // 파일 크기 포맷팅
+                formatFileSize(bytes) {
+                    return FileUtils.formatFileSize(bytes);
+                },
+
+                // 파일 아이콘
+                getFileIcon(fileName) {
+                    return FileUtils.getFileIcon(fileName);
+                },
+
+                // 지원하는 파일 형식 확인
+                isSupportedFileType(fileName) {
+                    const supportedExtensions = [
+                        'pdf', 'doc', 'docx', 'xls', 'xlsx', 'xlsm', 'ppt', 'pptx',
+                        'hwp', 'hwpx', 'png', 'jpg', 'jpeg', 'gif', 'zip', 'rar', '7z'
+                    ];
+                    const ext = fileName.split('.').pop().toLowerCase();
+                    return supportedExtensions.includes(ext);
+                },
+
+                // 지원되지 않는 파일 검증
+                validateAttachedFiles() {
+                    const unsupportedFiles = this.attachedFiles.filter(file => !this.isSupportedFileType(file.name));
+
+                    if (unsupportedFiles.length > 0) {
+                        const fileNames = unsupportedFiles.map(f => f.name).join(', ');
+                        throw new Error(`지원하지 않는 파일 형식입니다: ${fileNames}\n\n지원 형식: PDF, Office(DOC/XLS/PPT), HWP, 이미지, 압축파일`);
+                    }
+                },
+
+                async submitForm() {
+                    this.submitting = true;
+                    this.error = '';
+
+                    try {
+                        if (!this.form.titleKor.trim()) {
+                            throw new Error('한글 제목을 입력해주세요.');
+                        }
+                        if (!this.form.titleEng.trim()) {
+                            throw new Error('영어 제목을 입력해주세요.');
+                        }
+                        if (!this.form.baseYmd) {
+                            throw new Error('기준일을 입력해주세요.');
+                        }
+
+                        // 첨부파일 형식 검증
+                        this.validateAttachedFiles();
+
+                        // 저장 전 디버그
+                        console.log('Before save:');
+                        console.log('this.quillKor:', this.quillKor);
+                        console.log('this.quillEng:', this.quillEng);
+                        console.log('this.quillKor.root.innerHTML:', this.quillKor ? this.quillKor.root.innerHTML : 'null');
+                        console.log('this.quillEng.root.innerHTML:', this.quillEng ? this.quillEng.root.innerHTML : 'null');
+
+                        // Quill content에서 data URL 이미지를 서버 URL로 변환 (한글)
+                        const rawContentKor = this.quillKor ? this.quillKor.root.innerHTML : '';
+                        const processedContentKor = await processContentBeforeSave(rawContentKor);
+
+                        // Quill content에서 data URL 이미지를 서버 URL로 변환 (영어)
+                        const rawContentEng = this.quillEng ? this.quillEng.root.innerHTML : '';
+                        const processedContentEng = await processContentBeforeSave(rawContentEng);
+
+                        // 처리 후 디버그
+                        console.log('After processing:');
+                        console.log('processedContentKor:', processedContentKor);
+                        console.log('processedContentEng:', processedContentEng);
+
+                        // 기준일을 yyyyMMdd 형식으로 변환
+                        const baseYmdFormatted = this.form.baseYmd.replace(/-/g, '');
+
+                        // FormData로 파일과 함께 전송
+                        const formData = new FormData();
+                        formData.append('titleKor', this.form.titleKor.trim());
+                        formData.append('titleEng', this.form.titleEng.trim());
+                        formData.append('authorKor', this.form.authorKor.trim());
+                        formData.append('authorEng', this.form.authorEng.trim());
+                        formData.append('baseYmd', baseYmdFormatted);
+                        formData.append('contentKor', processedContentKor);
+                        formData.append('contentEng', processedContentEng);
+
+                        // 첨부파일 추가
+                        this.attachedFiles.forEach((file, index) => {
+                            formData.append('files', file);
+                        });
+
+                        const response = await ApiUtils.postFormData(`/admin/posts/${this.boardCode}`, formData);
+
+                        if (response.data.success) {
+                            const postId = response.data.data.id;
+                            alert('보도사항이 성공적으로 작성되었습니다.');
+                            window.location.href = `/admin/posts/${this.boardCode}/view/${postId}`;
+                        } else {
+                            throw new Error(response.data.message || '저장에 실패했습니다.');
+                        }
+                    } catch (error) {
+                        console.error('Error submitting form:', error);
+                        this.error = ApiUtils.handleError(error);
+                    } finally {
+                        this.submitting = false;
+                    }
+                },
+
+                logout() {
+                    AuthUtils.logout();
+                }
+            }
+        }
+    </script>
+</body>
+</html>
